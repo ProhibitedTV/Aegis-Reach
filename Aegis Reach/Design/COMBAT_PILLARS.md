@@ -28,7 +28,7 @@ These systems are enough to tune the core loop before adding more levels.
 
 ## Enemy combat language
 
-Pass 1 gives the stock MAX soldier behavior four readable roles. The role is deterministic from the Iron Warden number, so the current map does not need to be rebuilt.
+Pass 1 gives the stock MAX soldier behavior readable roles. The role is deterministic from the Iron Warden number, so the current map does not need to be rebuilt.
 
 ### Flanker
 
@@ -46,9 +46,11 @@ Closes distance aggressively. Hunters put pressure on shield recovery and make t
 
 Uses less predictable movement and supports the other roles. This is the baseline rifleman rather than the star of the encounter.
 
-### Reserve assault
+### Reserve assault + shock flank
 
-Reserve troops spawn only at authored mission beats and enter already alerted. They exist to reverse the emotional direction of a fight: the player thinks an area is nearly solved, then has to react to a fresh push.
+Reserve troops spawn only at authored mission beats and enter already alerted. Each pair is deliberately asymmetric: the first reserve pushes directly, then the second follows about 1.1 seconds later on a wide route. The goal is a readable reinforcement pincer rather than two hidden actors becoming visible on the same frame.
+
+Reserve troops exist to reverse the emotional direction of a fight: the player thinks an area is nearly solved, then has to react to a fresh push from a new vector.
 
 ## Encounter cadence for Relayfall
 
@@ -80,15 +82,19 @@ The field repair crate belongs near this middle beat because armour damage now h
 
 **Actors:** Wardens 09–12 plus Reserve 01–02.
 
-Purpose: the largest offensive fight in the slice. The standing defenders establish the problem; the reserve assault pair changes it after the player reaches the core phase. This should feel like a deliberate quick-response force, not enemies appearing randomly.
+Purpose: the largest offensive fight in the slice. The standing defenders establish the problem; the reserve pair changes it after the player reaches the core phase.
 
-The core override should happen after the player has earned a short moment of control.
+The core itself is now part of the combat sandbox. Within its local countermeasure field, suit recharge takes longer to begin and restores shield more slowly. This creates a distinct final-arena rule without adding fake health to enemies. The player should feel that the base is actively resisting them.
+
+The reserve pair should arrive as a pincer: direct pressure first, delayed wide flank second. The core override should happen after the player has earned a short moment of control.
 
 ### Beat 5 — Kestrel LZ reversal
 
 **Actors:** Reserve 03–04 plus any surviving pursuers.
 
 Purpose: turn the level back on itself. The player returns through familiar space with a new objective and an aggressive pursuit squad. Extraction remains blocked until nearby enemies are dead.
+
+Capturing the AEGIS core flips the shield rule in the player's favor: recharge begins sooner and restores faster during the return trip. This is intentional. The final beat should feel like a short power reversal after the oppressive core fight, not another identical attrition encounter.
 
 This beat should be shorter and more desperate than the core fight.
 
@@ -105,14 +111,51 @@ Do not add five nearly identical rifles. Add a weapon only when it creates a new
 
 ## Shield and armour rhythm
 
-The shield is the primary pacing clock.
+The shield is the primary pacing clock, but Relayfall now deliberately changes that clock across the mission.
+
+### Standard sectors
 
 - Damage first removes shield.
 - Shield collapse should be unmistakable.
 - Breaking contact for 5.5 seconds starts regeneration.
 - Armour loss persists and makes the field-repair crate meaningful.
 
-A good encounter repeatedly asks: **Can I finish this target before my shield breaks, or should I disengage now?**
+### AEGIS countermeasure field
+
+During phase 3, within the core combat space:
+
+- recharge delay increases to 7.6 seconds;
+- each recharge tick is weaker and slower;
+- the HUD explicitly warns that the countermeasure field is degrading the suit.
+
+This should create pressure, not helplessness. If the player is simply waiting behind cover for too long, reduce the penalty before increasing enemy damage.
+
+### Captured AEGIS uplink
+
+After the core override:
+
+- recharge delay drops to 3.6 seconds;
+- shield returns faster per tick;
+- the HUD shows the uplink boost.
+
+This is the reward for taking the core and supports a more aggressive extraction run.
+
+A good encounter repeatedly asks: **Can I finish this target before my shield breaks, or should I disengage now?** The core fight adds a second question: **Is my usual recovery rhythm still safe here?**
+
+## Telemetry as a design tool
+
+The director logs structured encounter events to `Design/native-runtime.log`:
+
+- encounter start, phase and opening contact count;
+- encounter duration;
+- eliminations;
+- armour loss;
+- shield breaks;
+- AEGIS signal-mode transitions.
+
+`tools/summarize_playtest.py` converts that append-only log into a compact scorecard. Use telemetry to support observations, not replace them: a 25-second fight can still be bad if an anchor is stuck on geometry, and a 45-second fight can still be excellent if the battle changes shape several times.
+
+The main value is comparative iteration. After each tuning pass, compare the same opening encounter and the same core fight.
 
 ## Visual direction
 
@@ -128,6 +171,8 @@ The cyberpunk DLC is potentially useful for:
 
 Use those assets as detail layers, not as an excuse to make every surface noisy. Combat cover and routes must remain readable at a glance.
 
+The next visual pass should help players understand combat state: major routes, core-field danger, reinforcement entry directions, weapon pickups and important silhouettes should read faster than decorative detail.
+
 ## Rules for future iteration
 
 1. Tune the first encounter before adding a second level.
@@ -137,23 +182,27 @@ Use those assets as detail layers, not as an excuse to make every surface noisy.
 5. Reinforcements should have an authored reason and readable arrival beat.
 6. Recovery time is part of combat; do not keep the player under constant undifferentiated fire.
 7. Weapon pickups should foreshadow the problem they are good at solving.
-8. Preserve the one-session mission state until save restoration is deliberately implemented.
-9. Keep scripts compatible with Lua 5.1 and stock GameGuru MAX behavior APIs.
-10. Validate every gameplay change in-engine; headless tests only protect mission logic.
+8. Change arena rules sparingly and telegraph them clearly; the AEGIS field is the prototype for this.
+9. Preserve the one-session mission state until save restoration is deliberately implemented.
+10. Keep scripts compatible with Lua 5.1 and stock GameGuru MAX behavior APIs.
+11. Validate every gameplay change in-engine; headless tests only protect mission logic.
+12. Use telemetry to compare builds, not to design by spreadsheet alone.
 
 ## Next high-value tasks for Codex
 
 After an in-engine test of this combat pass:
 
-1. Collect a short recording of the insertion breach and Northstar fight.
-2. Tune enemy accuracy, damage and wake radius from observed time-to-kill and shield pressure.
-3. Give the four combat roles visual silhouettes or color accents so behavior can be read before it happens.
-4. Add authored reinforcement arrival cues (door, lift, dropship audio, alarm light, or visible gate) instead of relying only on `Show()` for reserves.
-5. Replace some procedural cover with cyberpunk DLC props while preserving the tactical layout.
-6. Build one bespoke science-fiction enemy archetype that changes the sandbox rather than another rifleman.
-7. Improve weapon/audio impact: firing report, hit confirmation, shield-collapse cue and enemy reaction barks.
-8. Only then expand Relayfall or start a second mission.
+1. Collect a short recording of the insertion breach, Northstar fight and AEGIS-core fight.
+2. Run `python tools/summarize_playtest.py` and keep the output with the recording.
+3. Tune enemy accuracy, damage and wake radius from observed time-to-kill and shield pressure.
+4. Verify that the core interference is noticeable but fair, and that the post-capture boost creates a satisfying reversal.
+5. Give the four standing combat roles visual silhouettes or color accents so behavior can be read before it happens.
+6. Add authored reinforcement arrival cues (door, lift, dropship audio, alarm light, or visible gate) instead of relying only on `Show()` for reserves.
+7. Replace some procedural cover with cyberpunk DLC props while preserving the tactical layout.
+8. Build one bespoke science-fiction enemy archetype that changes the sandbox rather than another rifleman.
+9. Improve weapon/audio impact: firing report, hit confirmation, shield-collapse cue and enemy reaction barks.
+10. Only then expand Relayfall or start a second mission.
 
 ## Success metric
 
-The project is ready to grow when the first 30 seconds can be replayed several times and still produce small variations in movement, threat priority and weapon choice while remaining readable and fair.
+The project is ready to grow when the first 30 seconds can be replayed several times and still produce small variations in movement, threat priority and weapon choice while remaining readable and fair, and when the AEGIS core encounter feels mechanically distinct without feeling like a different game.
