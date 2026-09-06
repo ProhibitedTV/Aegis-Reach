@@ -47,11 +47,23 @@ def advance(ms,fn=None,e=1):
 
 g.aegis_director_init(1);g.aegis_director_main(1)
 ok('mission starts with 100 armour + 100 shield',g.aegis.shield==100 and g.aegis.armour==100 and g.aegis.phase==1)
+delay,amount,interval,mode=g.aegis_recharge_profile()
+ok('normal sectors use standard shield cadence',mode=='standard' and delay==5500 and amount==2 and interval==80)
+
 g.g_PlayerHealth=135;advance(100)
 ok('damage drains shield first',g.aegis.shield==35 and g.aegis.armour==100)
 advance(5000);ok('shield recharge waits for safe interval',g.aegis.shield==35)
 advance(1200);ok('shield recharges after combat delay',g.aegis.shield>35)
 g.g_PlayerHealth=50;advance(100);ok('excess damage reaches armour',g.aegis.shield==0 and g.aegis.armour==50)
+ok('shield collapse is counted for debrief telemetry',g.aegis.shield_breaks==1)
+
+# Mission arc: the live core weakens recharge, then captured AEGIS accelerates it.
+g.aegis.phase=3;pos(0,2870)
+delay,amount,interval,mode=g.aegis_recharge_profile()
+ok('AEGIS core countermeasure degrades recharge nearby',mode=='interference' and delay==7600 and amount==1 and interval==120)
+g.aegis.phase=4
+delay,amount,interval,mode=g.aegis_recharge_profile()
+ok('captured AEGIS uplink accelerates extraction recharge',mode=='overcharge' and delay==3600 and amount==3 and interval==70)
 
 entity(2,800,850);g.aegis_medical_init(2);pos(800,850);g.g_KeyPressE=1;g.aegis_medical_main(2)
 ok('field repair restores armour',g.aegis.armour==100)
@@ -59,6 +71,7 @@ g.aegis.armour=50;g.aegis_medical_main(2);ok('field repair is single use',g.aegi
 g.aegis.armour=100;g.aegis.shield=100;g.g_PlayerHealth=200;g.aegis.last_health=200
 
 # Encounter pacing: nearby opening guards should engage, later sectors should wait.
+g.aegis.phase=1
 entity(20,0,0);pos(0,0);g.aegis_enemy_init_name(20,'IRON WARDEN 01')
 before=g.ai_ticks;g.aegis_enemy_main(20)
 ok('opening guard wakes inside encounter radius',g.ai_ticks==before+1)
@@ -81,19 +94,30 @@ pos(800,850);advance(4000,g.aegis_relay_main,11);ok('relay order cannot be skipp
 pos(-700,-1100);advance(1500,g.aegis_relay_main,10);g.g_KeyPressE=0;advance(100,g.aegis_relay_main,10)
 g.g_KeyPressE=1;advance(1800,g.aegis_relay_main,10);ok('releasing E resets the override hold',g.aegis.phase==1)
 advance(1500,g.aegis_relay_main,10);ok('first relay advances mission',g.aegis.phase==2)
+ok('relay completion stores mission split time',g.aegis.relay_times[1] is not None)
 
 entity(30,950,2520);g.aegis_enemy_init_name(30,'RESERVE 01')
 before=g.ai_ticks;g.aegis_enemy_main(30)
 ok('reserve stays dormant before its trigger',not g.calls['shown30'] and g.ai_ticks==before)
 pos(800,850);advance(3200,g.aegis_relay_main,11);g.aegis_enemy_main(30)
-ok('second relay activates reserve infantry',g.aegis.phase==3 and g.calls['shown30'] and g.ai_ticks==before+1)
+ok('first core reserve activates at phase three',g.aegis.phase==3 and g.calls['shown30'] and g.ai_ticks==before+1)
 profile=g.calls['profile30']
-ok('reserve infantry enters combat already alerted',profile[7]==1 and profile[6]==2)
+ok('first reserve enters as alerted direct assault',profile[7]==1 and profile[6]==2)
+
+entity(31,-950,2520);g.aegis_enemy_init_name(31,'RESERVE 02')
+before=g.ai_ticks;g.aegis_enemy_main(31)
+ok('second reserve queues instead of popping simultaneously',not g.calls['shown31'] and g.ai_ticks==before)
+advance(1000);g.aegis_enemy_main(31)
+ok('second reserve remains hidden during pincer delay',not g.calls['shown31'])
+advance(200);g.aegis_enemy_main(31)
+profile=g.calls['profile31']
+ok('delayed reserve enters as alerted wide flanker',g.calls['shown31'] and g.ai_ticks==before+1 and profile[7]==1 and profile[6]==3)
 
 pos(0,2870);advance(3200,g.aegis_relay_main,12);ok('third relay unlocks extraction',g.aegis.phase==4)
+ok('third relay stores core capture split',g.aegis.relay_times[3] is not None)
 entity(40,0,-2510);entity(41,150,-2450);g.aegis.enemies[41]=True;g.aegis_extract_init(40);pos(0,-2510)
 advance(4000,g.aegis_extract_main,40);ok('nearby hostiles block extraction',not g.aegis.extracted)
-g.g_Entity[41].health=0;g.g_Entity[30].health=0;advance(3300,g.aegis_extract_main,40)
+g.g_Entity[41].health=0;g.g_Entity[30].health=0;g.g_Entity[31].health=0;advance(3300,g.aegis_extract_main,40)
 ok('clear LZ and held E complete the mission',g.aegis.extracted and g.calls.frozen and g.aegis.score>3000)
 ok('debrief cannot fire on the extraction frame',not g.calls.win)
 advance(2200);ok('debrief reaches MAX win screen',g.calls.win)
