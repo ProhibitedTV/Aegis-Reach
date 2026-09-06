@@ -1,6 +1,7 @@
 """Deploy Aegis Reach to GameGuru MAX's user Files area and collect playtest data.
 
 Examples:
+    python tools/max_playtest.py deploy --production
     python tools/max_playtest.py deploy --polish
     python tools/max_playtest.py deploy
     python tools/max_playtest.py collect
@@ -11,6 +12,7 @@ than requiring a full manual xcopy of every stock engine asset on each iteration
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 from pathlib import Path
@@ -42,18 +44,45 @@ def copy_tree(source: Path, target: Path) -> int:
     return count
 
 
-def deploy(target: Path, polish: bool) -> None:
-    if polish:
-        from polish_relayfall import rewrite_archive, MAP
+def prepare_production_content() -> None:
+    from environment_pass import rewrite_archive as environment_archive, MAP
+    from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
 
-        report = rewrite_archive(MAP, dry_run=False, backup=False)
-        print(
-            "Visual pass applied:",
-            len(report["visual_settings"]),
-            "settings /",
-            len(report["lights"]),
-            "lights",
-        )
+    environment = environment_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Environment pass applied:",
+        len(environment["generated_assets"]),
+        "assets /",
+        len(environment["placements"]),
+        "placements",
+    )
+
+    cards = build_original_cine_assets()
+    SHOTLIST.parent.mkdir(parents=True, exist_ok=True)
+    SHOTLIST.write_text(json.dumps(shotlist(), indent=2), encoding="utf-8")
+    print("Cinematic presentation assets generated:", len(cards), "image cards")
+
+
+def apply_visual_polish() -> None:
+    from polish_relayfall import rewrite_archive, MAP
+
+    report = rewrite_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Visual pass applied:",
+        len(report["visual_settings"]),
+        "settings /",
+        len(report["lights"]),
+        "lights",
+    )
+
+
+def deploy(target: Path, polish: bool, production: bool) -> None:
+    # Production is the preferred integrated path: authored environment first,
+    # visual settings second, then deploy the resulting validated map and assets.
+    if production:
+        prepare_production_content()
+    if polish or production:
+        apply_visual_polish()
 
     target.mkdir(parents=True, exist_ok=True)
 
@@ -78,6 +107,13 @@ def deploy(target: Path, polish: bool) -> None:
     print("AEGIS REACH // MAX PLAYTEST DEPLOYED")
     print("Target:", target)
     print("Files copied:", total)
+    if production:
+        print("Mode: PRODUCTION SLICE (environment + presentation + visual polish)")
+        print("CineGuru setup: python tools\\cineguru_bootstrap.py")
+    elif polish:
+        print("Mode: VISUAL POLISH")
+    else:
+        print("Mode: FAST SCRIPT/MAP SYNC")
     print("Restart GameGuru MAX before testing so scripts and map data reload cleanly.")
 
 
@@ -102,7 +138,7 @@ def collect(target: Path) -> None:
     print("AEGIS REACH // PLAYTEST COLLECTED")
     print("Source:", source)
     print("Repo log:", destination)
-    print("Next: python tools\\summarize_playtest.py")
+    print("Next: python tools\\summarize_playtest.py --json")
 
 
 def main() -> None:
@@ -118,11 +154,16 @@ def main() -> None:
         action="store_true",
         help="apply tools/polish_relayfall.py before deploying",
     )
+    parser.add_argument(
+        "--production",
+        action="store_true",
+        help="build environment + cinematic assets + visual polish before deploying",
+    )
     args = parser.parse_args()
 
     target = args.target or default_max_files()
     if args.command == "deploy":
-        deploy(target, args.polish)
+        deploy(target, args.polish, args.production)
     else:
         collect(target)
 
