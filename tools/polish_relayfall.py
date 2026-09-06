@@ -71,6 +71,10 @@ VISUAL_SETTINGS = {
     "SkyCloudCoverage": 0.88,
     "MotionIntensity#": 0,
     "LevelVSyncEnabled": 1,
+    # Remove the stock/template rainforest cue from the playable archive. Keep
+    # Relayfall's own low-volume underscore as the default atmospheric bed.
+    "AmbientMusicTrack": r"audiobank\aegis_reach\reach-underscore.wav",
+    "AmbientMusicTrackVolume": 55,
 }
 
 CYAN = 0x67D8EA
