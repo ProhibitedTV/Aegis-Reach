@@ -8,7 +8,8 @@ local profiles={
  anchor={0,0,500,1,0,4,0,1,18000,1,1600,0,0},
  hunter={0,1,260,0,0,2,0,1,12000,1,1500,0,0},
  skirmisher={0,1,420,0,1,1,0,1,15000,1,1350,0,0},
- assault={0,1,220,0,0,2,1,1,14000,1,1800,0,0}
+ assault={0,1,220,0,0,2,1,1,14000,1,1800,0,0},
+ shockflank={0,1,300,0,0,3,1,1,13000,1,1800,0,0}
 }
 
 local function configure(e,role)
@@ -17,7 +18,12 @@ local function configure(e,role)
 end
 
 local function role_for(index,reserve)
- if reserve then return "assault" end
+ if reserve then
+  -- Reserve pairs deliberately split jobs: one closes distance while the other
+  -- takes the wide route. Combined with their stagger this should read as a
+  -- reinforcement pincer rather than two soldiers popping in simultaneously.
+  return reserve%2==0 and "shockflank" or "assault"
+ end
  local slot=((index-1)%4)+1
  if slot==1 then return "flanker" end
  if slot==2 then return "anchor" end
@@ -49,7 +55,8 @@ function aegis_enemy_init_name(e,name)
  local index=tonumber(string.match(name,"WARDEN%s+(%d+)")) or reserve or 1
  local gate=phase_gate(index,reserve)
  local role=role_for(index,reserve)
- enemy[e]={reserve=reserve,index=index,gate=gate,role=role,registered=false,active=false,wake_range=1850}
+ enemy[e]={reserve=reserve,index=index,gate=gate,role=role,registered=false,active=false,wake_range=1850,
+   queued_at=0,activation_delay=reserve and (((reserve-1)%2)*1100) or 0}
  character_attack_init_file(e,"people\\character_attack")
  configure(e,role)
  if reserve then Hide(e);CollisionOff(e) end
@@ -67,12 +74,14 @@ function aegis_enemy_main(e)
  if not w.active then
   if aegis.phase<w.gate then return end
   if w.reserve then
+   if w.queued_at==0 then w.queued_at=g_Time end
+   if g_Time-w.queued_at<w.activation_delay then return end
    w.active=true
    Show(e);CollisionOn(e)
    aegis.reserves[e]=nil
    aegis.enemies[e]=true
    aegis.active_enemies[e]=true
-   configure(e,"assault")
+   configure(e,w.role)
    announce_reserve(w.gate)
   else
    -- Normal troops remain visible as guards, but do not enter full combat logic
