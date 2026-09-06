@@ -23,7 +23,9 @@ function aegis_director_init(e)
  aegis = {phase=1, relays={}, enemies={}, active_enemies={}, reserves={}, reserve_announced={}, extracted=false, started=false,
    message="", message_until=0, last_health=200, last_hit=0, shield=100, armour=100,
    next_regen=0, regen_announced=false, born=0, kills=0, hold=0, hold_last=0, radio=-1, score=0,
-   combat_active=false, combat_last=0, combat_contacts=0}
+   combat_active=false, combat_last=0, combat_contacts=0, signal_mode="standard", signal_announced="",
+   shield_breaks=0, encounter_seq=0, encounter_started=0, encounter_phase=0, encounter_start_kills=0,
+   encounter_start_armour=100, encounter_breaks=0}
  Hide(e)
  CollisionOff(e)
 end
@@ -59,6 +61,55 @@ function aegis_nearby_hostiles(radius)
  return alive
 end
 
+-- Recharge cadence is part of the mission arc, not just a health setting.
+-- The live AEGIS core fights the player's suit near the final objective; once
+-- captured, Vanguard Seven rides the same network home with a temporary boost.
+function aegis_recharge_profile()
+ if aegis.phase==3 and aegis_distance(0,2870)<1650 then
+  return 7600,1,120,"interference"
+ end
+ if aegis.phase>=4 then
+  return 3600,3,70,"overcharge"
+ end
+ return 5500,2,80,"standard"
+end
+
+local function update_signal_state()
+ local delay,amount,interval,mode=aegis_recharge_profile()
+ if aegis.signal_mode~=mode then
+  aegis.signal_mode=mode
+  if mode=="interference" then
+   aegis_message("SUIT: AEGIS COUNTERMEASURE FIELD // shield recharge degraded",5)
+   audit("signal_mode interference phase="..aegis.phase)
+  elseif mode=="overcharge" then
+   aegis_message("SUIT: AEGIS UPLINK CAPTURED // shield recharge accelerated",5)
+   audit("signal_mode overcharge phase="..aegis.phase)
+  elseif aegis.signal_announced~="" then
+   aegis_message("SUIT: Countermeasure field cleared // recharge nominal",4)
+   audit("signal_mode standard phase="..aegis.phase)
+  end
+  aegis.signal_announced=mode
+ end
+ return delay,amount,interval,mode
+end
+
+local function start_encounter(nearby)
+ aegis.encounter_seq=aegis.encounter_seq+1
+ aegis.encounter_started=g_Time
+ aegis.encounter_phase=aegis.phase
+ aegis.encounter_start_kills=aegis.kills
+ aegis.encounter_start_armour=aegis.armour
+ aegis.encounter_breaks=0
+ audit("encounter_start id="..aegis.encounter_seq.." phase="..aegis.phase.." contacts="..nearby.." armour="..math.floor(aegis.armour).." shield="..math.floor(aegis.shield))
+end
+
+local function finish_encounter()
+ local duration=math.floor((g_Time-aegis.encounter_started)/100)/10
+ local eliminations=math.max(0,aegis.kills-aegis.encounter_start_kills)
+ local armour_loss=math.max(0,math.floor(aegis.encounter_start_armour-aegis.armour))
+ audit("encounter_clear id="..aegis.encounter_seq.." phase="..aegis.encounter_phase.." duration="..duration.."s kills="..eliminations.." armour_loss="..armour_loss.." shield_breaks="..aegis.encounter_breaks)
+end
+
 local function update_combat_state()
  local nearby=aegis_nearby_hostiles(1850)
  aegis.combat_contacts=nearby
@@ -66,12 +117,14 @@ local function update_combat_state()
   aegis.combat_last=g_Time
   if not aegis.combat_active then
    aegis.combat_active=true
+   start_encounter(nearby)
    if g_Time-aegis.born>7000 then
     aegis_message("TACTICAL: Contact. Break their line, flank, then finish the survivors.",4)
    end
   end
  elseif aegis.combat_active and g_Time-aegis.combat_last>2200 then
   aegis.combat_active=false
+  finish_encounter()
   if not aegis.extracted then aegis_message("TACTICAL: Local sector clear. Reload and move before the next push.",4) end
  end
  return nearby
@@ -100,10 +153,13 @@ function aegis_director_main(e)
   TextCenterOnXColor(50,35,5,"AEGIS REACH // MISSION COMPLETE",88,231,239)
   TextCenterOnX(50,43,3,"Strike cancelled. The colony survives.")
   TextCenterOnX(50,49,3,"TIME "..aegis.final_time.."s    ELIMINATIONS "..aegis.kills.."    SCORE "..aegis.score)
-  TextCenterOnX(50,58,2,"Press E to debrief")
+  TextCenterOnX(50,54,2,"ARMOUR "..math.floor(aegis.armour).."    SHIELD BREAKS "..aegis.shield_breaks)
+  TextCenterOnX(50,61,2,"Press E to debrief")
   if g_Time>aegis.completed_at+2000 and g_KeyPressE==1 then WinGame() end
   return
  end
+
+ local regen_delay,regen_amount,regen_interval,signal_mode=update_signal_state()
 
  -- Health is split into 100 armour and 100 shield. Damage drains shield first.
  local shield_before=aegis.shield
@@ -115,17 +171,26 @@ function aegis_director_main(e)
   aegis.shield=aegis.shield-absorb
   aegis.armour=math.max(0,aegis.armour-(damage-absorb))
   if shield_before>0 and aegis.shield<=0 then
+   aegis.shield_breaks=aegis.shield_breaks+1
+   if aegis.combat_active then aegis.encounter_breaks=aegis.encounter_breaks+1 end
    aegis_message("SUIT: SHIELD COLLAPSE // break line of sight now",4)
+   audit("shield_break total="..aegis.shield_breaks.." phase="..aegis.phase.." armour="..math.floor(aegis.armour))
   end
  end
 
- if g_Time-aegis.last_hit>5500 and g_Time>=aegis.next_regen and aegis.shield<100 then
+ if g_Time-aegis.last_hit>regen_delay and g_Time>=aegis.next_regen and aegis.shield<100 then
   if not aegis.regen_announced then
    aegis.regen_announced=true
-   aegis_message("SUIT: Shield recharge engaged",3)
+   if signal_mode=="interference" then
+    aegis_message("SUIT: Weak recharge lock acquired // hold cover",3)
+   elseif signal_mode=="overcharge" then
+    aegis_message("SUIT: AEGIS-assisted recharge engaged",3)
+   else
+    aegis_message("SUIT: Shield recharge engaged",3)
+   end
   end
-  aegis.shield=math.min(100,aegis.shield+2)
-  aegis.next_regen=g_Time+80
+  aegis.shield=math.min(100,aegis.shield+regen_amount)
+  aegis.next_regen=g_Time+regen_interval
   SetPlayerHealth(math.floor(aegis.armour+aegis.shield))
  end
  aegis.last_health=g_PlayerHealth
@@ -147,7 +212,12 @@ function aegis_director_main(e)
  if nearby>0 then
   TextColor(72,12,1,"CONTACT // "..nearby.." close hostile"..(nearby==1 and "" or "s"),255,177,89)
  else
-  TextColor(72,12,1,"TACTICAL CLEAR // shield delay 5.5s",192,208,220)
+  TextColor(72,12,1,"TACTICAL CLEAR // recharge in "..(regen_delay/1000).."s",192,208,220)
+ end
+ if signal_mode=="interference" then
+  TextColor(72,16,1,"AEGIS FIELD // RECHARGE DEGRADED",255,137,94)
+ elseif signal_mode=="overcharge" then
+  TextColor(72,16,1,"AEGIS UPLINK // RECHARGE BOOSTED",91,239,214)
  end
 
  if aegis.shield<25 then TextCenterOnXColor(50,79,2,"SHIELD LOW // FIND COVER",255,117,80) end
