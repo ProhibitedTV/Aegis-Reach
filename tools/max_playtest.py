@@ -46,6 +46,9 @@ def copy_tree(source: Path, target: Path) -> int:
 
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
+    from world_story_pass import rewrite_archive as world_archive
+    from world_story_logic_pass import rewrite_archive as story_logic_archive
+    from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
     from ecosystem_scan import scan as scan_ecosystem
 
@@ -68,6 +71,23 @@ def prepare_production_content() -> None:
         "placements",
     )
 
+    world = world_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Vesper world-story pass applied:",
+        len(world["generated_assets"]),
+        "assets /",
+        len(world["placements"]),
+        "placements /",
+        world["south_gate_segments_removed"],
+        "south-gate segments removed",
+    )
+
+    story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
+    print("Environmental story triggers bound:", len(story_logic["story_entities"]))
+
+    story_images = build_story_art()
+    print("Original Vesper field-art assets generated:", len(story_images))
+
     cards = build_original_cine_assets()
     SHOTLIST.parent.mkdir(parents=True, exist_ok=True)
     SHOTLIST.write_text(json.dumps(shotlist(), indent=2), encoding="utf-8")
@@ -89,7 +109,7 @@ def apply_visual_polish() -> None:
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
     # Production is the preferred integrated path: ecosystem discovery and authored
-    # presentation first, visual settings second, then validated map/assets deploy.
+    # world/presentation first, visual settings second, then validated map/assets deploy.
     if production:
         prepare_production_content()
     if polish or production:
@@ -119,8 +139,10 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem scan + environment + presentation + visual polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + sky + open Vesper shelf + story + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
+        print("World report: Aegis Reach\\Design\\world-story-pass.json")
+        print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
@@ -169,7 +191,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build environment/cinematic assets + visual polish before deploying",
+        help="scan ecosystem + build environment/world/story/cinematic assets + visual polish before deploying",
     )
     args = parser.parse_args()
 
