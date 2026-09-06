@@ -47,6 +47,8 @@ def copy_tree(source: Path, target: Path) -> int:
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
+    from world_story_logic_pass import rewrite_archive as story_logic_archive
+    from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
     from ecosystem_scan import scan as scan_ecosystem
 
@@ -79,6 +81,12 @@ def prepare_production_content() -> None:
         world["south_gate_segments_removed"],
         "south-gate segments removed",
     )
+
+    story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
+    print("Environmental story triggers bound:", len(story_logic["story_entities"]))
+
+    story_images = build_story_art()
+    print("Original Vesper field-art assets generated:", len(story_images))
 
     cards = build_original_cine_assets()
     SHOTLIST.parent.mkdir(parents=True, exist_ok=True)
@@ -131,9 +139,10 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + sky + open Vesper shelf + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + sky + open Vesper shelf + story + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("World report: Aegis Reach\\Design\\world-story-pass.json")
+        print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
@@ -182,7 +191,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build environment/world/cinematic assets + visual polish before deploying",
+        help="scan ecosystem + build environment/world/story/cinematic assets + visual polish before deploying",
     )
     args = parser.parse_args()
 
