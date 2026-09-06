@@ -47,6 +47,17 @@ def copy_tree(source: Path, target: Path) -> int:
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
+    from ecosystem_scan import scan as scan_ecosystem
+
+    ecosystem = scan_ecosystem()
+    usable_categories = [name for name, paths in ecosystem["categories"].items() if paths]
+    print(
+        "GameGuru ecosystem scanned:",
+        len(ecosystem["existing_roots"]),
+        "roots /",
+        len(usable_categories),
+        "useful content categories",
+    )
 
     environment = environment_archive(MAP, dry_run=False, backup=False)
     print(
@@ -77,8 +88,8 @@ def apply_visual_polish() -> None:
 
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
-    # Production is the preferred integrated path: authored environment first,
-    # visual settings second, then deploy the resulting validated map and assets.
+    # Production is the preferred integrated path: ecosystem discovery and authored
+    # presentation first, visual settings second, then validated map/assets deploy.
     if production:
         prepare_production_content()
     if polish or production:
@@ -86,8 +97,8 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
 
     target.mkdir(parents=True, exist_ok=True)
 
-    # These are the project-authored/runtime-critical areas. Stock GameGuru assets
-    # can remain in the MAX user/install folders once initially staged.
+    # These are the project-authored/runtime-critical areas. Stock/DLC GameGuru
+    # assets stay in the user's licensed MAX install and are discovered separately.
     mappings = [
         (FILES / "mapbank", target / "mapbank"),
         (FILES / "scriptbank" / "aegis_reach", target / "scriptbank" / "aegis_reach"),
@@ -108,7 +119,8 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (environment + presentation + visual polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem scan + environment + presentation + visual polish)")
+        print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
@@ -157,7 +169,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="build environment + cinematic assets + visual polish before deploying",
+        help="scan ecosystem + build environment/cinematic assets + visual polish before deploying",
     )
     args = parser.parse_args()
 
