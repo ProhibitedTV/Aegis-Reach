@@ -1,0 +1,33 @@
+{
+  "original_assets": [
+    "Bastion Wall.fpe",
+    "Extraction Pad.fpe",
+    "Infantry Cover.fpe",
+    "Orbital Antenna Arc.fpe",
+    "Relay Bunker.fpe",
+    "Relay Terminal.fpe",
+    "Signal Spire.fpe",
+    "Station Deck.fpe",
+    "Supply Crate.fpe"
+  ],
+  "stock_entities": [
+    "Aegis Reach\\Station Deck.fpe",
+    "Aegis Reach\\Bastion Wall.fpe",
+    "Aegis Reach\\Infantry Cover.fpe",
+    "Aegis Reach\\Supply Crate.fpe",
+    "Aegis Reach\\Relay Bunker.fpe",
+    "Aegis Reach\\Signal Spire.fpe",
+    "Aegis Reach\\Orbital Antenna Arc.fpe",
+    "_markers\\Player Start.fpe",
+    "Aegis Reach\\Relay Terminal.fpe",
+    "Aegis Reach\\Extraction Pad.fpe",
+    "Characters\\Tony - Armed Response.fpe",
+    "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
+    "Max Collection\\Weapons\\Tactical Pump Shotgun.fpe",
+    "Max Collection\\Weapons\\Patrol Rifle.fpe",
+    "Max Collection\\Weapons\\Frag Grenade.fpe",
+    "_markers\\White Light.fpe"
+  ],
+  "map_version": 338,
+  "entities": 130
+}

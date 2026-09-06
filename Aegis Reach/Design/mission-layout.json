@@ -1,0 +1,1302 @@
+[
+  {
+    "id": 1,
+    "name": "REACH // Fortress foundation",
+    "kind": "scenery",
+    "x": 0,
+    "y": 600,
+    "z": 0,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Station Deck.fpe"
+  },
+  {
+    "id": 2,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -2900,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 3,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -2900,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 4,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -2350,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 5,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -2350,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 6,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -1800,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 7,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -1800,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 8,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -1250,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 9,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -1250,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 10,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -700,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 11,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -700,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 12,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": -150,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 13,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": -150,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 14,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 400,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 15,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 400,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 16,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 950,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 17,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 950,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 18,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 1500,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 19,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 1500,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 20,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 2050,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 21,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 2050,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 22,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 2600,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 23,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 2600,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 24,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 3150,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 25,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 3150,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 26,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -2150,
+    "y": 600,
+    "z": 3700,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 27,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 2150,
+    "y": 600,
+    "z": 3700,
+    "rotation": 90,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 28,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -1900,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 29,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -1900,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 30,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -1350,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 31,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -1350,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 32,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -800,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 33,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -800,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 34,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -250,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 35,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": -250,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 36,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 300,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 37,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 300,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 38,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 850,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 39,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 850,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 40,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 1400,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 41,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 1400,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 42,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 1950,
+    "y": 600,
+    "z": -2960,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 43,
+    "name": "Perimeter bastion",
+    "kind": "scenery",
+    "x": 1950,
+    "y": 600,
+    "z": 3760,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 44,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1850,
+    "y": 600,
+    "z": -1650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 45,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1250,
+    "y": 600,
+    "z": -1650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 46,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 0,
+    "y": 600,
+    "z": -1650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 47,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1250,
+    "y": 600,
+    "z": -1650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 48,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1850,
+    "y": 600,
+    "z": -1650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 49,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1850,
+    "y": 600,
+    "z": 200,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 50,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1250,
+    "y": 600,
+    "z": 200,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 51,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 0,
+    "y": 600,
+    "z": 200,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 52,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1250,
+    "y": 600,
+    "z": 200,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 53,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1850,
+    "y": 600,
+    "z": 200,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 54,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1850,
+    "y": 600,
+    "z": 1950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 55,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": -1250,
+    "y": 600,
+    "z": 1950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 56,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 0,
+    "y": 600,
+    "z": 1950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 57,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1250,
+    "y": 600,
+    "z": 1950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 58,
+    "name": "Blast wall / flank gates",
+    "kind": "scenery",
+    "x": 1850,
+    "y": 600,
+    "z": 1950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Bastion Wall.fpe"
+  },
+  {
+    "id": 59,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -950,
+    "y": 600,
+    "z": -2550,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 60,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 800,
+    "y": 600,
+    "z": -2450,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 61,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -1300,
+    "y": 600,
+    "z": -2100,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 62,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 250,
+    "y": 600,
+    "z": -2080,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 63,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -1500,
+    "y": 600,
+    "z": -900,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 64,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 650,
+    "y": 600,
+    "z": -950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 65,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -200,
+    "y": 600,
+    "z": -450,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 66,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 1400,
+    "y": 600,
+    "z": -220,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 67,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -1200,
+    "y": 600,
+    "z": 720,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 68,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 200,
+    "y": 600,
+    "z": 820,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 69,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 1300,
+    "y": 600,
+    "z": 1350,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 70,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -550,
+    "y": 600,
+    "z": 1460,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 71,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": -1400,
+    "y": 600,
+    "z": 2580,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 72,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 450,
+    "y": 600,
+    "z": 2380,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 73,
+    "name": "Infantry hard cover",
+    "kind": "cover",
+    "x": 1250,
+    "y": 600,
+    "z": 3020,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Infantry Cover.fpe"
+  },
+  {
+    "id": 74,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": -700,
+    "y": 600,
+    "z": -2700,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 75,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": -650,
+    "y": 600,
+    "z": -2600,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 76,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": 1100,
+    "y": 600,
+    "z": -1100,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 77,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": 1250,
+    "y": 600,
+    "z": -1000,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 78,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": -1350,
+    "y": 600,
+    "z": 1000,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 79,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": -1200,
+    "y": 600,
+    "z": 900,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 80,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": 700,
+    "y": 600,
+    "z": 2820,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 81,
+    "name": "Supply cache",
+    "kind": "cover",
+    "x": 850,
+    "y": 600,
+    "z": 2840,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 82,
+    "name": "Command enclosure",
+    "kind": "scenery",
+    "x": -1550,
+    "y": 600,
+    "z": -520,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Bunker.fpe"
+  },
+  {
+    "id": 83,
+    "name": "Command enclosure",
+    "kind": "scenery",
+    "x": 1550,
+    "y": 600,
+    "z": 1150,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Bunker.fpe"
+  },
+  {
+    "id": 84,
+    "name": "Command enclosure",
+    "kind": "scenery",
+    "x": -1450,
+    "y": 600,
+    "z": 2900,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Bunker.fpe"
+  },
+  {
+    "id": 85,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": -1500,
+    "y": 600,
+    "z": -2650,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 86,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": 1550,
+    "y": 600,
+    "z": -1500,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 87,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": -1600,
+    "y": 600,
+    "z": 400,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 88,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": 1600,
+    "y": 600,
+    "z": 2300,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 89,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": -750,
+    "y": 600,
+    "z": 3330,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 90,
+    "name": "AEGIS array mast",
+    "kind": "scenery",
+    "x": 750,
+    "y": 600,
+    "z": 3330,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Signal Spire.fpe"
+  },
+  {
+    "id": 91,
+    "name": "Broken orbital antenna",
+    "kind": "scenery",
+    "x": 0,
+    "y": 1150,
+    "z": 3600,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Orbital Antenna Arc.fpe"
+  },
+  {
+    "id": 92,
+    "name": "Vanguard 7 // insertion",
+    "kind": "player",
+    "x": 0,
+    "y": 645,
+    "z": -2700,
+    "rotation": 0,
+    "asset": "_markers\\Player Start.fpe"
+  },
+  {
+    "id": 93,
+    "name": "AEGIS MISSION CONTROLLER",
+    "kind": "controller",
+    "x": -1900,
+    "y": 600,
+    "z": -2950,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 94,
+    "name": "RELAY 1 // NORTHSTAR",
+    "kind": "relay",
+    "x": -700,
+    "y": 600,
+    "z": -1100,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Terminal.fpe"
+  },
+  {
+    "id": 95,
+    "name": "RELAY 2 // LANTERN",
+    "kind": "relay",
+    "x": 800,
+    "y": 600,
+    "z": 850,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Terminal.fpe"
+  },
+  {
+    "id": 96,
+    "name": "RELAY 3 // AEGIS CORE",
+    "kind": "relay",
+    "x": 0,
+    "y": 600,
+    "z": 2870,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Relay Terminal.fpe"
+  },
+  {
+    "id": 97,
+    "name": "EXTRACT // Kestrel landing zone",
+    "kind": "extraction",
+    "x": 0,
+    "y": 600,
+    "z": -2510,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Extraction Pad.fpe"
+  },
+  {
+    "id": 98,
+    "name": "FIELD REPAIR // 75 armour",
+    "kind": "medical",
+    "x": 700,
+    "y": 600,
+    "z": 700,
+    "rotation": 0,
+    "asset": "Aegis Reach\\Supply Crate.fpe"
+  },
+  {
+    "id": 99,
+    "name": "IRON WARDEN 01",
+    "kind": "enemy",
+    "x": -800,
+    "y": 605,
+    "z": -2130,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 100,
+    "name": "IRON WARDEN 02",
+    "kind": "enemy",
+    "x": 880,
+    "y": 605,
+    "z": -2010,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 101,
+    "name": "IRON WARDEN 03",
+    "kind": "enemy",
+    "x": -900,
+    "y": 605,
+    "z": -680,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 102,
+    "name": "IRON WARDEN 04",
+    "kind": "enemy",
+    "x": 600,
+    "y": 605,
+    "z": -690,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 103,
+    "name": "IRON WARDEN 05",
+    "kind": "enemy",
+    "x": 1450,
+    "y": 605,
+    "z": -470,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 104,
+    "name": "IRON WARDEN 06",
+    "kind": "enemy",
+    "x": -720,
+    "y": 605,
+    "z": 630,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 105,
+    "name": "IRON WARDEN 07",
+    "kind": "enemy",
+    "x": 450,
+    "y": 605,
+    "z": 1120,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 106,
+    "name": "IRON WARDEN 08",
+    "kind": "enemy",
+    "x": 1480,
+    "y": 605,
+    "z": 1570,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 107,
+    "name": "IRON WARDEN 09",
+    "kind": "enemy",
+    "x": -1450,
+    "y": 605,
+    "z": 2230,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 108,
+    "name": "IRON WARDEN 10",
+    "kind": "enemy",
+    "x": 650,
+    "y": 605,
+    "z": 2530,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 109,
+    "name": "IRON WARDEN 11",
+    "kind": "enemy",
+    "x": -400,
+    "y": 605,
+    "z": 3290,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 110,
+    "name": "IRON WARDEN 12",
+    "kind": "enemy",
+    "x": 950,
+    "y": 605,
+    "z": 3410,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 111,
+    "name": "RESERVE 01",
+    "kind": "reserve",
+    "x": -950,
+    "y": 605,
+    "z": 2520,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 112,
+    "name": "RESERVE 02",
+    "kind": "reserve",
+    "x": 950,
+    "y": 605,
+    "z": 2520,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 113,
+    "name": "RESERVE 03",
+    "kind": "reserve",
+    "x": -700,
+    "y": 605,
+    "z": -1850,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 114,
+    "name": "RESERVE 04",
+    "kind": "reserve",
+    "x": 700,
+    "y": 605,
+    "z": -1850,
+    "rotation": 180,
+    "asset": "Characters\\Tony - Armed Response.fpe"
+  },
+  {
+    "id": 115,
+    "name": "MK18 ammunition 1",
+    "kind": "ammo",
+    "x": -420,
+    "y": 630,
+    "z": -2590,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe"
+  },
+  {
+    "id": 116,
+    "name": "MK18 ammunition 2",
+    "kind": "ammo",
+    "x": 950,
+    "y": 630,
+    "z": -1000,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe"
+  },
+  {
+    "id": 117,
+    "name": "MK18 ammunition 3",
+    "kind": "ammo",
+    "x": -1030,
+    "y": 630,
+    "z": 850,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe"
+  },
+  {
+    "id": 118,
+    "name": "MK18 ammunition 4",
+    "kind": "ammo",
+    "x": 480,
+    "y": 630,
+    "z": 2800,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe"
+  },
+  {
+    "id": 119,
+    "name": "Breach shotgun",
+    "kind": "weapon",
+    "x": 900,
+    "y": 630,
+    "z": -1130,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Tactical Pump Shotgun.fpe"
+  },
+  {
+    "id": 120,
+    "name": "Marksman rifle",
+    "kind": "weapon",
+    "x": -1130,
+    "y": 630,
+    "z": 1050,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Patrol Rifle.fpe"
+  },
+  {
+    "id": 121,
+    "name": "Fragmentation grenade",
+    "kind": "weapon",
+    "x": -380,
+    "y": 630,
+    "z": -2570,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Frag Grenade.fpe"
+  },
+  {
+    "id": 122,
+    "name": "Fragmentation grenade",
+    "kind": "weapon",
+    "x": -340,
+    "y": 630,
+    "z": -2570,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Frag Grenade.fpe"
+  },
+  {
+    "id": 123,
+    "name": "Fragmentation grenade",
+    "kind": "weapon",
+    "x": 940,
+    "y": 630,
+    "z": -1130,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Frag Grenade.fpe"
+  },
+  {
+    "id": 124,
+    "name": "Fragmentation grenade",
+    "kind": "weapon",
+    "x": -1090,
+    "y": 630,
+    "z": 1050,
+    "rotation": 0,
+    "asset": "Max Collection\\Weapons\\Frag Grenade.fpe"
+  },
+  {
+    "id": 125,
+    "name": "Relay illumination 1",
+    "kind": "light",
+    "x": 0,
+    "y": 880,
+    "z": -2350,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  },
+  {
+    "id": 126,
+    "name": "Relay illumination 2",
+    "kind": "light",
+    "x": -700,
+    "y": 880,
+    "z": -1050,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  },
+  {
+    "id": 127,
+    "name": "Relay illumination 3",
+    "kind": "light",
+    "x": 800,
+    "y": 880,
+    "z": 900,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  },
+  {
+    "id": 128,
+    "name": "Relay illumination 4",
+    "kind": "light",
+    "x": 0,
+    "y": 880,
+    "z": 2880,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  },
+  {
+    "id": 129,
+    "name": "Relay illumination 5",
+    "kind": "light",
+    "x": -1500,
+    "y": 880,
+    "z": 3000,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  },
+  {
+    "id": 130,
+    "name": "Relay illumination 6",
+    "kind": "light",
+    "x": 1500,
+    "y": 880,
+    "z": 1600,
+    "rotation": 0,
+    "asset": "_markers\\White Light.fpe"
+  }
+]

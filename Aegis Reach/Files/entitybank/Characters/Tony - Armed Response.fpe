@@ -1,0 +1,113 @@
+;header
+desc             = Tony - Armed Response
+
+;character creator plus
+ccpassembly      = adult male headgear 15,adult male head 15c [IC1a],adult male body 17,adult male legs 14,adult male feet 11b
+
+;scripts
+aimain           = people\character_attack.lua
+voice            = David
+speakrate        = 0
+soundset         = audiobank\characters\human\male\enemies_heard_something2.wav
+soundset1        = audiobank\characters\human\male\enemyseesplayer1.wav
+soundset2        = audiobank\characters\human\male\enemy_lost_sight1.wav
+soundset3        = audiobank\characters\human\male\enemy_kills_player1.wav
+hasweapon        = enhanced\Mk19T
+cantakeweapon    = 1
+quantity         = 8
+ragdoll          = 1
+
+; flesh
+decalmax         = 1
+decal0           = blood
+strength         = 250
+materialindex    = 6
+
+;geometry
+model            = Tony - Armed Response.dbo
+scale            = 100
+
+;visuals
+textured         = 
+effect           = effectbank\reloaded\apbr_animwithtran.fx
+
+;attributes
+ischaracter      = 1
+
+;anim set
+animspeed        = 100
+animmax          = 1
+playanimineditor = idle_aim
+anim0            = 0,0
+
+textured         = 
+baseColorMap0    = tempfinalalbedo0.dds
+alphaRef0        = 1.00
+normalMap0       = charactercreatorplus\parts\Adult Male\adult male body 17_normal.dds
+normalStrength0  = 1.00
+surfaceMap0      = charactercreatorplus\parts\Adult Male\adult male body 17_surface.dds
+roughnessStrength0= 1.00
+metalnessStrength0= 1.00
+transparency0    = 0
+renderorderbias0 = 0.00
+reflectance0     = 1.0000
+basecolor0       = 4294967295
+emissivecolor0   = 0
+baseColorMap1    = charactercreatorplus\parts\Adult Male\adult male headgear 15_color.dds
+alphaRef1        = 1.00
+normalMap1       = charactercreatorplus\parts\Adult Male\adult male headgear 15_normal.dds
+normalStrength1  = 1.00
+surfaceMap1      = charactercreatorplus\parts\Adult Male\adult male headgear 15_surface.dds
+roughnessStrength1= 1.00
+metalnessStrength1= 1.00
+transparency1    = 1
+castshadow1      = -1
+doublesided1     = 1
+renderorderbias1 = 0.00
+reflectance1     = 1.0000
+basecolor1       = 4294967295
+emissivecolor1   = 0
+baseColorMap2    = charactercreatorplus\parts\Adult Male\adult male head 15c_color.dds
+alphaRef2        = 1.00
+normalMap2       = charactercreatorplus\parts\Adult Male\adult male head 15_normal.dds
+normalStrength2  = 1.00
+surfaceMap2      = charactercreatorplus\parts\Adult Male\adult male head 15_surface.dds
+roughnessStrength2= 1.00
+metalnessStrength2= 1.00
+transparency2    = 0
+renderorderbias2 = 0.00
+reflectance2     = 1.0000
+basecolor2       = 4294967295
+emissivecolor2   = 0
+baseColorMap3    = charactercreatorplus\parts\Adult Male\adult male legs 14_color.dds
+alphaRef3        = 1.00
+normalMap3       = charactercreatorplus\parts\Adult Male\adult male legs 14_normal.dds
+normalStrength3  = 1.00
+surfaceMap3      = charactercreatorplus\parts\Adult Male\adult male legs 14_surface.dds
+roughnessStrength3= 1.00
+metalnessStrength3= 1.00
+transparency3    = 0
+renderorderbias3 = 0.00
+reflectance3     = 1.0000
+basecolor3       = 4294967295
+emissivecolor3   = 0
+baseColorMap4    = charactercreatorplus\parts\Adult Male\adult male feet 11b_color.dds
+alphaRef4        = 1.00
+normalMap4       = charactercreatorplus\parts\Adult Male\adult male feet 11_normal.dds
+normalStrength4  = 1.00
+surfaceMap4      = charactercreatorplus\parts\Adult Male\adult male feet 11_surface.dds
+roughnessStrength4= 1.00
+metalnessStrength4= 1.00
+transparency4    = 0
+renderorderbias4 = 0.00
+reflectance4     = 1.0000
+basecolor4       = 4294967295
+emissivecolor4   = 0
+;thumbnail
+thumbnailbackdrop = Stage 2.dds
+thumbnailzoom = 1.000000
+thumbnailcamleft = 0.000000
+thumbnailcamup = 0.000000
+thumbnailrotatex = 0.000000
+thumbnailrotatey = 180.264587
+thumbnailanimset = 0

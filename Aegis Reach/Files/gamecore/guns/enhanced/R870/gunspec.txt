@@ -1,0 +1,316 @@
+;// R870 Pump Shotgun weapon spec Calibrated for Camera Distance=70, Weapon FOV=70+, Horizontal FOV=110
+;// Tactical Pump Shotgun
+
+;// Enhanced Weapon Pack v.1.2
+;// Mesh, Textures and Animation by Jake Cotton aka EAI (Errant AI) (c)2018 errant_ai@yahoo.com
+;// https://www.tgcstore.net/artist/77474
+;// https://eaimedia.com
+
+;// Press [melee key] to melee
+;// Right-Click to Aim Down Sights
+
+;// Stock Weapon Object 
+pathtostockentity	= Max Collection\Weapons\Tactical Pump Shotgun.fpe
+
+;// VR Support
+vrweaponmode=1
+vrweaponlimbofweapon=108
+vrweaponstaticframe=0
+vrweaponoffsetx=-3
+vrweaponoffsety=2
+vrweaponoffsetz=-5
+
+;// Ammunition
+
+poolammo			= enhanced\00BUCK12
+
+reloadqty			= 5	;max number of cartridges in magazine
+chamberedround			= 1	;max number of chambered cartridges
+shotgun         		= 1	;uses dynamic looped loading animations when performing reload
+empty shotgun			= 1	;uses dynamic looped loading animations when performing reload of empty weapon
+
+noautoreload			= 1	;disables automated reloading when out of in-gun ammo
+nofullreload			= 1	;disables the ability to reload when weapon is fully topped up with ammo
+forcezoomout			= 1	;allows weapon to be reloaded while aiming without releasing aim button
+addtospare			= 1	;collected ammo is added to pooled ammo instead of being added directly to weapon
+
+npcignorereload			= 0	;npc spawns with empty weapon
+
+;// Range and damage
+
+damage				= 30	;base damage per hitscan projectile
+range				= 1500	;maximum range in inches
+force           		= 40	;amount of force applied to dynamic objects upon bullet impact
+iterate         		= 8	;number of additional hitscan projectiles per firing instance
+scorchtype			= 1	;bullet hole decal type (currently n/a)
+noscorch			= 0	;disables use of bullet hole decals (currently n/a)
+
+melee damage			= 5	;melee damage value
+melee range			= 75	;melee attack range in inches
+melee force			= 300	;amount of force applied to dynamic objects upon melee impact
+melee noscorch 			= 1	;disables use of bullet hole decals for melee attack (currently n/a)
+
+firerate			= 20	;delay between shots as shotgun more clumsy
+alt firerate			= 20
+
+;// Accuracy
+
+simplezoom			= 1	;value of 1 or higher enables aiming and sets magnification strength while aiming
+accuracy			= 25	;bullet spread
+runacc				= 25	;bullet spread while sprinting
+simplezoomacc			= 200	;intensity of breath distruption while aiming
+zoomaccuracy			= 25	;bullet spread while aiming
+zoomaccuracybreathhold		= 1	;enables or disables ability to steady aiming using [zoomholdbreath] key defined in setup.ini
+zoomaccuracybreath		= 5000	;maximum duration in ms that aim can be steadied before needing to take breath and try again
+zoomaccuracyheld		= 1	;intensity of breath disruption while aim is steadied
+
+
+;// Reliability
+
+overheatafter		= 999 ;weapon is hot after x number of cyclic shots. increase value for higher reliability.
+cooldown			= 0	;time after shot for overheatafter reset. decrease value for higher reliability.
+jamchance			= 0	;percentage chance for stoppage while hot. decrease value for higher reliability.
+
+
+;// HUD handling characteristics
+
+disablemovespeedmod		= 0	;disables use of movespeed modification settings
+
+zoomwalkspeed                   = 0.5	;walk speed multiplier while aiming
+zoomturnspeed                   = 0.6	;turn speed multiplier while aiming
+plrmovespeedmod			= 0.8	;move speed multiplier
+plremptyspeedmod        	= 0.9	;move speed multiplier with empty weapon
+plrturnspeedmod			= 1.0	;turn speed multiplier 
+plrjumpspeedmod			= 1.0	;jump inertia multiplier
+plrreloadspeedmod		= 0.5	;move speed multiplier while reloading
+
+recoily				= 50	;recoil vertical disturbance
+recoilyreturn			= 95	;recoil vertical return percentage
+recoilx				= 5	;recoil horizontal disturbance
+recoilxreturn			= 90	;recoil horizontal return percentage
+zoomrecoily			= 40	;recoil vertical disturbance while aiming
+zoomrecoilyreturn		= 97	;recoil vertical return percentage while aiming
+zoomrecoilx			= 2	;recoil horizontal disturbance while aiming
+zoomrecoilxreturn		= 94	;recoil horizontal return percentage while aiming
+
+zoomgunlagspeed			= 25	;hud model drift inertia while aiming
+zoomgunlagxmax			= 6	;hud model max vertical drift while aiming
+zoomgunlagymax			= 8	;hud model max horizontal drift while aiming
+gunlagspeed			= 30	;hud model drift inertia
+gunlagxmax			= 10	;hud model max vertical drift
+gunlagymax			= 18	;hud model max horizontal drift
+
+simplezoomspeed			= 10	;speed of runy offset or non-ainmated zoomto/from transition
+
+disablerunandshoot		= 1	;disables ability to fire weapon while sprinting
+
+reloadspeed 			= 100	;reload animation playback speed default 100
+
+
+;// Visuals
+textured			= 
+effect				= effectbank\reloaded\weapon_bone.fx
+weapontype			= 3
+animsetoverride         	= -rifle
+statuspanelcode			= 100
+vweaptex			= R870
+decal           		= muzzleflash4
+decalforward    		= 100
+invertnormal			= 1	;flag for -Y axis normal maps
+preservetangents		= 1	;disable normal tangent shifting
+boostintensity			= 1	;boost illumination effect
+
+;//Model positions
+
+horiz				= 0	;player weapon model horizontal position offset
+vert				= 0	;player weapon model vertical position offset
+forward				= 0	;player weapon model depth position offset
+runy				= -1	;player weapon model vertical offset while sprinting
+simplezoommod			= 2	;player weapon model fov adjustment while aiming to avoid near clip 
+simplezoomx			= 0	;player weapon model horizontal position offset while aiming - zeroed @ 85 weapon fov
+simplezoomy			= 0.14	;player weapon model vertical position offset while aiming - zeroed @ 85 weapon fov
+
+;//Model adjustments for MAX Characters
+handscale           = 85
+handposx			= 3.75	;character weapon model position offset X
+handposy			= 1.0	;character weapon model position offset Y
+handposz			= 1.0	;character weapon model position offset Z
+handrotx			= -5.0	;character weapon model rotation offset X
+handroty			= -92.0	;character weapon model rotation offset Y
+handrotz			= 0	;character weapon model rotation offset Z
+alwaysshowenemyweapon		= 1     ;large weapons always need to be visible (cannot 'hideweapon')
+
+;// Muzzleflash
+
+usespotlighting			= 1	;enables dynamic muzzleflash light effect when firing
+
+muzzlecolorR			= 252	;muzzleflash light red value
+muzzlecolorG			= 150	;muzzleflash light green value
+muzzlecolorB			= 54	;muzzleflash light blue value
+
+muzzleflash			= 4	;ID of muzzleflash decal when firing
+simplezoomflash			= 1	;enables muzzleflash when firing while aimed
+muzzlesize			= 160	;scale of muzzleflash decal
+smokedecal			= gunsmoke
+alignx				= 4	;muzzleflash decal horizontal screenspace offset from center
+aligny				= -1	;muzzleflash decal vertical screenspace offset from center
+alignz				= 40	;muzzleflash decal distance from camera in inches
+zoomalignx			= 0	;muzzleflash decal horizontal screenspace offset from center when aiming
+zoomaligny			= 0	;muzzleflash decal vertical screenspace offset from center when aiming
+zoomalignz			= 50	;muzzleflash decal distance from camera in inches when aiming
+
+
+;// Brass System
+
+brass				= 12	;brass model ID for dynamic ejecting cartridge cases
+brasslife       		= 2000	;brass model instance lifespan before despawning
+brassangle      		= 80	;base relative bearing for brass ejection
+brassanglerand  		= 1	;brassangle randomized deviation maximum
+brassspeed      		= 70	;brass ejection impulse
+brassspeedrand  		= 0.1	;brassspeed randomized deviation maximum
+brassupward     		= 5	;brass ejection vertical impulse
+brassupwardrand 		= 0.1	;brassupward randomized deviation maximum
+brassrotx       		= 500	;brass model x axis spin rate
+brassrotxrand   		= 0.5	;brassrotx randomized deviation maximum
+brassroty       		= 500	;brass model y axis spin rate
+brassrotyrand   		= 0.5	;brassroty randomized deviation maximum
+brassrotz       		= -200	;brass model z axis spin rate
+brassrotzrand   		= 0.5	;brassrotz randomized deviation maximum
+brassdelay			= 400	;brass spawn delay in ms
+zoom brassdelay			= 230	;brass zoom spawn delay in ms
+
+;// HUD ANIMATION (timeline 0-1036)
+
+keyframe ratio			= 1	;animation multiplier for weapons exported at other than 30 fps
+simplezoomanim			= 1	;activates use of defined aiming mode animations
+useempty			= 1	;activates use of defined empty weapon animations
+
+select				= 478,504	;equip select
+;select				= 363,371	;fast select
+idle				= 10,60
+move				= 116,156
+
+runto				= 207,221
+run				= 222,262
+runfrom				= 264,271
+
+melee start			= 407,411
+melee end			= 412,430
+
+start fire			= 910,911
+end fire			= 912,931
+start fire 2			= 940,941
+end fire 2			= 942,961
+start fire 3			= 970,971
+end fire 3			= 972,991
+last start fire			= 1000,1001
+last end fire			= 1002,1035
+
+start reload			= 593,598
+reload loop			= 599,618
+end reload			= 621,628
+cock				= 635,652
+
+empty start reload		= 585,590
+empty reload loop		= 599,618
+empty end reload		= 631,634
+empty cock			= 635,652
+
+putaway				= 374,382
+
+empty select			= 385,393
+empty idle			= 63,113
+empty move			= 160,200
+
+empty runto			= 287,301
+empty run			= 302,342
+empty runfrom			= 344,351
+
+empty melee start		= 437,441
+empty melee end			= 442,460
+
+empty putaway			= 352,362
+
+zoomto				= 656,660
+zoom idle			= 815,875
+zoom move			= 771,811
+
+zoom start fire			= 691,692
+zoom end fire			= 693,701
+zoom start fire 2		= 705,706
+zoom end fire 2			= 707,715
+zoom start fire 3		= 719,720
+zoom end fire 3			= 721,729
+zoom last start fire		= 733,734
+zoom last end fire		= 735,743
+
+
+zoomfrom			= 878,882
+
+empty zoomto			= 885,889
+empty zoom idle			= 815,875
+empty zoom move			= 771,811
+empty zoomfrom			= 890,894
+
+;dryfire			= 470,474	;simple
+dryfire				= 544,576	;with reset
+;zoom dryfire			= 734,738	;simple
+zoom dryfire			= 752,761	;with reset
+
+fix jam				= 510,539
+
+
+;// GUN Sounds
+
+sound1				= fire.wav
+sound2				= reload.ogg
+sound3				= dryfire.ogg
+sound4				= putaway.ogg
+sound5				= melee.ogg
+sound6				= pumpfull.ogg
+sound7				= pumpstart.ogg
+sound8				= pumpend.ogg
+
+fireloop			= 0
+soundstrength			= 100
+
+
+;// HUD sound frames list
+
+soundframes			= 21
+sframe0				= 
+
+;equip
+sframe1				= 485,6
+
+;draw
+sframe2				= 364,4
+sframe3				= 386,4
+
+;reload
+sframe4				= 
+sframe5				= 604,2
+sframe6				= 639,6
+
+;melee
+sframe7				= 408,5
+sframe8				= 438,5
+
+;fixjam
+sframe9				= 520,6
+
+;dryfire
+sframe10			= 557,6
+sframe11			= 756,6
+
+;pump end
+sframe12			= 695,6
+sframe13			= 709,6
+sframe14			= 723,6
+sframe15			= 737,6
+
+sframe16			= 920,6
+sframe17			= 950,6
+sframe18			= 980,6
+sframe19			= 1011,7
+sframe20			= 1021,8

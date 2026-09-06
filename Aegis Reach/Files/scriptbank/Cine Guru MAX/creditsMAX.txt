@@ -1,0 +1,35 @@
+Thank you for purchasing
+
+
+CineGuru
+MAX
+
+
+Create cinematics in GameGuru MAX
+
+
+By
+Scott Tanner | Chris Stapleton
+
+
+Lua scripting
+Chris Stapleton
+
+
+Asset creation
+Scott Tanner
+
+
+Manual
+Scott Tanner
+
+
+Special thanks to
+our beta testers
+Extreme Strategy
+Mav3r1ck1981
+Monkey Frog
+pixelwolf
+
+
+Copyright © Scott Tanner & Chris Stapleton 2024

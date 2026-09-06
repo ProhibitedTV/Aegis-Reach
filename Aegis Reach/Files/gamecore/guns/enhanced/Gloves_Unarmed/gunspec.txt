@@ -1,0 +1,215 @@
+;// UNARMED FISTS weapon spec  Calibrated for Camera Distance=70, Weapon FOV=70+, Horizontal FOV=110
+
+;// Enhanced Weapon Pack v.1.0
+;// Mesh, Textures and Animation by Jake Cotton aka EAI (Errant AI) (c)2018 errant_ai@yahoo.com
+;// https://www.tgcstore.net/artist/77474
+;// https://eaimedia.com
+
+;// Press [melee key] for high-force/low-damage attack
+
+;// Ammunition
+
+alternateisray		= 1	;enables alt-fire ability. 0 for projectile/flak, 1 for raycast bullet
+
+reloadqty		= 0	;unlimited ammo
+
+alt reloadqty		= 0
+
+
+;// Range and damage
+
+damage			= 5	;base damage per hitscan projectile
+range			= 75	;maximum range in inches
+force           	= 50	;amount of force applied to dynamic objects upon bullet impact
+noscorch		= 1	;disables use of bullet hole decals (currently n/a)
+
+melee damage		= 1	;melee damage value
+melee range		= 75	;melee attack range in inches
+melee force		= 200	;amount of force applied to dynamic objects upon melee impact
+melee noscorch 		= 1	;disables use of bullet hole decals for melee attack (currently n/a)
+
+alt damage		= 5
+alt range		= 75
+alt force           	= 50
+alt noscorch		= 1
+
+alt melee damage	= 1
+alt melee range		= 75
+alt melee force		= 200
+alt melee noscorch 	= 1
+
+
+;// Accuracy
+
+simplezoom		= 0	;bullet spread
+accuracy		= 0	;bullet spread while sprinting
+
+alt simplezoom		= 0
+alt accuracy		= 0
+
+
+;// HUD handling characteristics - Activate plrspeedmods in setup.ini
+
+disablemovespeedmod	= 0	;disables use of player move and turn speed multipliers 
+alt disablemovespeedmod	= 0
+
+plrmovespeedmod		= 1.1	;move speed multiplier
+plrturnspeedmod		= 1.0	;turn speed multiplier 
+plrjumpspeedmod		= 1.5	;jump inertia multiplier
+
+alt plrmovespeedmod	= 1.1
+alt plrturnspeedmod	= 1.0
+alt plrjumpspeedmod	= 1.5
+
+recoily			= 50	;recoil vertical disturbance
+recoilyreturn		= 99	;recoil vertical return percentage
+recoilx			= 20	;recoil horizontal disturbance
+recoilxreturn		= 99	;recoil horizontal return percentage
+
+gunlagspeed		= 60	;hud model drift inertia
+gunlagxmax		= 10	;hud model max vertical drift
+gunlagymax		= 16	;hud model max horizontal drift
+
+alt recoily		= 50
+alt recoilyreturn	= 99
+alt recoilx		= 20
+alt recoilxreturn	= 99
+
+alt gunlagspeed		= 60
+alt gunlagxmax		= 10
+alt gunlagymax		= 16
+
+simplezoomspeed		= 10	;speed of runy offset or non-ainmated zoomto/from transition
+alt simplezoomspeed	= 10
+
+disablerunandshoot	= 0	;disables ability to fire weapon while sprinting
+alt disablerunandshoot	= 0
+
+
+;// Visuals - This weapon should NOT be assigned to NPCs
+textured		= 
+effect			= effectbank\reloaded\weapon_bone.fx
+weapontype		= 51
+animsetoverride        	= -melee
+statuspanelcode		= 100
+vweaptex		= 
+invertnormal		= 1	;flag for -Y axis normal maps
+preservetangents	= 1	;disable normal tangent shifting
+
+;//Model positions
+
+horiz			= 0	;player weapon model horizontal position offset
+vert			= 0	;player weapon model vertical position offset
+forward			= 3	;player weapon model depth position offset
+runy			= -4	;player weapon model vertical offset while sprinting
+
+alt horiz		= 0
+alt vert		= 0
+alt forward		= 3
+alt runy		= -4
+
+;//Model adjustment for MAX Characters
+handscale           = 85
+
+;// Muzzleflash
+
+muzzlecolorR		= 1	;muzzleflash light red value
+muzzlecolorG		= 1	;muzzleflash light green value
+muzzlecolorB		= 1	;muzzleflash light blue value
+
+alt muzzlecolorR	= 1
+alt muzzlecolorG	= 1
+alt muzzlecolorB	= 1
+
+muzzleflash		= 4	;ID of muzzleflash decal when firing
+muzzlesize		= 1	;scale of muzzleflash decal
+alignx			= 0	;muzzleflash decal horizontal screenspace offset from center
+aligny			= -50	;muzzleflash decal vertical screenspace offset from center
+alignz			= 0	;muzzleflash decal distance from camera in inches
+
+alt muzzleflash		= 4
+alt muzzlesize		= 1
+alt alignx		= 0
+alt aligny		= -50
+alt alignz		= 0
+
+
+;// Brass System
+brass			= 0
+
+
+;// HUD ANIMATION (timeline 0-416)
+
+keyframe ratio		= 1	;animation multiplier for weapons exported at other than 30 fps
+keyframe ratio		= 1
+disablemovespeedmod	= 0
+alt disablemovespeedmod	= 0
+run delay		= 1000
+
+
+select			= 370,415	;equip with knucklecrack
+;select			= 15,20		;fast select
+idle			= 21,60
+move			= 83,125
+run			= 170,212
+
+;right punch
+start fire		= 240,244
+end fire		= 245,249
+;left punch
+start fire 2		= 260,264
+end fire 2		= 265,269
+
+;melee shove
+melee start		= 280,287
+melee end		= 288,303
+
+putaway			= 360,365
+
+reload			= 310,355
+
+altto			= 310,355
+altfrom			= 310,355
+
+alt select		= 370,415	;alt equip with knucklecrack
+;alt select		= 15,20		;alt fast select
+alt idle		= 21,60
+alt move		= 83,125
+alt run			= 170,212
+
+;right punch
+alt start fire		= 240,244
+alt end fire		= 245,249
+
+;left punch
+alt start fire 2	= 260,264
+alt end fire 2		= 265,269
+
+;melee shove
+alt melee start		= 280,287
+alt melee end		= 288,303
+
+alt putaway		= 360,365
+
+
+;//HUD Sounds
+
+sound1			= fire.ogg
+sound2			= crack.ogg
+sound5			= melee.ogg
+fireloop		= 0
+soundstrength		= 5
+
+altsound1		= fire.ogg
+altsound2		= crack.ogg
+alt fireloop		= 0
+alt soundstrength	= 5
+
+;//HUD Sound frames list
+
+soundframes	= 4
+
+sframe0		=
+sframe1		= 321,2
+sframe2		= 281,5
+sframe3		= 373,2

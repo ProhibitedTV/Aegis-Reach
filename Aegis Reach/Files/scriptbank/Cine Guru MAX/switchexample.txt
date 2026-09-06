@@ -1,0 +1,7 @@
+abort,actor, sound|0|audiobank\\characters\\human\\male\\enemies_heard_something2.wav, sound|1|audiobank\\characters\\human\\male\\enemyseesplayer1.wav, sound|2|audiobank\\characters\\human\\male\\enemy_lost_sight1.wav, switch|Character_Attack
+
+actor, idle|Idle|0.8
+actor, speak|0|100, delay|4000, move|mark1, speak|1|100, delay|1700, teleport|mark2, speak|2|100, delay|2500,
+actor, sound|0|audiobank\\characters\\human\\male\\enemies_heard_something2.wav,
+actor, sound|1|audiobank\\characters\\human\\male\\enemyseesplayer1.wav,
+actor, sound|2|audiobank\\characters\\human\\male\\enemy_lost_sight1.wav, switch|Character_Attack

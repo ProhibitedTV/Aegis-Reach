@@ -1,0 +1,53 @@
+;header
+desc          = Patrol Rifle Ammo
+
+;Identity Details
+isammo	      = 1
+hasweapon     = enhanced\AR
+quantity      = 60
+isimmobile    = 1
+
+;ai
+aiinit	      = 
+aimain	      = ammo.lua
+aidestroy     = 
+
+;visualinfo
+textured      = gamecore\ammo\enhanced\556NATO\556NATOammo_color.dds
+effect        = effectbank\reloaded\apbr_basic.fx
+castshadow    = 1
+invertnormal  = 1
+preservetangents = 1
+
+;orientation
+model         = gamecore\ammo\enhanced\556NATO\556NATOammo.x
+offx          = 0
+offy          = 0
+offz          = 0
+rotx          = 0
+roty          = 0
+rotz          = 0
+defaultstatic = 0
+materialindex = 2
+collisionmode = 0
+
+;Sound
+soundset      = audiobank\misc\ammo.wav
+
+;statistics
+strength      = 0
+explodable    = 0
+debrisshape   = 0
+
+;spawn
+spawnmax      = 0
+spawndelay    = 0
+spawnqty      = 0
+
+;thumbnail
+thumbnailbackdrop = Grey studio.dds
+thumbnailzoom = 17.510218
+thumbnailcamleft = 0.000000
+thumbnailcamup = 0.000000
+thumbnailrotatex = 0.000000
+thumbnailrotatey = 15.000000

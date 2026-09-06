@@ -1,0 +1,53 @@
+;header
+desc          = Tactical Pump Shotgun
+
+
+;Identity Details
+isweapon      = enhanced\R870
+quantity      = 5
+isimmobile    = 1
+
+;ai
+aiinit	      = 
+aimain	      = weapon.lua
+aidestroy     = 
+
+;visualinfo
+textured      = gamecore\guns\enhanced\R870\R870_color.dds
+effect        = effectbank\reloaded\apbr_basic.fx
+castshadow    = 1
+invertnormal  = 1
+preservetangents = 1
+
+;orientation
+model         = gamecore\guns\enhanced\R870\R870.x
+offx          = 0
+offy          = 0
+offz          = 0
+rotx          = 0
+roty          = 0
+rotz          = 0
+defaultstatic = 0
+materialindex = 2
+collisionmode = 0
+
+;Sound
+soundset      = audiobank\misc\weapon.wav
+
+;statistics
+strength      = 0
+explodable    = 0
+debrisshape   = 0
+
+;spawn
+spawnmax      = 0
+spawndelay    = 0
+spawnqty      = 0
+
+;thumbnail
+thumbnailbackdrop = Grey studio.dds
+thumbnailzoom = 161.310013
+thumbnailcamleft = 0.000000
+thumbnailcamup = 0.000000
+thumbnailrotatex = 1.712119
+thumbnailrotatey = 79.310997

@@ -1,0 +1,44 @@
+;Entity Spec
+
+;Header
+desc          = Player Start Position
+
+;Details
+ismarker      = 1
+
+;AI
+aimain	      = default.lua
+
+;Orientation
+model         = start with ghost.dbo
+scale         = 100
+fixnewy       = 0
+defaultheight = 0
+
+;visualinfo
+textured         = start with ghost.dds
+baseColorMap     = start with ghost.dds
+transparency     = 0
+renderorderbias  = 0.00
+reflectance      = 0.00
+basecolor        = 4294901503
+emissivecolor    = 0
+textureref1      = start with ghost.dds
+effect           = effectbank\reloaded\apbr_basic.fx
+
+;Identity Details
+strength      = 500
+lives         = 1
+hasweapon     = 
+quantity      = 42
+
+;Sound
+soundset      = player
+
+;thumbnail
+thumbnailbackdrop = Blue showroom.png
+thumbnailzoom = 1.000000
+thumbnailcamleft = 0.000000
+thumbnailcamup = 0.000000
+thumbnailrotatex = 0.000000
+thumbnailrotatey = 15.000000

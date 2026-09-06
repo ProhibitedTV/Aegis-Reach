@@ -1,0 +1,528 @@
+;// Mk.18 Close Quarters Battle Rifle weapon spec  Calibrated for Camera Distance=70, Weapon FOV=70, Horizontal FOV=110
+;// Compact Assault Rifle
+
+;// Enhanced Weapon Pack v.1.3
+;// Mesh, Textures and Animation by Jake Cotton aka EAI (Errant AI) (c)2018 errant_ai@yahoo.com
+;// https://www.tgcstore.net/artist/77474
+;// https://eaimedia.com
+
+;// Press [switchtoalt] to switch fire modes (semi-auto/full-auto firing)
+;// Press [melee key] to melee
+;// Right-Click to Aim Down Sights
+
+;// Stock Weapon Object 
+pathtostockentity	= Max Collection\Weapons\Compact Assault Rifle.fpe
+
+;// VR Support
+vrweaponmode=1
+vrweaponlimbofweapon=1
+vrweaponstaticframe=2
+vrweaponoffsetx=-4
+vrweaponoffsety=3
+vrweaponoffsetz=-9
+
+;// Ammunition
+
+alternateisray			= 1	;enables alt-fire ability. 0 for projectile/flak, 1 for raycast bullet
+
+poolammo			= enhanced\556NATO
+alt poolammo			= enhanced\556NATO
+shareloadedammo 		= 1	; weapon shares the same in-gun ammo between fire modes
+
+reloadqty			= 30	;max number of cartridges in magazine
+chamberedround			= 1	;max number of chambered cartridges
+
+alt reloadqty			= 30	;max number of cartridges in alt-mode magazine
+alt chamberedround		= 1	;max number of chambered cartridges in alt-mode
+
+noautoreload			= 1	;disables automated reloading when out of in-gun ammo
+nofullreload			= 1	;disables the ability to reload when weapon is fully topped up with ammo
+forcezoomout			= 1	;allows weapon to be reloaded while aiming without releasing aim button
+addtospare			= 1	;collected ammo is added to pooled ammo instead of being added directly to weapon's magazine
+
+alt noautoreload		= 1
+alt nofullreload		= 1
+alt forcezoomout		= 1
+alt addtospare			= 1
+
+npcignorereload			= 0	;npc spawns with empty weapon
+
+traceractive = 1
+tracerlifetime = 0.12
+tracerglow = 10
+tracerscrollv = 0
+tracerscalev = 1.0
+tracerwidth = 1.2
+tracermaxlength = 100
+tracercolorr = 255
+tracercolorg = 128
+tracercolorb = 25
+
+;// Range and damage
+damage				= 35	;base damage per hitscan projectile
+range				= 12000	;maximum range in inches
+force           		= 50	;amount of force applied to dynamic objects upon bullet impact
+scorchtype			= 1	;bullet hole decal type (currently n/a)
+noscorch			= 0	;disables use of bullet hole decals (currently n/a)
+
+alt damage			= 35
+alt range			= 12000
+alt force           		= 50
+alt scorchtype			= 1
+alt noscorch			= 0
+
+melee damage			= 5	;melee damage value
+melee range			= 75	;melee attack range in inches
+melee force			= 300	;amount of force applied to dynamic objects upon melee impact
+melee noscorch 			= 1	;disables use of bullet hole decals for melee attack (currently n/a)
+
+alt melee damage		= 5
+alt melee range			= 75
+alt melee force			= 300
+alt melee noscorch 		= 1
+
+firerate			= 4	;delay between shots in automatic firing mode
+alt firerate			= 4
+
+;// Accuracy
+
+simplezoom			= 1	;value of 1 or higher enables aiming and sets magnification strength while aiming
+accuracy			= 230	;bullet spread
+runacc				= 500	;bullet spread while sprinting
+simplezoomacc			= 70	;intensity of breath distruption while aiming
+zoomaccuracy			= 30	;bullet spread while aiming
+zoomaccuracybreathhold		= 1	;enables or disables ability to steady aiming using [zoomholdbreath] key defined in setup.ini
+zoomaccuracybreath		= 5000	;maximum duration in ms that aim can be steadied before needing to take breath and try again
+zoomaccuracyheld		= 1	;intensity of breath disruption while aim is steadied
+
+alt simplezoom			= 1
+alt accuracy			= 230
+alt runacc			= 500
+alt simplezoomacc		= 70
+alt zoomaccuracy		= 30
+alt zoomaccuracybreathhold	= 1
+alt zoomaccuracybreath		= 5000
+alt zoomaccuracyheld		= 1
+
+
+;// Reliability
+
+overheatafter		= 999 ;weapon is hot after x number of cyclic shots. increase value for higher reliability.
+cooldown			= 0	;time after shot for overheatafter reset. decrease value for higher reliability.
+jamchance			= 0	;percentage chance for stoppage while hot. decrease value for higher reliability.
+
+alt overheatafter		= 999
+alt cooldown			= 0
+alt jamchance			= 0
+
+
+;// HUD handling characteristics - Activate plrspeedmods in setup.ini
+
+disablemovespeedmod		= 0	;disables use of player move and turn speed multipliers 
+alt disablemovespeedmod		= 0
+
+zoomwalkspeed                   = 0.8	;walk speed multiplier while aiming
+zoomturnspeed                   = 0.7	;turn speed multiplier while aiming
+plrmovespeedmod			= 0.9	;move speed multiplier
+plremptyspeedmod        	= 1.0	;move speed multiplier with empty weapon
+plrturnspeedmod			= 1.0	;turn speed multiplier 
+plrjumpspeedmod			= 1.0	;jump inertia multiplier
+plrreloadspeedmod		= 0.5	;move speed multiplier while reloading
+
+alt zoomwalkspeed		= 0.8
+alt zoomturnspeed 		= 0.7
+alt plrmovespeedmod		= 0.9
+alt plremptyspeedmod        	= 1.0
+alt plrturnspeedmod		= 1.0
+alt plrjumpspeedmod		= 1.0
+alt plrreloadspeedmod		= 0.5
+
+recoily				= 25	;recoil vertical disturbance
+recoilyreturn			= 95	;recoil vertical return percentage
+recoilx				= 5	;recoil horizontal disturbance
+recoilxreturn			= 90	;recoil horizontal return percentage
+zoomrecoily			= 18	;recoil vertical disturbance while aiming
+zoomrecoilyreturn		= 97	;recoil vertical return percentage while aiming
+zoomrecoilx			= 3	;recoil horizontal disturbance while aiming
+zoomrecoilxreturn		= 94	;recoil horizontal return percentage while aiming
+
+zoomgunlagspeed			= 16	;hud model drift inertia while aiming
+zoomgunlagxmax			= 16	;hud model max vertical drift while aiming
+zoomgunlagymax			= 16	;hud model max horizontal drift while aiming
+gunlagspeed			= 30	;hud model drift inertia
+gunlagxmax			= 10	;hud model max vertical drift
+gunlagymax			= 18	;hud model max horizontal drift
+
+simplezoomspeed			= 10	;speed of runy offset or non-ainmated zoomto/from transition
+
+alt recoily			= 25
+alt recoilyreturn		= 95
+alt recoilx			= 5
+alt recoilxreturn		= 90
+alt zoomrecoily			= 18
+alt zoomrecoilyreturn		= 97
+alt zoomrecoilx			= 3
+alt zoomrecoilxreturn		= 94
+
+alt zoomgunlagspeed		= 16
+alt zoomgunlagxmax		= 16
+alt zoomgunlagymax		= 16
+alt gunlagspeed			= 30
+alt gunlagxmax			= 10
+alt gunlagymax			= 18
+
+alt simplezoomspeed		= 10
+
+disablerunandshoot		= 0	;disables ability to fire weapon while sprinting
+alt disablerunandshoot		= 0
+
+reloadspeed 			= 110	;reload animation playback speed default 100
+alt reloadspeed 		= 110
+
+
+;// Visuals
+zoomscope			= 
+alt zoomscope			= 
+textured			= 
+effect				= effectbank\reloaded\weapon_bone.fx
+weapontype			= 5
+animsetoverride         	= -rifle
+statuspanelcode			= 100
+vweaptex			= MK18
+decal           		= muzzleflash4
+decalforward    		= 100
+invertnormal			= 1	;flag for -Y axis normal maps
+preservetangents		= 1	;disable normal tangent shifting
+boostintensity			= 1	;boost illumination effect
+
+
+;//Model positions
+
+horiz				= 0	;player weapon model horizontal position offset
+vert				= 0	;player weapon model vertical position offset
+forward				= 0	;player weapon model depth position offset
+runy				= -1	;player weapon model vertical offset while sprinting
+simplezoommod			= 2	;player weapon model fov adjustment while aiming to avoid near clip
+simplezoomx			= 0	;player weapon model horizontal position offset while aiming - zeroed @ 85 weapon fov
+simplezoomy			= 0.11	;player weapon model vertical position offset while aiming - zeroed @ 85 weapon fov
+
+alt horiz			= 0
+alt vert			= 0
+alt forward			= 0
+alt runy			= -1
+alt simplezoommod		= 2
+alt simplezoomx			= 0
+alt simplezoomy			= 0.11
+
+;//Model adjustment for MAX Characters
+handscale           = 85
+handposx			= 3.75	;character weapon model position offset X
+handposy			= 1.0	;character weapon model position offset Y
+handposz			= 1.0	;character weapon model position offset Z
+handrotx			= -5.0	;character weapon model rotation offset X
+handroty			= -92.0	;character weapon model rotation offset Y
+handrotz			= 0	;character weapon model rotation offset Z
+alwaysshowenemyweapon		= 1     ;large weapons always need to be visible (cannot 'hideweapon')
+
+;// Muzzleflash
+
+usespotlighting			= 1	;enables dynamic muzzleflash light effect when firing
+alt usespotlighting		= 1
+
+muzzlecolorR			= 255	;muzzleflash light red value
+muzzlecolorG			= 152	;muzzleflash light green value
+muzzlecolorB			= 55	;muzzleflash light blue value
+
+alt muzzlecolorR		= 255
+alt muzzlecolorG		= 152
+alt muzzlecolorB		= 55
+
+muzzleflash			= 4	;ID of muzzleflash decal when firing
+simplezoomflash			= 1	;enables muzzleflash when firing while aimed
+muzzlesize			= 140	;scale of muzzleflash decal
+smokedecal			= gunsmoke
+alignx				= 4	;muzzleflash decal horizontal screenspace offset from center
+aligny				= -4	;muzzleflash decal vertical screenspace offset from center
+alignz				= 34	;muzzleflash decal distance from camera in inches
+zoomalignx			= 0	;muzzleflash decal horizontal screenspace offset from center when aiming
+zoomaligny			= -3	;muzzleflash decal vertical screenspace offset from center when aiming
+zoomalignz			= 30	;muzzleflash decal distance from camera in inches when aiming
+
+alt muzzleflash			= 4
+alt simplezoomflash		= 1
+alt muzzlesize			= 140
+alt smokedecal			= gunsmoke
+alt alignx			= 4
+alt aligny			= -4
+alt alignz			= 34
+alt zoomalignx			= 0
+alt zoomaligny			= -3
+alt zoomalignz			= 30
+
+
+;// Brass System
+
+brass				= 223	;brass model ID for dynamic ejecting cartridge cases
+brasslife       		= 2000	;brass model instance lifespan before despawning
+brassangle      		= 80	;base relative bearing for brass ejection
+brassanglerand  		= 5	;brassangle randomized deviation maximum
+brassspeed      		= 40	;brass ejection impulse
+brassspeedrand  		= 1	;brassspeed randomized deviation maximum
+brassupward     		= 30	;brass ejection vertical impulse
+brassupwardrand 		= 1	;brassupward randomized deviation maximum
+brassrotx       		= 1000	;brass model x axis spin rate
+brassrotxrand   		= 200	;brassrotx randomized deviation maximum
+brassroty       		= 500	;brass model y axis spin rate
+brassrotyrand   		= 100	;brassroty randomized deviation maximum
+brassrotz       		= -200	;brass model z axis spin rate
+brassrotzrand   		= 100	;brassrotz randomized deviation maximum
+
+alt brass			= 223
+alt brasslife       		= 2000
+alt brassangle      		= 80
+alt brassanglerand  		= 5
+alt brassspeed     	 	= 40
+alt brassspeedrand  		= 1.5
+alt brassupward     		= 30
+alt brassupwardrand 		= 5
+alt brassrotx       		= 1000
+alt brassrotxrand  	 	= 200
+alt brassroty       		= 500
+alt brassrotyrand   		= 100
+alt brassrotz       		= -200
+alt brassrotzrand   		= 100
+
+
+;// HUD ANIMATION (timeline 0-2389 offset +1300)
+
+keyframe ratio			= 1	;animation multiplier for weapons exported at other than 30 fps
+simplezoomanim			= 1	;activates use of defined aiming mode animations
+alt simplezoomanim		= 1
+useempty			= 1	;activates use of defined empty weapon animations
+alt useempty			= 1
+
+;select				= 323,333	;fast select
+select				= 670,708	;equip select
+idle				= 5,55
+move				= 111,151
+
+runto				= 199,208
+run				= 209,249
+runfrom				= 251,258
+
+melee start			= 367,371
+melee end			= 372,390
+
+;fire				= 715,718
+start fire			= 715,716
+end fire			= 717,718
+start fire 2			= 721,722
+end fire 2			= 723,724
+start fire 3			= 727,728
+end fire 3			= 729,730
+;automatic fire			= 736,743
+last start fire			= 747,748
+last end fire			= 749,755
+
+dryfire				= 758,764
+
+reload				= 430,504	;opportunistic reload
+
+putaway				= 334,343
+
+empty select			= 344,354
+empty idle			= 58,108
+empty move			= 155,195
+
+empty runto			= 261,270
+empty run			= 271,311
+empty runfrom			= 313,320
+
+empty melee start		= 400,404
+empty melee end			= 405,423
+
+empty reload			= 514,586	;emergency reload
+empty putaway			= 355,364
+
+zoomto				= 767,771
+zoom idle			= 870,930
+zoom move			= 826,866
+zoom start fire			= 774,775
+zoom end fire			= 776,777
+zoom start fire 2		= 780,781
+zoom end fire 2			= 782,783
+zoom start fire 3		= 786,787
+zoom end fire 3			= 788,789
+;zoom automatic fire		= 794,801
+zoom last start fire		= 810,811
+zoom last end fire		= 812,816
+
+zoomfrom			= 933,937
+
+empty zoomto			= 940,944
+empty zoom idle			= 999,1079
+empty zoom move			= 955,995
+empty zoomfrom			= 1082,1086
+
+zoom dryfire			= 947,950
+fix jam				= 589,668
+
+;3x
+;altto				= 1089,1113
+;altfrom			= 1119,1143
+;empty altto			= 1149,1173
+;empty altfrom			= 1179,1203
+
+;selector
+altto				= 1210,1220
+altfrom				= 1223,1233
+empty altto			= 1236,1246
+empty altfrom			= 1249,1259
+
+;alt select			= 1523,1533	;alt fast select
+alt select			= 1970,2008	;alt equip select
+alt idle			= 1305,1355
+alt move			= 1411,1451
+
+alt runto			= 1499,1508
+alt run				= 1509,1549
+alt runfrom			= 1551,1558
+
+alt melee start			= 1667,1671
+alt melee end			= 1672,1690
+
+;alt fire			= 2015,2018
+alt start fire			= 2015,2016
+alt end fire			= 2017,2018
+alt start fire 2		= 2021,2022
+alt end fire 2			= 2023,2024
+alt start fire 3		= 2027,2028
+alt end fire 3			= 2029,2030
+alt automatic fire		= 2036,2043
+alt last start fire		= 2047,2048
+alt last end fire		= 2049,2055
+
+alt dryfire			= 2058,2064
+
+alt reload			= 1730,1804	;opportunistic reload
+
+alt putaway			= 1634,1643
+
+alt empty select		= 1644,1654
+alt empty idle			= 1357,1407
+alt empty move			= 1455,1495
+
+alt empty runto			= 1561,1570
+alt empty run			= 1571,1611
+alt empty runfrom		= 1613,1620
+
+alt empty melee start		= 1700,1704
+alt empty melee end		= 1705,1723
+
+alt empty reload		= 1814,1886
+alt empty putaway		= 1655,1664
+
+alt zoomto			= 2067,2071
+alt zoom idle			= 2170,2230
+alt zoom move			= 2126,2166
+alt zoom start fire		= 2074,2075
+alt zoom end fire		= 2076,2077
+alt zoom start fire 2		= 2080,2081
+alt zoom end fire 2		= 2082,2083
+alt zoom start fire 3		= 2086,2087
+alt zoom end fire 3		= 2088,2089
+alt zoom automatic fire		= 2094,2101
+alt zoom last start fire	= 2110,2111
+alt zoom last end fire		= 2112,2116
+
+alt zoomfrom			= 2233,2237
+
+alt empty zoomto		= 2240,2244
+alt empty zoom idle		= 2299,2379
+alt empty zoom move		= 2255,2295
+alt empty zoomfrom		= 2382,2386
+
+alt zoom dryfire		= 2247,2250
+alt fix jam			= 1889,1968
+
+;// GUN Sounds
+
+sound1				= fire.wav
+sound2				= reload.ogg
+sound3				= dryfire.ogg
+sound4				= putaway.ogg
+sound5				= melee.ogg
+sound6				= charge.ogg
+sound7				= unload.ogg
+sound8				= unload2.ogg
+sound9				= taprack1.ogg
+sound10				= taprack2.ogg
+sound11				= taprack3.ogg
+;sound12			= altchange3.ogg
+sound12				= lock.ogg
+sound13				= altchanges.ogg
+sound14				= equip.ogg
+
+fireloop			= 0
+soundstrength			= 100
+
+altsound1			= altfire.wav
+altsound3			= dryfire.ogg
+altsound4			= putaway.ogg
+alt fireloop			= -1
+alt soundstrength		= 100
+
+;// HUD sound frames list
+soundframes			= 39
+sframe0				= 
+;tacload
+sframe1				= 456,8		;mag out
+sframe2				= 470,2		;mag in
+;reload
+sframe3				= 523,7		;mag out
+sframe4				= 547,2		;mag in
+sframe5				= 568,6		;drop bolt
+;draw
+sframe6				= 324,4
+sframe7				= 345,4
+;melee
+sframe8				= 368,5
+sframe9				= 401,5
+;fixjam
+sframe10			= 593,9		;tap
+sframe11			= 610,10	;rack
+sframe12			= 637,11	;forward assist
+;alt tacload
+sframe13			= 1756,8	;mag out
+sframe14			= 1770,2	;mag in
+;alt reload
+sframe15			= 1823,7	;mag out
+sframe16			= 1847,2	;mag in
+sframe17			= 1868,6	;drop bolt
+;alt draw
+sframe18			= 1624,4
+sframe19			= 1645,4
+;alt melee
+sframe20			= 1668,5
+sframe21			= 1701,5
+;alt fixjam
+sframe22			= 1893,9	;tap
+sframe23			= 1910,10	;rack
+sframe24			= 1937,11	;forward assist
+;alt change
+sframe25			= 1097,12	;altto-3x
+sframe26			= 1126,12	;altfrom-3x
+sframe27			= 1156,12	;empty altto-3x
+sframe28			= 1186,12	;empty altfrom-3x
+sframe29			= 1214,13	;altto-selector
+sframe30			= 1227,13	;altfrom-selector
+sframe31			= 1239,13	;empty altto-selector
+sframe32			= 1252,13	;empty altfrom-selector
+;equip
+sframe33			= 672,14
+sframe34			= 1972,14
+;boltlock
+sframe35			= 751,12
+sframe36			= 814,12
+sframe37			= 2051,12
+sframe38			= 2114,12

@@ -1,0 +1,2 @@
+actor1, idle|Idle
+actor1, move|mark1, delay|1000, speak|1|100, anim|Throw_Grenade|0.2

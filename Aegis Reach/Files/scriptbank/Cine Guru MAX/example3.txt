@@ -1,0 +1,4 @@
+actor1, idle|Idle
+actor2, idle|Idle
+actor1, move|mark4, delay|1000 
+actor2, move|mark5, anim|Throw_Grenade

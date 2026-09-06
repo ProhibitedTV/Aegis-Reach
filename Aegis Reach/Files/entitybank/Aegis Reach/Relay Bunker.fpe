@@ -1,0 +1,17 @@
+; Original Aegis Reach modular asset
+desc = Relay Bunker
+model = Relay Bunker.x
+scale = 100
+textured = aegis_atlas.png
+baseColorMap = aegis_atlas.png
+effect = effectbank\reloaded\apbr_basic.fx
+collisionmode = 1
+materialindex = 2
+defaultstatic = 1
+strength = 0
+castshadow = 1
+roughnessStrength = 0.75
+metalnessStrength = 0.4
+reflectance = 0.2
+basecolor = 4294967295
+aimain = no_behavior_selected.lua

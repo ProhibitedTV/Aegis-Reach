@@ -1,0 +1,2 @@
+actor2, idle|Idle
+actor2, speak|0|100, look|player, delay|1500, look|mark|lookmark, delay|1000, look|forward, move|mark3|50|100

@@ -1,0 +1,24 @@
+{
+  "passed": 17,
+  "checks": [
+    "mission starts with 100 armour + 100 shield",
+    "damage drains shield first",
+    "shield recharge waits for safe interval",
+    "shield recharges after combat delay",
+    "excess damage reaches armour",
+    "field repair restores armour",
+    "field repair is single use",
+    "relay order cannot be skipped",
+    "releasing E resets the override hold",
+    "first relay advances mission",
+    "reserve stays dormant before its trigger",
+    "second relay activates reserve infantry",
+    "third relay unlocks extraction",
+    "nearby hostiles block extraction",
+    "clear LZ and held E complete the mission",
+    "debrief cannot fire on the extraction frame",
+    "debrief reaches MAX win screen"
+  ],
+  "in_engine_playtest": false,
+  "limits": "GameGuru screenshot capture unavailable; collision, rendering and real NPC combat still require in-engine validation."
+}

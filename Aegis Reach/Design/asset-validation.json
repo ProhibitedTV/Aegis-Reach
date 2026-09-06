@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Bastion Wall.x imports through installed Assimp",
+    "Extraction Pad.x imports through installed Assimp",
+    "Infantry Cover.x imports through installed Assimp",
+    "Orbital Antenna Arc.x imports through installed Assimp",
+    "Relay Bunker.x imports through installed Assimp",
+    "Relay Terminal.x imports through installed Assimp",
+    "Signal Spire.x imports through installed Assimp",
+    "Station Deck.x imports through installed Assimp",
+    "Supply Crate.x imports through installed Assimp",
+    "Aegis Reach - Relayfall.fpm: 130 entities, all map asset/script/audio references present, archive CRC and entity roundtrip valid"
+  ],
+  "engine_import_library": "installed GameGuru MAX assimp.dll",
+  "in_engine_playtest": false
+}

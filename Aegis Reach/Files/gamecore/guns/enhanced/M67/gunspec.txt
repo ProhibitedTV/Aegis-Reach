@@ -1,0 +1,198 @@
+;//M-67 FRAG GRENADE weapon spec Calibrated for Camera Distance=70, Weapon FOV=70+, Horizontal FOV=110
+
+;// Enhanced Weapon Pack v.1.0
+;// Mesh, Textures and Animation by Jake Cotton aka EAI (Errant AI) (c)2018 errant_ai@yahoo.com
+;// https://www.tgcstore.net/artist/77474
+;// https://eaimedia.com
+
+;//Press [melee key] for high-force/low-damage attack
+
+;// Stock Weapon Object 
+pathtostockentity	= Max Collection\Weapons\Frag Grenade.fpe
+
+;// VR Support
+vrweaponmode=1
+vrweaponlimbofweapon=93
+vrweaponstaticframe=0
+vrweaponoffsetx=-3
+vrweaponoffsety=3
+vrweaponoffsetz=-11
+
+;// Ammunition
+
+reloadqty		= 1
+
+projectile      	= enhanced\m67
+
+
+poolammo        	= grenade
+
+weaponisammo		= 0
+noautoreload		= 0
+nofullreload		= 0
+addtospare		= 1
+
+
+;// Range and damage
+
+damage = 100
+foece = 100
+
+scorchtype		= 4
+noscorch		= 0
+
+melee damage		= 1
+melee range		= 75
+melee force		= 200
+melee noscorch 		= 1
+
+
+;// Accuracy
+
+simplezoom		= 0
+accuracy		= 10
+runacc			= 100
+
+
+;// HUD handling characteristics
+
+disablemovespeedmod	= 0	;disables use of player move and turn speed multipliers 
+
+plrmovespeedmod		= 1.0	;move speed multiplier
+plrturnspeedmod		= 1.0	;turn speed multiplier 
+plrjumpspeedmod		= 1.0	;jump inertia multiplier
+
+recoily			= 50	;recoil vertical disturbance
+recoilyreturn		= 99	;recoil vertical return percentage
+recoilx			= 20	;recoil horizontal disturbance
+recoilxreturn		= 99	;recoil horizontal return percentage
+
+gunlagspeed		= 60	;hud model drift inertia
+gunlagxmax		= 10	;hud model max vertical drift
+gunlagymax		= 16	;hud model max horizontal drift
+
+disablerunandshoot	= 0	;disables ability to fire weapon while sprinting
+
+simplezoomspeed		= 10	;speed of runy offset or non-ainmated zoomto/from transition
+
+reloadspeed 		= 100
+
+
+;// Visuals
+textured		= 
+effect			= effectbank\reloaded\weapon_bone.fx
+weapontype		= 0
+statuspanelcode		= 100
+vweaptex		= m67
+invertnormal		= 1	;flag for -Y axis normal maps
+preservetangents	= 1	;disable normal tangent shifting
+
+
+;//Model positions
+
+horiz			= 0	;player weapon model horizontal position offset
+vert			= 0	;player weapon model vertical position offset
+forward			= 3	;player weapon model depth position offset
+runy			= -4	;player weapon model vertical offset while sprinting
+
+;//Model adjustment for MAX Characters
+handscale           = 85
+
+;// Muzzleflash
+
+muzzleflash     	= 0
+muzzlesize      	= 0
+
+alignx			= 0
+aligny			= 0
+alignz			= 0
+
+muzzlecolorR		= 1	;muzzleflash light red value
+muzzlecolorG		= 1	;muzzleflash light green value
+muzzlecolorB		= 1	;muzzleflash light blue value
+
+
+;// Brass System
+
+brass			= 67	;brass model ID for dynamic ejecting cartridge cases
+brasslife       	= 2000	;brass model instance lifespan before despawning
+brassangle      	= -30	;base relative bearing for brass ejection
+brassanglerand  	= 5	;brassangle randomized deviation maximum
+brassspeed      	= 150	;brass ejection impulse
+brassspeedrand  	= 0.1	;brassspeed randomized deviation maximum
+brassupward     	= 5	;brass ejection vertical impulse
+brassupwardrand 	= 0.1	;brassupward randomized deviation maximum
+brassrotx       	= -500	;brass model x axis spin rate
+brassrotxrand   	= 0.5	;brassrotx randomized deviation maximum
+brassroty       	= 500	;brass model y axis spin rate
+brassrotyrand   	= 0.5	;brassroty randomized deviation maximum
+brassrotz       	= -20	;brass model z axis spin rate
+brassrotzrand   	= 0.5	;brassrotz randomized deviation maximum
+
+
+
+;// HUD ANIMATION (timeline 0-483)
+
+keyframe ratio		= 1	;animation multiplier for weapons exported at other than 30 fps
+useempty		= 1	;activates use of defined empty weapon animations
+
+;select			= 15,20		;fast
+select			= 293,315	;equip
+idle			= 21,60
+move			= 83,125
+run			= 170,212
+
+;throw
+start fire		= 320,343
+end fire		= 344,352
+;fire			= 320,352
+;flakrearmframe 	= 344
+
+reload			= 420,447
+
+;melee shove
+melee start		= 260,269
+melee end		= 270,280
+
+putaway			= 285,290
+
+dryfire			= 375,405
+
+empty select		= 360,365
+empty idle		= 360,370
+empty move		= 360,370
+empty run		= 360,370
+
+empty reload		= 293,315
+
+;melee shove
+empty melee start	= 458,469
+empty melee end		= 470,482
+
+empty putaway		= 360,365
+
+
+;//HUD Sounds
+
+sound1			= fire.ogg
+sound2			= reload.ogg
+sound4			= putaway.ogg
+sound5			= retrieve.ogg
+sound6			= melee.ogg
+sound7			= pin.ogg
+sound8			= fidget.ogg
+
+fireloop		= 0
+soundstrength		= 20
+
+
+;//HUD Sound frames list
+
+soundframes		= 6
+
+sframe0			=
+sframe1			= 261,6
+sframe2			= 294,2
+sframe3			= 421,8
+sframe4			= 328,7
+sframe5			= 461,6

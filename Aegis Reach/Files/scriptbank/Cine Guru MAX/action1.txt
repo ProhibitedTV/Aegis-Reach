@@ -1,0 +1,10 @@
+music,audiobank\\music\\outside.ogg,29536
+subtitles,scriptbank\\Cine Guru MAX\\subtitles.txt,80,4,4
+--debug
+Jane,mplay|3000,idle|Idle|0.9,sub|1|3000|2|11
+Bob,idle|Idle_LookAround
+Jane,move|mark1,mvol|40|2000,speak|0|90,sub|2|6000|1|35,sub|3|6000|2|35.5,delay|6000
+Bob,speak|0|94,sub|4|3000|2|30,delay|3000
+Jane,speak|1|90,sub|5|3500|2|28,delay|3000
+Bob,move|mark2,speak|1|91,sub|6|5000|2|34,delay|3000,activate,
+Jane,trigger|camera1,move|mark3,mstop|2000,sub|7|3000|2|14

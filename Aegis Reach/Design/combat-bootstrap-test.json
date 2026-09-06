@@ -1,0 +1,6 @@
+{
+  "lua": "5.1",
+  "real_MAX_character_behavior_instructions": 493,
+  "initialization": "passed",
+  "live_pathfinding_and_combat": "requires engine playtest"
+}

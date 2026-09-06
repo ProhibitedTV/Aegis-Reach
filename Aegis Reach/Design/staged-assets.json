@@ -1,0 +1,30 @@
+{
+  "copied": [
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo.dbo",
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo_ao.dds",
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo_color.dds",
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo_gloss.dds",
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo_metalness.dds",
+    "gamecore\\ammo\\enhanced\\00BUCK12\\00BUCK12ammo_normal.dds",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo.dbo",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo_ao.dds",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo_color.dds",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo_gloss.dds",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo_metalness.dds",
+    "gamecore\\ammo\\enhanced\\44MAG\\44MAGammo_normal.dds",
+    "gamecore\\ammo\\enhanced\\556NATO\\556NATOammo.dbo",
+    "gamecore\\ammo\\enhanced\\556NATO\\556NATOammo_ao.dds",
+    "gamecore\\ammo\\enhanced\\556NATO\\556NATOammo_gloss.dds",
+    "gamecore\\ammo\\enhanced\\556NATO\\556NATOammo_metalness.dds",
+    "gamecore\\ammo\\enhanced\\556NATO\\556NATOammo_normal.dds",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo.dbo",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo_ao.dds",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo_color.dds",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo_gloss.dds",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo_metalness.dds",
+    "gamecore\\ammo\\enhanced\\762x39\\762x39ammo_normal.dds"
+  ],
+  "unresolved": [
+    "_markers\\Player Start.fpe -> default.lua"
+  ]
+}
