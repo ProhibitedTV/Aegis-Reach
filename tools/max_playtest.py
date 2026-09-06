@@ -48,6 +48,8 @@ def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
     from world_story_logic_pass import rewrite_archive as story_logic_archive
+    from shelf_encounter_pass import rewrite_archive as shelf_encounter_archive
+    from native_integration_pass import rewrite_archive as native_integration_archive
     from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
     from ecosystem_scan import scan as scan_ecosystem
@@ -85,6 +87,22 @@ def prepare_production_content() -> None:
     story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
     print("Environmental story triggers bound:", len(story_logic["story_entities"]))
 
+    shelf = shelf_encounter_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Optional Vesper shelf encounter applied:",
+        shelf["enemy_count"],
+        "enemies /",
+        shelf["reward_count"],
+        "field rewards",
+    )
+
+    native = native_integration_archive(MAP, dry_run=False, backup=False)
+    print(
+        "MAX-native presentation endpoints applied:",
+        len(native["beacons"]),
+        "beacons + world-state controller",
+    )
+
     story_images = build_story_art()
     print("Original Vesper field-art assets generated:", len(story_images))
 
@@ -109,7 +127,7 @@ def apply_visual_polish() -> None:
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
     # Production is the preferred integrated path: ecosystem discovery and authored
-    # world/presentation first, visual settings second, then validated map/assets deploy.
+    # world/gameplay/presentation first, visual settings second, then validated deploy.
     if production:
         prepare_production_content()
     if polish or production:
@@ -139,9 +157,10 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + sky + open Vesper shelf + story + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + Vesper + optional recon combat + native MAX logic + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("World report: Aegis Reach\\Design\\world-story-pass.json")
+        print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
         print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
@@ -191,7 +210,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build environment/world/story/cinematic assets + visual polish before deploying",
+        help="scan ecosystem + build world/story/recon/native/cinematic systems + visual polish before deploying",
     )
     args = parser.parse_args()
 
