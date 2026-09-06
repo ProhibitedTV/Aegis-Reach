@@ -18,9 +18,18 @@ function aegis_relay_main(e)
  if g_KeyPressE==1 then r.progress=r.progress+dt else r.progress=0 end
  Prompt("Hold E to override relay // "..math.floor(r.progress/30).."%")
  if r.progress>=3000 then
-  r.done=true;aegis.relays[r.index]=true;aegis.phase=r.index+1;PlaySound(e,0)
-  if r.index==1 then aegis_message("NORTHSTAR online. Flank through the blast gates to LANTERN.",8)
-  elseif r.index==2 then aegis_message("LANTERN online. The AEGIS core is ahead. Expect the reserve squad.",8)
-  else aegis_message("Orbital strike CANCELLED. Kestrel inbound. Return to the insertion pad!",10) end
+  r.done=true
+  aegis.relays[r.index]=true
+  aegis.relay_times=aegis.relay_times or {}
+  aegis.relay_times[r.index]=math.floor((g_Time-(aegis.born or g_Time))/1000)
+  aegis.phase=r.index+1
+  PlaySound(e,0)
+  if r.index==1 then
+   aegis_message("NORTHSTAR online. Flank through the blast gates to LANTERN.",8)
+  elseif r.index==2 then
+   aegis_message("LANTERN online. The AEGIS core is ahead. Expect countermeasures and reserves.",8)
+  else
+   aegis_message("Orbital strike CANCELLED. AEGIS uplink captured -- suit boost live. Kestrel inbound!",10)
+  end
  end
 end
