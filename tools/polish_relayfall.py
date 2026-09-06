@@ -42,7 +42,9 @@ VISUAL_SETTINGS = {
     "PostBrightness#": 0.075,
     "PostContrast#": 1.08,
     "Gamma": 2.2,
-    "DeSaturate": 0,
+    # MAX treats this as a saturation multiplier. 1.0 preserves authored color;
+    # 0.0 produced the monochrome second playtest despite better readability.
+    "DeSaturate": 1,
     "AmbienceIntensity#": 205,
     "AmbienceRed#": 176,
     "AmbienceGeen#": 196,
