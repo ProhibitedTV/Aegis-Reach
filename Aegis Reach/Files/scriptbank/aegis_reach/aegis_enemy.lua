@@ -31,7 +31,8 @@ local function role_for(index,reserve)
  return "skirmisher"
 end
 
-local function phase_gate(index,reserve)
+local function phase_gate(index,reserve,shelf)
+ if shelf then return 1 end
  if reserve then return reserve<=2 and 3 or 4 end
  if index<=5 then return 1 end
  if index<=8 then return 2 end
@@ -50,13 +51,20 @@ local function announce_reserve(gate)
  end
 end
 
+local function announce_shelf()
+ if not aegis or not aegis_message or aegis.shelf_contact_announced then return end
+ aegis.shelf_contact_announced=true
+ aegis_message("KESTREL: Patrol on the old sea floor. Use the basalt for angles -- don't cross the shelf flat.",6)
+end
+
 function aegis_enemy_init_name(e,name)
  local reserve=tonumber(string.match(name,"RESERVE%s+(%d+)"))
+ local shelf=string.find(name,"SHELF WARDEN",1,true)~=nil
  local index=tonumber(string.match(name,"WARDEN%s+(%d+)")) or reserve or 1
- local gate=phase_gate(index,reserve)
+ local gate=phase_gate(index,reserve,shelf)
  local role=role_for(index,reserve)
- enemy[e]={reserve=reserve,index=index,gate=gate,role=role,registered=false,active=false,wake_range=1850,
-   queued_at=0,activation_delay=reserve and (((reserve-1)%2)*1100) or 0}
+ enemy[e]={reserve=reserve,shelf=shelf,index=index,gate=gate,role=role,registered=false,active=false,
+   wake_range=shelf and 2700 or 1850,queued_at=0,activation_delay=reserve and (((reserve-1)%2)*1100) or 0}
  character_attack_init_file(e,"people\\character_attack")
  configure(e,role)
  if reserve then Hide(e);CollisionOff(e) end
@@ -66,13 +74,19 @@ function aegis_enemy_main(e)
  local w=enemy[e]
  if not w or not aegis or not aegis.started then return end
 
+ -- Shelf patrols are an optional exterior encounter. Do not add them to the
+ -- mission's hostile count or wake their AI until the player intentionally leaves
+ -- the fortress through the south breach. This preserves a quiet visual reveal.
+ local on_shelf=(g_PlayerPosZ or 0)<-3300
  if not w.registered then
+  if w.shelf and not on_shelf then return end
   w.registered=true
   if w.reserve then aegis.reserves[e]=true else aegis.enemies[e]=true end
  end
 
  if not w.active then
   if aegis.phase<w.gate then return end
+  if w.shelf and not on_shelf then return end
   if w.reserve then
    if w.queued_at==0 then w.queued_at=g_Time end
    if g_Time-w.queued_at<w.activation_delay then return end
@@ -91,6 +105,7 @@ function aegis_enemy_main(e)
    w.active=true
    aegis.active_enemies[e]=true
    configure(e,w.role)
+   if w.shelf then announce_shelf() end
   end
  end
 
