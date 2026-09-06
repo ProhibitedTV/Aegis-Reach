@@ -20,7 +20,7 @@ end
 
 function aegis_director_init(e)
  audit("director_init entity="..e)
- aegis = {phase=1, relays={}, enemies={}, reserves={}, reserve_announced={}, extracted=false, started=false,
+ aegis = {phase=1, relays={}, enemies={}, active_enemies={}, reserves={}, reserve_announced={}, extracted=false, started=false,
    message="", message_until=0, last_health=200, last_hit=0, shield=100, armour=100,
    next_regen=0, regen_announced=false, born=0, kills=0, hold=0, hold_last=0, radio=-1, score=0,
    combat_active=false, combat_last=0, combat_contacts=0}
@@ -48,7 +48,7 @@ end
 function aegis_nearby_hostiles(radius)
  local alive=0
  local rr=radius*radius
- for id,_ in pairs(aegis.enemies) do
+ for id,_ in pairs(aegis.active_enemies) do
   local n=g_Entity[id]
   if n and n.health>0 then
    local dx=(n.x or 0)-g_PlayerPosX
