@@ -71,6 +71,7 @@ function aegis_enemy_main(e)
    Show(e);CollisionOn(e)
    aegis.reserves[e]=nil
    aegis.enemies[e]=true
+   aegis.active_enemies[e]=true
    configure(e,"assault")
    announce_reserve(w.gate)
   else
@@ -79,6 +80,7 @@ function aegis_enemy_main(e)
    -- whole fortress from becoming one long undifferentiated firefight.
    if GetPlayerDistance(e)>w.wake_range then return end
    w.active=true
+   aegis.active_enemies[e]=true
    configure(e,w.role)
   end
  end
