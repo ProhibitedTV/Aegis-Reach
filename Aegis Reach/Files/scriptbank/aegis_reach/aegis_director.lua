@@ -2,9 +2,19 @@
 -- Original scenario and code. Uses GameGuru MAX's local combat assets.
 aegis = aegis or {}
 
--- Runtime audit is deliberately best-effort. MAX commonly runs with Files as the
--- working directory, so prefer a project-relative path instead of a machine path.
-local audit_paths={"../Design/native-runtime.log","Design/native-runtime.log"}
+-- Runtime audit is deliberately best-effort. Relayfall is commonly copied into
+-- GameGuru MAX's user Files directory for testing, so try that known writable
+-- location before project-relative development paths. This keeps telemetry alive
+-- whether the mission runs from the repo or from MAX's Documents deployment.
+local audit_paths={}
+local userprofile=os.getenv and os.getenv("USERPROFILE") or nil
+if userprofile and userprofile~="" then
+ table.insert(audit_paths,userprofile.."/Documents/GameGuruApps/GameGuruMAX/Files/aegis-native-runtime.log")
+end
+table.insert(audit_paths,"aegis-native-runtime.log")
+table.insert(audit_paths,"../Design/native-runtime.log")
+table.insert(audit_paths,"Design/native-runtime.log")
+
 local function audit(message)
  pcall(function()
   for _,path in ipairs(audit_paths) do
