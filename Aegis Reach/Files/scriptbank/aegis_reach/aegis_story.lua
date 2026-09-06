@@ -1,9 +1,12 @@
 -- DESCRIPTION: Sparse environmental-story trigger for authored Vesper props.
 -- The world should speak first. These lines react to details the player can already see.
+-- Story props also fire MAX Visual Logic / IfUsed outputs once, allowing CineGuru,
+-- audio, particles, lights, or other authored responses without hard-coded entity IDs.
 local story={}
 
 function aegis_story_init_name(e,name)
  story[e]={name=name or "",fired=false,near=false}
+ SetActivated(e,0)
 end
 
 local function line_for(name)
@@ -19,15 +22,30 @@ local function line_for(name)
  return nil,0
 end
 
+local function subtle_emissive(e,name,distance)
+ -- Old survey hardware has just enough surviving instrumentation to catch the eye.
+ if string.find(name,"TIDE GAUGE",1,true) then
+  local near=math.max(0,1-math.min(1,distance/700))
+  local pulse=(math.sin(g_Time*0.0022)+1)*0.5
+  SetEntityEmissiveColor(e,72,190,202)
+  SetEntityEmissiveStrength(e,15+near*55+pulse*12)
+ end
+end
+
 function aegis_story_main(e)
  local s=story[e]
- if not s or s.fired or not aegis or not aegis.started or aegis.extracted then return end
- if GetPlayerDistance(e)>240 then return end
+ if not s or not aegis or not aegis.started or aegis.extracted then return end
+ local distance=GetPlayerDistance(e)
+ subtle_emissive(e,s.name,distance)
+ if s.fired or distance>240 then return end
  -- Never interrupt a hot fight for optional environmental narration.
  if aegis.combat_active then return end
  local text,seconds=line_for(s.name)
  if text then
   aegis_message(text,seconds)
   s.fired=true
+  SetActivated(e,1)
+  PerformLogicConnections(e)
+  ActivateIfUsed(e)
  end
 end
