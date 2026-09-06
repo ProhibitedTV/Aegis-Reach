@@ -1,0 +1,70 @@
+{
+  "sequence": "RELAYFALL // COLD OPEN",
+  "duration_seconds": 11.0,
+  "trigger": {
+    "type": "Cine-trigger zone",
+    "position": [0, 645, -2700],
+    "dtime": 0.1,
+    "enable_skip": true,
+    "disable_if_combat": false
+  },
+  "shots": [
+    {
+      "id": "CG_INTRO_01_DEAD_ORBIT",
+      "position": [-1500, 1750, -3380],
+      "target": [0, 1200, 3300],
+      "filmtime": 3.4,
+      "fade": 1.2,
+      "fls": 108,
+      "fle": 84,
+      "purpose": "Establish fortress, broken orbital spine, and Aurelia beyond it.",
+      "image_trigger": "imagebank\\aegis_reach\\cine\\relayfall_location_card.png"
+    },
+    {
+      "id": "CG_INTRO_02_INSERTION",
+      "position": [760, 980, -3180],
+      "target": [0, 760, -2050],
+      "filmtime": 2.7,
+      "fade": 0,
+      "fls": 82,
+      "fle": 72,
+      "purpose": "Drop beneath the service gantry and reveal the player route."
+    },
+    {
+      "id": "CG_INTRO_03_WARDENS",
+      "position": [-1220, 880, -2370],
+      "target": [-800, 690, -2130],
+      "filmtime": 2.4,
+      "fade": 0,
+      "fls": 76,
+      "fle": 60,
+      "purpose": "Show the opening two-Warden tactical problem before control returns.",
+      "image_trigger": "imagebank\\aegis_reach\\cine\\relayfall_warning_card.png"
+    },
+    {
+      "id": "CG_INTRO_04_HANDOFF",
+      "position": [0, 790, -2870],
+      "target": [0, 760, -1650],
+      "filmtime": 2.5,
+      "fade": 0.25,
+      "fls": 72,
+      "fle": 72,
+      "purpose": "Match toward the player's first-person heading and hand off cleanly."
+    }
+  ],
+  "audio": {
+    "underscore": "audiobank\\aegis_reach\\reach-underscore.wav",
+    "briefing": "audiobank\\aegis_reach\\briefing.wav",
+    "subtitle_lines": [
+      "KESTREL: Vanguard Seven, Reach is dark.",
+      "KESTREL: Three relays stand between us and an orbital strike.",
+      "KESTREL: Wake Northstar. Wake Lantern. Then take AEGIS away from them."
+    ]
+  },
+  "visual_logic": [
+    "Cine-trigger zone -> CG_INTRO_01_DEAD_ORBIT",
+    "CG_INTRO_01_DEAD_ORBIT -> CG_INTRO_02_INSERTION",
+    "CG_INTRO_02_INSERTION -> CG_INTRO_03_WARDENS",
+    "CG_INTRO_03_WARDENS -> CG_INTRO_04_HANDOFF"
+  ]
+}
