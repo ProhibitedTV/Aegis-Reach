@@ -2,8 +2,9 @@
 
 This does not copy or redistribute CineGuru DLC files. It scans the user's licensed
 GameGuru MAX installation and user Files area, records the exact local CineGuru entity
-and script paths, and generates original Aegis Reach title-card assets for CineGuru
-image triggers.
+and script paths, generates original Aegis Reach title-card assets, and inspects any
+installed CineGuru example maps for structural metadata that can help automate camera
+and Visual Logic placement in a later pass.
 
 Usage:
     python tools/cineguru_bootstrap.py
@@ -14,9 +15,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import struct
+import zipfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+
+from max_archive import PASSWORD
+from native_format import read_ele
 
 ROOT = Path(__file__).resolve().parent.parent
 GAME = ROOT / "Aegis Reach"
@@ -35,7 +41,6 @@ def candidate_roots():
         Path(r"C:\Program Files (x86)\Steam\steamapps\common\GameGuru MAX\Files"),
         Path(r"C:\Program Files\Steam\steamapps\common\GameGuru MAX\Files"),
     ]
-    # Keep order, remove duplicate paths case-insensitively.
     seen = set(); result = []
     for path in roots:
         key = str(path).lower()
@@ -55,20 +60,13 @@ def classify_fpe(path: Path):
     text = (path.name + "\n" + text_lower(path))
     if not ("cine" in text or "cg_" in text or "cg " in text):
         return None
-    if "camera" in text and ("cinematic" in text or "cg" in text):
-        return "camera"
-    if "trigger" in text and "zone" in text:
-        return "trigger_zone"
-    if "trigger" in text:
-        return "trigger"
-    if "focus" in text:
-        return "focus"
-    if "light" in text:
-        return "light"
-    if "actor" in text:
-        return "actor"
-    if "mark" in text:
-        return "mark"
+    if "camera" in text and ("cinematic" in text or "cg" in text): return "camera"
+    if "trigger" in text and "zone" in text: return "trigger_zone"
+    if "trigger" in text: return "trigger"
+    if "focus" in text: return "focus"
+    if "light" in text: return "light"
+    if "actor" in text: return "actor"
+    if "mark" in text: return "mark"
     return "other"
 
 
@@ -99,7 +97,6 @@ def discover(roots):
                         "path": str(path.relative_to(scriptbank)),
                         "full_path": str(path),
                     })
-    # Deduplicate because the user Files area can contain a staged copy of install DLC.
     def unique(items, key):
         seen = set(); result = []
         for item in items:
@@ -110,6 +107,100 @@ def discover(roots):
     entities = unique(entities, lambda item: item["path"] + "|" + item["kind"])
     scripts = unique(scripts, lambda item: item["path"])
     return found_roots, entities, scripts
+
+
+def suffix_value(entity, suffix, default=None):
+    for key, value in entity.items():
+        if key.split(":", 1)[-1] == suffix:
+            return value
+    return default
+
+
+def parse_bank(data: bytes):
+    count = struct.unpack_from("<i", data)[0]
+    bank = [line for line in data[4:].decode("latin1").splitlines() if line]
+    if len(bank) != count:
+        raise ValueError(f"bank count mismatch {count} != {len(bank)}")
+    return bank
+
+
+def interesting_entity_fields(entity):
+    result = {}
+    for key, value in entity.items():
+        if value in (0, 0.0, "", None):
+            continue
+        lower = key.lower()
+        if any(token in lower for token in (
+            "objectrelationships", "aimain", "aiinit", "aidestroy", "soundset",
+            "script", "lua", "ifused", "custom", "phyalways", "name_s",
+        )):
+            result[key] = value
+    return result
+
+
+def inspect_example_maps(found_roots, cine_entities):
+    known_paths = {item["path"].replace("/", "\\").lower() for item in cine_entities}
+    reports = []
+    for root in found_roots:
+        mapbank = root / "mapbank"
+        if not mapbank.exists():
+            continue
+        candidates = []
+        for path in mapbank.rglob("*.fpm"):
+            marker = str(path.relative_to(mapbank)).lower()
+            if any(token in marker for token in ("cine", "cinematic", "camera")):
+                candidates.append(path)
+        for path in candidates[:12]:
+            try:
+                with zipfile.ZipFile(path) as archive:
+                    archive.setpassword(PASSWORD)
+                    names = archive.namelist()
+                    if "map.ele" not in names or "map.ent" not in names:
+                        continue
+                    version, entities = read_ele(archive.read("map.ele"))
+                    bank = parse_bank(archive.read("map.ent"))
+                    matched = []
+                    for entity in entities:
+                        idx = int(suffix_value(entity, "bankindex", 0) or 0)
+                        bank_path = bank[idx - 1] if 0 < idx <= len(bank) else ""
+                        bank_marker = bank_path.replace("/", "\\").lower()
+                        if not (
+                            bank_marker in known_paths
+                            or "cine" in bank_marker
+                            or "cg_" in bank_marker
+                            or "cg " in bank_marker
+                        ):
+                            continue
+                        matched.append({
+                            "name": str(suffix_value(entity, "eleprof.name_s", "")),
+                            "bank_path": bank_path,
+                            "position": [
+                                suffix_value(entity, "x", 0),
+                                suffix_value(entity, "y", 0),
+                                suffix_value(entity, "z", 0),
+                            ],
+                            "rotation": [
+                                suffix_value(entity, "rx", 0),
+                                suffix_value(entity, "ry", 0),
+                                suffix_value(entity, "rz", 0),
+                            ],
+                            "interesting_fields": interesting_entity_fields(entity),
+                        })
+                    if matched:
+                        reports.append({
+                            "root": str(root),
+                            "map": str(path.relative_to(mapbank)),
+                            "version": version,
+                            "entities": len(entities),
+                            "matched_cine_entities": matched[:40],
+                            "archive_sidecars": [
+                                name for name in names
+                                if any(token in name.lower() for token in ("cine", "cg_", "script", "logic"))
+                            ][:80],
+                        })
+            except Exception as exc:
+                reports.append({"root": str(root), "map": str(path), "error": str(exc)})
+    return reports
 
 
 def font(size, bold=False):
@@ -162,8 +253,6 @@ def build_original_cine_assets():
 
 
 def shotlist():
-    # Positions are design coordinates for manual placement in MAX. Camera marker
-    # rotation should be aimed at target using the editor; CineGuru owns camera motion.
     return {
         "sequence": "RELAYFALL // COLD OPEN",
         "duration_seconds": 11.0,
@@ -242,6 +331,7 @@ def main():
     args = parser.parse_args()
     roots = args.root or candidate_roots()
     found_roots, entities, scripts = discover(roots)
+    examples = inspect_example_maps(found_roots, entities)
     generated = build_original_cine_assets()
     plan = shotlist()
     SHOTLIST.parent.mkdir(parents=True, exist_ok=True)
@@ -256,6 +346,7 @@ def main():
         "cineguru_entities": entities,
         "cineguru_scripts": scripts,
         "by_kind": by_kind,
+        "example_maps": examples,
         "generated_original_assets": generated,
         "shotlist": str(SHOTLIST),
         "camera_candidates": by_kind.get("camera", []),
@@ -270,11 +361,14 @@ def main():
     print("CineGuru script candidates:", len(scripts))
     print("Camera candidates:", len(report["camera_candidates"]))
     print("Trigger-zone candidates:", len(report["trigger_zone_candidates"]))
+    print("CineGuru example maps inspected:", len(examples))
     print("Original cinematic image assets:", len(generated))
     print("Discovery report:", REPORT)
     print("Shot list:", SHOTLIST)
     if report["camera_candidates"] and report["trigger_zone_candidates"]:
         print("CineGuru detected. Open Design/CINEGURU_OPENING.md for the 4-shot Visual Logic setup.")
+        if examples:
+            print("Example-map metadata captured; this can be used to automate marker/logic insertion in a later pass.")
     else:
         print("CineGuru was not confidently located. Pass --root with its GameGuru MAX Files directory if needed.")
 
