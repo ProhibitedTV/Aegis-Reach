@@ -46,6 +46,7 @@ def copy_tree(source: Path, target: Path) -> int:
 
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
+    from world_story_pass import rewrite_archive as world_archive
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
     from ecosystem_scan import scan as scan_ecosystem
 
@@ -66,6 +67,17 @@ def prepare_production_content() -> None:
         "assets /",
         len(environment["placements"]),
         "placements",
+    )
+
+    world = world_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Vesper world-story pass applied:",
+        len(world["generated_assets"]),
+        "assets /",
+        len(world["placements"]),
+        "placements /",
+        world["south_gate_segments_removed"],
+        "south-gate segments removed",
     )
 
     cards = build_original_cine_assets()
@@ -89,7 +101,7 @@ def apply_visual_polish() -> None:
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
     # Production is the preferred integrated path: ecosystem discovery and authored
-    # presentation first, visual settings second, then validated map/assets deploy.
+    # world/presentation first, visual settings second, then validated map/assets deploy.
     if production:
         prepare_production_content()
     if polish or production:
@@ -119,8 +131,9 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem scan + environment + presentation + visual polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + sky + open Vesper shelf + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
+        print("World report: Aegis Reach\\Design\\world-story-pass.json")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
@@ -169,7 +182,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build environment/cinematic assets + visual polish before deploying",
+        help="scan ecosystem + build environment/world/cinematic assets + visual polish before deploying",
     )
     args = parser.parse_args()
 
