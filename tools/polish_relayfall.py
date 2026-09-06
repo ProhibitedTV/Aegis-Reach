@@ -108,10 +108,28 @@ def get_suffix(entity: dict, suffix: str, default=None):
 
 
 def set_suffix(entity: dict, suffix: str, value) -> bool:
+    """Set a native .ele field while preserving the codec's decoded value type.
+
+    The MAX writer schema contains both integer and float numeric fields. Python's
+    struct.pack is intentionally strict for integer fields, so feeding a visually
+    harmless value such as 1750.0 into an integer light-range slot will fail the
+    archive rewrite. Preserve the decoded field type rather than guessing from the
+    setting name.
+    """
     key = suffix_key(entity, suffix)
     if not key:
         return False
-    entity[key] = value
+    current = entity[key]
+    if isinstance(current, bool):
+        entity[key] = bool(value)
+    elif isinstance(current, int):
+        entity[key] = int(round(value))
+    elif isinstance(current, float):
+        entity[key] = float(value)
+    elif isinstance(current, str):
+        entity[key] = str(value)
+    else:
+        entity[key] = value
     return True
 
 
@@ -130,7 +148,7 @@ def patch_lights(map_ele: bytes) -> tuple[bytes, list[dict]]:
         # combat pockets and silhouette contrast. Larger ranges illuminate lanes
         # without turning the whole fortress into flat fullbright.
         color = CYAN if index % 2 else AMBER
-        radius = 1750.0 if index in (1, 2, 3, 4) else 1550.0
+        radius = 1750 if index in (1, 2, 3, 4) else 1550
         old_range = get_suffix(entity, "eleprof.light.range")
         old_color = get_suffix(entity, "eleprof.light.color")
 
@@ -142,15 +160,17 @@ def patch_lights(map_ele: bytes) -> tuple[bytes, list[dict]]:
             {
                 "name": name,
                 "range_before": old_range,
-                "range_after": radius,
+                "range_after": get_suffix(entity, "eleprof.light.range"),
                 "color_before": old_color,
-                "color_after": hex(color),
+                "color_after": hex(int(get_suffix(entity, "eleprof.light.color", color))),
             }
         )
 
     result = write_ele(version, entities)
     # Protect against codec drift while touching a binary map format.
-    assert read_ele(result)[0] == version
+    roundtrip_version, roundtrip_entities = read_ele(result)
+    assert roundtrip_version == version
+    assert len(roundtrip_entities) == len(entities)
     return result, changed
 
 
