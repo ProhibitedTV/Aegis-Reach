@@ -34,6 +34,31 @@ You begin with a compact assault rifle and reserve ammunition. The first combat 
 
 This first prototype runs in one session. Save/load menu controls are omitted because persistent mission-state restoration has not been implemented.
 
+## Combat-loop pass 1
+
+The current branch adds a first deliberate combat-pacing layer without changing the map archive:
+
+- Iron Wardens now have deterministic tactical roles: **flanker, anchor, hunter, skirmisher**, plus an aggressive **reserve assault** role.
+- Standing troops remain visible, but their full combat AI wakes only when the player reaches the appropriate encounter phase and local radius. This keeps Relayfall from becoming one fortress-wide firefight.
+- Reserve squads remain hidden until their authored mission beat and enter already alerted.
+- The HUD now reports close tactical contact, shield collapse and shield-recharge state more clearly.
+- The mission runtime audit uses project-relative paths instead of Astra's previous absolute desktop path.
+
+The intended encounter structure is documented in `Design\COMBAT_PILLARS.md`.
+
+### What to watch for in this pass
+
+1. **Insertion:** Wardens 01–02 should be the only immediate combat problem. They should engage naturally as you leave the cyan pad.
+2. **Enemy roles:** some soldiers should attempt wider movement, some should hold a position, and some should close distance. Note any role that looks broken or gets stuck on the MAX navmesh.
+3. **Encounter boundaries:** later enemies should not begin fighting from across the entire fortress. They should wake as you enter their local space.
+4. **Northstar to Lantern:** the blast-wall side gates should provide meaningful flanking routes rather than decorative openings.
+5. **Core reserve:** after Lantern, the first reserve pair should feel like a quick-response team joining the AEGIS-core fight.
+6. **LZ reserve:** after the core override, the final reserve pair should turn the return trip into a short pursuit fight.
+7. **Shield rhythm:** shield collapse should be obvious; after 5.5 seconds out of damage, recharge should be obvious without becoming UI spam.
+8. **Pop-in:** ordinary Wardens are never hidden by encounter gating. Only authored reserve troops use `Hide/Show`; note whether their arrival needs a better visual/audio cue.
+
+For balance feedback, the most useful measurements are: approximate duration of each fight, number of shield breaks, armour remaining after each relay, weapon used for each kill, and whether you ever felt forced to stand still and trade damage.
+
 ## What is included
 
 - Native MAX map with 130 entity placements and 16 enemy soldiers, including staged reserves.
@@ -45,9 +70,9 @@ This first prototype runs in one session. Save/load menu controls are omitted be
 
 ## Validation and playtest focus
 
-**Completed:** 17 headless mission-logic checks; real MAX soldier-interpreter initialization (493 behavior instructions) under Lua 5.1; original meshes imported through the installed MAX Assimp library; native archive CRC, entity-format roundtrip and referenced-file checks. Details are saved in `Design`.
+**Completed before the combat-loop pass:** 17 headless mission-logic checks; real MAX soldier-interpreter initialization (493 behavior instructions) under Lua 5.1; original meshes imported through the installed MAX Assimp library; native archive CRC, entity-format roundtrip and referenced-file checks. Details are saved in `Design`.
 
-**Still needs your in-engine playtest:** rendering and lighting, player spawn and collision, NPC navigation and weapon balance, audio levels, and the complete menu-to-win flow. Codex's Windows screenshot capture failed with `SetIsBorderRequired: No such interface supported (0x80004002)`, so these have not been visually verified in GameGuru MAX.
+**Still needs your in-engine playtest:** rendering and lighting, player spawn and collision, NPC navigation and weapon balance, audio levels, the new role/wake behavior, and the complete menu-to-win flow. Codex's Windows screenshot capture failed with `SetIsBorderRequired: No such interface supported (0x80004002)`, so these have not been visually verified in GameGuru MAX.
 
 Useful first observations: can you spawn on the cyan pad, see the mission HUD, fire and reload, fight the first two guards, activate Northstar, and reach the other relays? If something fails, note the exact on-screen error and the action just before it. Prefer screenshots or a short gameplay recording for geometry and lighting problems.
 
