@@ -47,6 +47,7 @@ def copy_tree(source: Path, target: Path) -> int:
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
+    from terrain_story_pass import rewrite_archive as terrain_archive
     from world_story_logic_pass import rewrite_archive as story_logic_archive
     from shelf_encounter_pass import rewrite_archive as shelf_encounter_archive
     from native_integration_pass import rewrite_archive as native_integration_archive
@@ -82,6 +83,15 @@ def prepare_production_content() -> None:
         "placements /",
         world["south_gate_segments_removed"],
         "south-gate segments removed",
+    )
+
+    terrain = terrain_archive(MAP, dry_run=False, backup=False)
+    print(
+        "Layered Vesper terrain/story pass applied:",
+        len(terrain["generated_assets"]),
+        "assets /",
+        len(terrain["placements"]),
+        "placements",
     )
 
     story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
@@ -157,9 +167,10 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + Vesper + optional recon combat + native MAX logic + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + layered Vesper terrain + recon combat + native MAX logic + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("World report: Aegis Reach\\Design\\world-story-pass.json")
+        print("Terrain report: Aegis Reach\\Design\\terrain-story-pass.json")
         print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
         print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
@@ -210,7 +221,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build world/story/recon/native/cinematic systems + visual polish before deploying",
+        help="scan ecosystem + build layered world/story/recon/native/cinematic systems + visual polish before deploying",
     )
     args = parser.parse_args()
 

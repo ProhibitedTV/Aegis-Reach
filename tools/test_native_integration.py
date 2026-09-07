@@ -1,8 +1,8 @@
 """Headless structural test for the integrated Relayfall production pipeline.
 
-Exercises the map-transform sequence in memory: environment -> Vesper world -> story
-bindings -> optional shelf combat -> native MAX presentation bindings. It never replaces
-the checked-in .fpm.
+Exercises the map-transform sequence in memory: environment -> Vesper world -> layered
+terrain story -> story bindings -> optional shelf combat -> native MAX presentation
+bindings. It never replaces the checked-in .fpm.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from max_archive import PASSWORD
 from native_format import read_ele
 from environment_pass import MAP, build_assets as build_environment_assets, patch_environment, get_suffix
 from world_story_pass import build_assets as build_world_assets, patch_world
+from terrain_story_pass import build_assets as build_terrain_assets, patch_terrain, PLACEMENTS as TERRAIN_PLACEMENTS
 from world_story_logic_pass import patch as patch_story_logic, STORY_NAMES
 from shelf_encounter_pass import patch_encounter
 from native_integration_pass import patch as patch_native, CONTROLLER_NAME
@@ -25,6 +26,7 @@ def name_set(data: bytes) -> set[str]:
 def main():
     build_environment_assets()
     build_world_assets()
+    build_terrain_assets()
 
     with zipfile.ZipFile(MAP) as source:
         source.setpassword(PASSWORD)
@@ -38,10 +40,13 @@ def main():
     assert removed_gate == 4, removed_gate
     assert len(world_added) >= 10, len(world_added)
 
-    story_ele, story_bound = patch_story_logic(world_ele)
+    terrain_ele, terrain_ent, terrain_added, _, _ = patch_terrain(world_ele, world_ent)
+    assert len(terrain_added) == len(TERRAIN_PLACEMENTS), (len(terrain_added), len(TERRAIN_PLACEMENTS))
+
+    story_ele, story_bound = patch_story_logic(terrain_ele)
     assert set(story_bound) == STORY_NAMES, story_bound
 
-    shelf_ele, shelf_ent, shelf_added, _ = patch_encounter(story_ele, world_ent)
+    shelf_ele, shelf_ent, shelf_added, _ = patch_encounter(story_ele, terrain_ent)
     shelf_enemies = [item for item in shelf_added if item["kind"] == "enemy"]
     assert len(shelf_enemies) == 4, len(shelf_enemies)
 
@@ -52,6 +57,8 @@ def main():
     assert CONTROLLER_NAME in names
     for expected in STORY_NAMES:
         assert expected in names
+    for placement in TERRAIN_PLACEMENTS:
+        assert placement[0] in names, placement[0]
     for i in range(21, 25):
         assert any(f"SHELF WARDEN {i}" in name for name in names), i
 
@@ -63,10 +70,13 @@ def main():
     assert scripts[CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_world.lua")
     for name in beacons:
         assert scripts[name].lower().endswith(r"aegis_reach\aegis_beacon.lua")
+    for name in STORY_NAMES:
+        assert scripts[name].lower().endswith(r"aegis_reach\aegis_story.lua")
 
     print("AEGIS REACH // MAX-NATIVE PIPELINE TEST PASS")
     print("Environment placements:", len(env_added))
-    print("Vesper placements:", len(world_added))
+    print("Vesper base placements:", len(world_added))
+    print("Layered terrain placements:", len(terrain_added))
     print("Shelf enemies:", len(shelf_enemies))
     print("Story bindings:", len(story_bound))
     print("Mission-reactive beacons:", len(beacons))

@@ -1,7 +1,8 @@
 """Bind authored Vesper world props to sparse story behaviour inside Relayfall.
 
-Runs after world_story_pass.py. Keeps the geometry pass focused on map construction and
-adds dynamic Lua only to the few props that should react to the player.
+Runs after world_story_pass.py and terrain_story_pass.py. Keeps geometry construction
+separate from the few props that should react to the player or expose MAX-native logic
+outputs for CineGuru/audio/FX authoring.
 """
 from __future__ import annotations
 
@@ -24,6 +25,8 @@ STORY_NAMES = {
     "WORLD // MIRA SURVEY WRECK",
     "WORLD // TIDE GAUGE 17",
     "WORLD // TIDE GAUGE 22",
+    "TERRAIN // MERIDIAN SHELTER 12",
+    "TERRAIN // RESONANCE CUT 03",
 }
 
 
