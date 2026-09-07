@@ -1,10 +1,39 @@
-"""Mission rules and native content checks; does not replace a human combat test."""
-import sys,json,math,zipfile,ctypes as C
+"""Mission rules and native content checks; does not replace a human combat test.
+
+The repository vendors Lupa/Lua 5.1 as a CPython 3.12 Windows extension because
+GameGuru MAX still uses Lua 5.1 semantics.  If this script is started through a
+different `python.exe`, transparently relaunch it with the Windows Python 3.12
+launcher instead of failing with a misleading `lupa.lua51` import error.
+"""
+import sys,json,math,zipfile,ctypes as C,subprocess,os
 from pathlib import Path
+
+ROOT=Path(__file__).resolve().parent.parent
+VENDOR=ROOT/'tools/vendor'
+sys.path.insert(0,str(VENDOR))
+
+try:
+ from lupa.lua51 import LuaRuntime
+except (ModuleNotFoundError,ImportError) as exc:
+ # The checked-in native module is lua51.cp312-win_amd64.pyd.  Jeremy's normal
+ # `python` command may point at 3.11, while the `py` launcher also has 3.12.
+ if os.name=='nt' and sys.version_info[:2]!=(3,12) and os.environ.get('AEGIS_PY312_REEXEC')!='1':
+  env=os.environ.copy();env['AEGIS_PY312_REEXEC']='1'
+  try:
+   result=subprocess.run(['py','-3.12',str(Path(__file__).resolve()),*sys.argv[1:]],env=env)
+  except FileNotFoundError:
+   result=None
+  if result is not None:
+   raise SystemExit(result.returncode)
+ raise SystemExit(
+  'First Light tests require 64-bit CPython 3.12 because the repo vendors '
+  'tools/vendor/lupa/lua51.cp312-win_amd64.pyd.\n'
+  'Run: py -3.12 tools\\test_firstlight.py\n'
+  f'Original import error: {exc}'
+ )
+
 from native_format import ROOT,INSTALL,read_ele,write_ele
 from max_archive import PASSWORD
-sys.path.insert(0,str(ROOT/'tools/vendor'))
-from lupa.lua51 import LuaRuntime
 lua=LuaRuntime(unpack_returned_tuples=True)
 lua.execute('''
 FIRSTLIGHT_TEST=true
