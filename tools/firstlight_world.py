@@ -55,7 +55,11 @@ TERRAIN_MATERIALS={
 }
 
 def architecture(Mesh,own,add,prop,P,I):
- """Three assembled shells, with deliberate openings and floor/roof extents."""
+ """Three assembled shells, with deliberate openings and floor/roof extents.
+
+ Floor top faces sit six inches above their native-terrain pads. Earlier shells
+ ended exactly on the terrain plane, producing severe z-fighting/flicker in MAX.
+ """
  def beam(m,x,y,z,w,h,d,c=1):m.box(x,y,z,w,h,d,c)
  def endwall(m,z,left,right,opening,h=390,color=1):
   lo,hi=opening
@@ -68,13 +72,13 @@ def architecture(Mesh,own,add,prop,P,I):
   if far>hi:beam(m,x,0,(hi+far)/2,45,h,far-hi,color)
   beam(m,x,280,(lo+hi)/2,45,h-280,hi-lo,color)
  # Gate occupies a real cut in the shelf. A short covered passage compresses the vista.
- m=Mesh();beam(m,-440,-35,0,380,35,680);beam(m,440,-35,0,380,35,680)
+ m=Mesh();beam(m,-440,-28,0,380,34,680);beam(m,440,-28,0,380,34,680)
  beam(m,-390,0,0,180,460,680);beam(m,390,0,0,180,460,680)
  beam(m,0,340,0,650,130,680,2)
  for z in (-320,320):beam(m,0,337,z,590,10,18,5)
  gate=own('Gate 07 Cut Portal',m);add(gate,'Gate 07 / sea wall threshold',0,-3100,y=640)
  # Northstar: tall turbine nave + lower west maintenance aisle. Open south/east portals.
- m=Mesh();beam(m,0,-25,0,1900,25,2000)
+ m=Mesh();beam(m,0,-18,0,1900,24,2000)
  endwall(m,-1000,-950,950,(-30,470),560);beam(m,0,0,1000,1900,560,45)
  sidewall(m,950,-1000,1000,(-240,260),560);beam(m,-950,0,0,45,390,2000)
  beam(m,230,560,0,1440,30,2000,2);beam(m,-720,390,0,450,30,2000,2)
@@ -82,11 +86,11 @@ def architecture(Mesh,own,add,prop,P,I):
  for z in (-760,140,760):beam(m,-500,0,z,60,560,60,2)
  for z in (-800,0,800):beam(m,230,520,z,1440,40,65,2)
  shell=own('Northstar Turbine Hall',m);add(shell,'Northstar / turbine nave and maintenance aisle',-1450,-650,y=900)
- for z in (-1000,-50):prop(P+'Generator 04a.fpe',-1590,z,y=900,ry=90)
- for z in (-1110,-120):prop(I+'Storage Tank - Small.fpe',-2210,z,y=900)
- for x in (-1350,-1070):prop(I+'Control Box - Large.fpe',x,170,y=900,ry=180)
+ for z in (-1000,-50):prop(P+'Generator 04a.fpe',-1590,z,y=906,ry=90)
+ for z in (-1110,-120):prop(I+'Storage Tank - Small.fpe',-2210,z,y=906)
+ for x in (-1350,-1070):prop(I+'Control Box - Large.fpe',x,170,y=906,ry=180)
  # Operations: low civilian office, offset north archive and emergency sleeping alcove.
- m=Mesh();beam(m,0,-20,-90,2000,20,1500);beam(m,460,-20,790,1080,20,260)
+ m=Mesh();beam(m,0,-14,-90,2000,20,1500);beam(m,460,-14,790,1080,20,260)
  endwall(m,-840,-1000,1000,(-620,-180),330)
  sidewall(m,-1000,-840,660,(-100,340),330)
  sidewall(m,1000,-840,920,(450,890),330)
@@ -97,12 +101,12 @@ def architecture(Mesh,own,add,prop,P,I):
  beam(m,130,0,60,35,250,600,1);beam(m,130,245,60,35,12,620,4)
  shell=own('Meridian Operations House',m);add(shell,'Operations / requisitioned civilian workplace',1250,600,y=1080)
  for x,z in [(620,40),(950,720),(1670,1000)]:
-  prop(P+'Desk 01a.fpe',x,z,y=1080,ry=90);prop(P+'Computer 01a.fpe',x,z,y=1155,ry=90)
- for z in (0,260,520):prop(P+'Locker 01a.fpe',2100,z,y=1080,ry=-90)
- for x in (1550,1820):prop(P+'Portable Cot 01a.fpe',x,1370,y=1080,ry=90)
- prop(P+'Desk Chair 01a.fpe',1720,900,y=1080,ry=135)
+  prop(P+'Desk 01a.fpe',x,z,y=1086,ry=90);prop(P+'Computer 01a.fpe',x,z,y=1161,ry=90)
+ for z in (0,260,520):prop(P+'Locker 01a.fpe',2100,z,y=1086,ry=-90)
+ for x in (1550,1820):prop(P+'Portable Cot 01a.fpe',x,1370,y=1086,ry=90)
+ prop(P+'Desk Chair 01a.fpe',1720,900,y=1086,ry=135)
  # AEGIS: narrow entry, double-height equipment hall, then open cliff-edge gallery.
- m=Mesh();beam(m,0,-30,0,2500,30,1750,1)
+ m=Mesh();beam(m,0,-22,0,2500,28,1750,1)
  endwall(m,-875,-1250,1250,(-300,300),680,2)
  sidewall(m,-1250,-875,875,(-280,280),680,2)
  sidewall(m,1250,-875,875,(-380,220),680,2)
@@ -113,7 +117,7 @@ def architecture(Mesh,own,add,prop,P,I):
  for x in (-1210,1210):
   beam(m,x,0,80,55,680,80,2);beam(m,x,450,-20,22,110,160,5)
  shell=own('AEGIS Cliff Gallery',m);add(shell,'AEGIS / armoured hall above the Choir cut',0,3090,y=1540)
- for x in (-880,880):prop(I+'Control Box - Tall.fpe',x,3250,y=1540,ry=180)
+ for x in (-880,880):prop(I+'Control Box - Tall.fpe',x,3250,y=1546,ry=180)
  # An asymmetric buried arch. Purposeful non-height-field structure, not landscape mesh.
  m=Mesh()
  for x,y,z,w,h,d,angle in [(-420,0,0,210,2850,310,-11),(490,0,180,260,3300,340,9),(20,2520,100,980,300,400,-8)]:
@@ -122,7 +126,7 @@ def architecture(Mesh,own,add,prop,P,I):
  for y in (390,430,500):m.box(-420,y,-160,205,9,9,7,-11)
  arch=own('Choir Breach Arch',m);add(arch,'Choir / buried arch exposed by the receded sea',0,5100,y=180,ry=16)
  # Segmented service bridge along the void's lip: built structure, terrain beneath falls away.
- m=Mesh();beam(m,0,-22,0,500,22,980,2)
+ m=Mesh();beam(m,0,-16,0,500,22,980,2)
  for x in (-245,245):
   beam(m,x,95,0,12,12,980,2)
   for z in (-460,0,460):beam(m,x,0,z,12,100,12,2)

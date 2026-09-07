@@ -23,6 +23,10 @@ def run_tool(name):
  subprocess.run(cmd,cwd=ROOT,check=True)
 
 
+def ensure_current_build():
+ run_tool('firstlight_rebuild_if_needed.py')
+
+
 def apply_load_safety():
  run_tool('firstlight_load_safety.py')
 
@@ -53,6 +57,7 @@ def launch_manifest(qa,pid):
  return {
   'pid':pid,
   'qa':qa,
+  'qa_mode':'observational' if qa else None,
   'project':str(GAME),
   'git_head':git_head(),
   'launched_at':time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -65,6 +70,9 @@ def launch_manifest(qa,pid):
 
 
 def deploy():
+ # Rebuild only when authored generation sources changed. This is what propagates
+ # world/geometry fixes into the binary .fpm without rewriting it every launch.
+ ensure_current_build()
  # The canonical map may still contain legacy loose pickups from an older binary
  # build. Strip only the known-bad stock weapon.lua entities, then prove the exact
  # runtime map is structurally safe before MAX sees it.
@@ -103,7 +111,8 @@ def launch(qa=False):
  p=subprocess.Popen(cmd,cwd=INSTALL.parent,env=env)
  manifest=launch_manifest(qa,p.pid)
  (DESIGN/'last-launch.json').write_text(json.dumps(manifest,indent=2))
- print('GameGuru MAX launched:',p.pid,'AUTOMATED QA' if qa else 'NORMAL PLAY')
+ print('GameGuru MAX launched:',p.pid,'OBSERVATIONAL QA' if qa else 'NORMAL PLAY')
+ if qa:print('QA mode records evidence only: no teleporting, forced input, healing, or enemy kills.')
  print('Git head:',manifest['git_head'][:12])
  print('Runtime map:',manifest['map_sha256'][:16] if manifest['map_sha256'] else 'missing')
  print('After exiting MAX: python tools\\firstlight_collect.py')

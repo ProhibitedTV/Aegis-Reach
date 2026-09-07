@@ -30,7 +30,7 @@ PATTERNS = {
     'music_states': re.compile(r'music_state state=', re.I),
     'enemy_activation': re.compile(r'enemy_activated', re.I),
     'qa_actor_samples': re.compile(r'QA_ACTOR|actor e=', re.I),
-    'qa_failures': re.compile(r'QA_NATIVE_FAILURE', re.I),
+    'qa_failures': re.compile(r'QA_NATIVE_FAILURE|QA_GEOMETRY_WARNING', re.I),
     'qa_complete': re.compile(r'QA_NATIVE_COMPLETE', re.I),
     'mission_complete': re.compile(r'MISSION_COMPLETE', re.I),
 }
@@ -46,6 +46,16 @@ def read_text(path):
 def tail_lines(text, count=220):
     lines = text.splitlines()
     return lines[-count:]
+
+
+def unique_tail(lines, limit=12):
+    out=[];seen=set()
+    for line in reversed(lines):
+        clean=line.strip()
+        if clean and clean not in seen:
+            seen.add(clean);out.append(clean)
+        if len(out)>=limit:break
+    return list(reversed(out))
 
 
 def main():
@@ -77,12 +87,13 @@ def main():
         evidence[name] = hits[-60:]
 
     blockers = []
+    notes = []
     if evidence['lua_errors']:
         blockers.append('Lua/runtime error recorded')
     if evidence['qa_failures']:
-        blockers.append('Native QA failure recorded')
+        blockers.append('Native QA/geometry warning recorded')
     if launch.get('qa') and not evidence['qa_complete']:
-        blockers.append('QA launch did not record QA_NATIVE_COMPLETE')
+        notes.append('QA run ended before mission completion; this is not itself a failure in observational QA mode')
     if not evidence['music_init']:
         blockers.append('No score initialization evidence found')
 
@@ -93,12 +104,13 @@ def main():
         'logs': logs,
         'evidence': evidence,
         'blockers': blockers,
+        'notes': notes,
         'human_review_required': [
             'opening vista and terrain composition',
             'music audible at useful mix level',
             'no visible T-pose or animation pop on activation',
             'enemy navigation and cover use',
-            'no floating/intersecting geometry',
+            'no floating/intersecting geometry or z-fighting',
             'Northstar / Operations / AEGIS visual differentiation',
             'return-route combat and extraction readability',
         ],
@@ -114,12 +126,19 @@ def main():
     print('Music evidence:', len(evidence['music_init']) + len(evidence['music_states']))
     print('Enemy activation lines:', len(evidence['enemy_activation']))
     print('QA actor samples:', len(evidence['qa_actor_samples']))
+    if evidence['lua_errors']:
+        print('LATEST UNIQUE LUA/RUNTIME ERRORS:')
+        for line in unique_tail(evidence['lua_errors']):print(' !',line)
+    if evidence['qa_failures']:
+        print('QA / GEOMETRY WARNINGS:')
+        for line in unique_tail(evidence['qa_failures']):print(' !',line)
     if blockers:
         print('BLOCKERS:')
         for item in blockers:
             print(' -', item)
     else:
         print('No log-level blocker detected. Visual/combat review still required.')
+    for item in notes:print('NOTE:',item)
 
 
 if __name__ == '__main__':
