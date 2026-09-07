@@ -1,25 +1,65 @@
 # First Light: Mission 01 playtest
 
-This pass starts from remote main **a68d5ea**. Relayfall's map and scripts remain
-unchanged. First Light is `Files/mapbank/Aegis Reach - First Light.fpm`.
+First Light is `Files/mapbank/Aegis Reach - First Light.fpm`. Relayfall remains the
+older prototype/reference and is not rewritten by the First Light authoring tools.
 
-## Play from main
+## Normal play from main
 
-Close MAX before launching. Double-click `PLAY FIRST LIGHT.cmd` in your main
-checkout after pulling the merged change. The launcher registers that checkout,
-preserving any conflicting old Documents storyboard in a local backup directory.
-The storyboard contains no machine-specific project path.
+Close MAX before launching. Pull `main`, then run:
+
+```bat
+call "PLAY FIRST LIGHT.cmd"
+```
+
+The launcher now performs three steps before MAX starts:
+
+1. applies the narrow load-safety patch for any legacy stock `weapon.lua` pickups
+2. runs the Lua 5.2 compatibility and First Light structural tests
+3. validates the exact runtime map and all three authored score masters
+
+It then registers the current checkout as MAX's external Aegis Reach project and
+records the git commit, runtime map hash and score-file metadata in local launch
+state. If preflight fails, MAX does not launch.
 
 WASD move, mouse aim/fire, RMB aim down sights, R reload, Shift sprint. Hold E for
 three seconds at terminals. E reads field records and uses repair crates.
+
+## Instrumented native QA
+
+Run:
+
+```bat
+call "PLAY FIRST LIGHT QA.cmd"
+```
+
+The QA route moves through the major authored spaces and records floor-height,
+enemy-animation/movement and score-controller evidence. It is a diagnostic run,
+not proof that combat balance or visual composition is good.
+
+After either normal play or QA, run:
+
+```bat
+call "COLLECT FIRST LIGHT.cmd"
+```
+
+or:
+
+```bat
+python tools\firstlight_collect.py
+```
+
+A timestamped report is written under `Design/First Light/runtime-reports/` and
+summarizes Lua errors, score initialization/transitions, enemy activations, native
+QA actor samples and mission/QA completion evidence. These reports remain local.
 
 ## Intended route and history
 
 1. **Meridian Shelf:** a high insertion shelf looks down onto a broad evaporite
    basin. Descend along the graded survey approach toward Camp 12.
 2. **Survey Camp 12:** packed cargo, emergency cots and the evacuation roster tell
-   the first story: forty-two workers left; Mira Sen did not. A patrol rifle and
-   ammunition reward the detour through the camp.
+   the first story: forty-two workers left; Mira Sen did not. Ammunition and the
+   field record reward the detour without relying on MAX's unstable loose-weapon
+   pickup path.
 3. **Dry Tide Channel:** cracked seabed, weathered native rock shoulders and a few
    remnants separate the first fighting positions. Low ground remembers the sea.
 4. **Gate 07:** a roofed cut compresses the approach. Beyond it, barriers face both
@@ -46,32 +86,65 @@ First Light uses a separate spatial score controller with crossfades, a stable
 selection delay and a minimum track residence time. Small combat boundaries do
 not replace the exploration cue. Temporary synthesized radio remains provisional.
 
-## Validation
+The playtest is not considered audio-clean until all three cues are heard in their
+intended spaces at useful levels and the native report contains score evidence.
+
+## Current acceptance gates
+
+### Gate 1: boot/runtime
+
+- no Lua dialog during load or mission start
+- First Light HUD appears and stage 1 begins
+- no missing asset/script errors
+- no stock `weapon.lua` pickup crash
+- preflight passes before launch
+
+### Gate 2: animation/AI/audio
+
+- no visible T-pose on dormant or activating Wardens
+- activation happens locally and deliberately
+- enemies navigate in native MAX rather than remaining stationary
+- death lifecycle completes through stock character behavior
+- score is audible and transitions without spam/restarts
+
+### Gate 3: visual composition
+
+Capture and review these nine frames:
+
+1. insertion vista
+2. Survey Camp 12
+3. first tide-channel fight
+4. Gate 07
+5. Northstar interior
+6. Operations
+7. AEGIS excavation / Choir reveal
+8. west return route
+9. extraction holdout
+
+Inspect terrain/structure interfaces, lighting hierarchy, enemy readability,
+repeated prefab patterns, floating/clipping geometry and whether the civilian,
+military and buried-Choir history reads visually.
+
+### Gate 4: combat
+
+Only tune damage after visibility, animation and navigation are proven. Review
+cover spacing, flank routes, reveal directions, reinforcement timing, encounter
+duration and recovery space between fights.
+
+The detailed order of work is in `NEXT_PASS.md`.
+
+## Validation and dependencies
 
 Structural tests check Lua mission rules, model imports, encrypted map integrity,
 required assets/scripts/audio, portable project binding and native material IDs.
-Licensed references resolve against the installed MAX assets rather than requiring
-DLC folders in Git. Native QA records actual floor heights, animation frames,
-character movement and global-sound playback state in local diagnostics.
-
-Native review results for this pass are recorded in `native-review.md`.
-A completed diagnostic route does not prove combat balance or visual quality.
-
-Human checks still required: opening vista and terrain texture appearance;
-walking gradients and thresholds; character skinning/animation appearance;
-cover and weapon pickup accessibility; audible score/radio mix; every combat
-approach, reinforcement reveal, return route and extraction; floating/clipping
-props; and readability of the excavation reveal. No screenshots are fabricated
-from the layout data. The native screenshot/control tool was unavailable in this
-session, so diagram previews are not presented as engine captures.
-
-## Authoring and dependencies
+Licensed references resolve against installed MAX assets rather than requiring DLC
+folders in Git.
 
 `tools/firstlight_world.py` defines native terrain and architecture.
-`tools/build_first_light.py` creates First Light only; it never rewrites Relayfall.
-`tools/firstlight_storyboard.py` rebuilds the storyboard and layout previews.
-`tools/firstlight_playtest.py` registers and launches this checkout.
+`tools/build_first_light.py` creates First Light only and no longer authors loose
+stock weapon pickups. `tools/firstlight_storyboard.py` rebuilds the storyboard and
+layout previews. `tools/firstlight_playtest.py` owns launch/preflight registration.
 
-Local asset dependencies include the Military Pack, Industrial Collection and
-MAX Collection. Their payloads stay in the licensed installation. Original
-project meshes/signs and the supplied Suno masters are repository assets.
+Local asset dependencies include the Military Pack, Industrial Collection and MAX
+Collection. Their payloads stay in the licensed installation. Original project
+meshes/signs and the supplied Suno masters are repository assets.

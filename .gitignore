@@ -6,6 +6,8 @@
 # Local MAX/editor recovery state and generated runtime reports
 Aegis Reach/Design/map-backups/
 Aegis Reach/Design/First Light/last-launch.json
+Aegis Reach/Design/First Light/preflight.json
+Aegis Reach/Design/First Light/runtime-reports/
 Aegis Reach/Design/First Light/previous-remoteproject.txt
 Aegis Reach/Design/First Light/previous-storyboard.dat
 Aegis Reach/Design/music-manifest.json
@@ -21,7 +23,6 @@ Aegis Reach/Files/entitybank/Cyberpunk Streets Booster Pack/
 .local-review/
 Aegis Reach/Design/First Light/material-review.*
 Aegis Reach/Design/First Light/native-*.log
-
 
 # MAX generates compiled copies of authored text meshes during loading.
 Aegis Reach/Files/entitybank/Aegis Reach/First Light/*.dbo

@@ -85,10 +85,10 @@ for x,z in [(-720,-2140),(570,-1710),(-960,-560),(-750,2520),(650,2670)]:add(COV
 # Return route follows a separate graded maintenance road, with concealed staging bays.
 for x,z in [(-3200,-1100),(-3250,220),(-3260,1530)]:prop(P+'Container 02a.fpe',x,z,ry=0,scale=95)
 for x,z in [(-2810,1110),(-2690,1250)]:prop(P+'Gas Barrel 01a.fpe',x,z)
-# Loot is placed in believable supply/story spaces, with distinct weapon choices.
+# The player already deploys with an MK18. Do not author loose stock weapon.lua
+# pickups here: native MAX has crashed loading hand-authored pickup state. Reward
+# exploration with ammunition until First Light owns a tested custom pickup wrapper.
 weapon='Max Collection\\Weapons\\'
-for path,name,x,z,qty in [(weapon+'Patrol Rifle.fpe','Survey watch rifle',-1550,-6890,60),(weapon+'Tactical Pump Shotgun.fpe','Checkpoint breach shotgun',1700,-2200,32)]:
- add(path,name,x,z,y=ground(x,z)+35,kind='weapon',template=T[path],script='weapon.lua',**{'eleprof.quantity':qty})
 for x,z in [(-1570,-6800),(-2050,-2200),(-1150,100),(1550,1250),(-850,3100),(300,-2200)]:
  path=weapon+'Compact Assault Rifle Ammo.fpe'
  add(path,'Supply: rifle ammunition',x,z,y=ground(x,z)+28,kind='ammo',template=T[path],script='ammo.lua',**{'eleprof.quantity':120,'eleprof.hasweapon_s':r'enhanced\MK18'})

@@ -1,17 +1,76 @@
 """Deploy/launch First Light using MAX's native external-project registration."""
 from pathlib import Path
-import argparse,shutil,subprocess,os,json,time,sys
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+
 from native_format import ROOT,INSTALL
+
 GAME=ROOT/'Aegis Reach';FILES=GAME/'Files'
 TARGET=Path(os.environ['USERPROFILE'])/'Documents/GameGuruApps/GameGuruMAX/Files'
 REG=TARGET/'projectbank/Aegis Reach';DESIGN=GAME/'Design/First Light'
+MAP=FILES/'mapbank/Aegis Reach - First Light.fpm'
+TRACKS=('salt_moon_drift.wav','moon_outpost_drift.wav','orbital_catacomb.wav')
 
-def apply_load_safety():
- cmd=[sys.executable,str(ROOT/'tools/firstlight_load_safety.py')]
+
+def run_tool(name):
+ cmd=[sys.executable,str(ROOT/'tools'/name)]
  subprocess.run(cmd,cwd=ROOT,check=True)
 
+
+def apply_load_safety():
+ run_tool('firstlight_load_safety.py')
+
+
+def run_preflight():
+ run_tool('firstlight_preflight.py')
+
+
+def git_head():
+ try:
+  return subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,stderr=subprocess.DEVNULL).strip()
+ except Exception:
+  return 'unknown'
+
+
+def file_sha256(path):
+ h=hashlib.sha256()
+ with open(path,'rb') as f:
+  for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+ return h.hexdigest()
+
+
+def launch_manifest(qa,pid):
+ tracks={}
+ for name in TRACKS:
+  path=FILES/'audiobank/aegis_reach/music'/name
+  tracks[name]={'exists':path.is_file(),'bytes':path.stat().st_size if path.is_file() else 0}
+ return {
+  'pid':pid,
+  'qa':qa,
+  'project':str(GAME),
+  'git_head':git_head(),
+  'launched_at':time.strftime('%Y-%m-%d %H:%M:%S'),
+  'map':str(MAP),
+  'map_bytes':MAP.stat().st_size if MAP.is_file() else 0,
+  'map_sha256':file_sha256(MAP) if MAP.is_file() else None,
+  'tracks':tracks,
+  'collect_after_run':'python tools\\firstlight_collect.py',
+ }
+
+
 def deploy():
+ # The canonical map may still contain legacy loose pickups from an older binary
+ # build. Strip only the known-bad stock weapon.lua entities, then prove the exact
+ # runtime map is structurally safe before MAX sees it.
  apply_load_safety()
+ run_preflight()
+
  REG.mkdir(parents=True,exist_ok=True)
  DESIGN.mkdir(parents=True,exist_ok=True)
  # MAX load_storyboard consults remoteproject.txt only when no local project DAT exists.
@@ -33,6 +92,7 @@ def deploy():
  print('MAX project registration:',old)
  print('Authoritative playable project:',GAME)
 
+
 def launch(qa=False):
  deploy()
  env=os.environ.copy()
@@ -41,8 +101,14 @@ def launch(qa=False):
  # Native MAX parser consumes the remainder of the command line as the project name.
  cmd='"'+str(INSTALL.parent/'GameGuruMAX.exe')+'" project='+('1' if qa else '0')+'Aegis Reach'
  p=subprocess.Popen(cmd,cwd=INSTALL.parent,env=env)
- (DESIGN/'last-launch.json').write_text(json.dumps({'pid':p.pid,'qa':qa,'project':str(GAME)},indent=2))
+ manifest=launch_manifest(qa,p.pid)
+ (DESIGN/'last-launch.json').write_text(json.dumps(manifest,indent=2))
  print('GameGuru MAX launched:',p.pid,'AUTOMATED QA' if qa else 'NORMAL PLAY')
+ print('Git head:',manifest['git_head'][:12])
+ print('Runtime map:',manifest['map_sha256'][:16] if manifest['map_sha256'] else 'missing')
+ print('After exiting MAX: python tools\\firstlight_collect.py')
+
+
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('command',choices=['deploy','play','qa']);a=p.parse_args()
  if a.command=='deploy':deploy()
