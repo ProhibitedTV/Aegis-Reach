@@ -1,68 +1,77 @@
-# First Light — playable Mission 01
+# First Light: Mission 01 playtest
 
-The new level is `Aegis Reach/Files/mapbank/Aegis Reach - First Light.fpm`.
-The previous Relayfall prototype remains intact. This branch builds from remote
-revision 70efa63 and preserves Sol's native terrain codec, MAX combat interpreter,
-three supplied Suno masters, and established Vesper/Mira/Kestrel setting.
+This pass starts from remote main **a68d5ea**. Relayfall's map and scripts remain
+unchanged. First Light is `Files/mapbank/Aegis Reach - First Light.fpm`.
 
-## Play
+## Play from main
 
-Double-click `PLAY FIRST LIGHT.cmd` in this working copy. Close an existing MAX
-run first. The launcher registers this copy of Aegis Reach and starts MAX's normal
-native project play mode. In the editor, the mission node is FIRST LIGHT.
+Close MAX before launching. Double-click `PLAY FIRST LIGHT.cmd` in your main
+checkout after pulling the merged change. The launcher registers that checkout,
+preserving any conflicting old Documents storyboard in a local backup directory.
+The storyboard contains no machine-specific project path.
 
 WASD move, mouse aim/fire, RMB aim down sights, R reload, Shift sprint. Hold E for
-three seconds at mission terminals; E reads records and uses field repair crates.
+three seconds at terminals. E reads field records and uses repair crates.
 
-## The playable story
+## Intended route and history
 
-Forty-two survey workers escaped Relayfall. Mira Sen did not. Seven arrives on the
-exposed seabed to restore a blackout, finds a camp packed for an evacuation that
-never finished, and discovers that the Wardens are pointing the colony's own
-defense network at the missing team's shelter.
+1. **Meridian Shelf:** a high insertion shelf looks down onto a broad evaporite
+   basin. Descend along the graded survey approach toward Camp 12.
+2. **Survey Camp 12:** packed cargo, emergency cots and the evacuation roster tell
+   the first story: forty-two workers left; Mira Sen did not. A patrol rifle and
+   ammunition reward the detour through the camp.
+3. **Dry Tide Channel:** cracked seabed, weathered native rock shoulders and a few
+   remnants separate the first fighting positions. Low ground remembers the sea.
+4. **Gate 07:** a roofed cut compresses the approach. Beyond it, barriers face both
+   the outer road and the civilian compound. The Wardens were containing people.
+5. **Northstar:** the taller turbine nave has a lower west maintenance aisle and
+   an east service exit. Amber light marks the machinery and restart terminal.
+6. **Operations:** an offset, low civilian workplace with archive annex, desks,
+   storage, emergency beds, partitions and several doors. Recover the manifest:
+   the colony's defenses have been retasked against Shelter 12.
+7. **AEGIS Excavation:** pass the armored threshold into a high hall. Its roof
+   ends at an open gallery above a deep native-terrain cut. A black buried arch
+   rises beyond the railing; mineral lines cross its base below the old sea level.
+   Cancel the firing order. Mira may still be alive below the station.
+8. **West service route / Gate 07:** a separately graded return road brings the
+   player back toward familiar ground. Hold the LZ for sixty seconds, defeat the
+   nearby Wardens, then hold E to extract with Kestrel.
 
-1. **Meridian Shelf:** quiet arrival, a view toward Aurelia and the distant station.
-2. **Survey Camp 12:** packed crates, abandoned cots, a missing name on the roster.
-   The optional marksman rifle rewards investigation before the first fight.
-3. **Dry Tide Channel:** basalt cover and offset ridges offer a direct crossing or
-   a wider firing position. Three Wardens activate locally after the arrival beat.
-4. **Gate 07:** barricades face into the compound. A checkpoint shotgun and ammo
-   cache support a closer approach. The gate becomes the later extraction arena.
-5. **Northstar:** a generator court with maintenance cover and an open side aisle.
-   Restoring its terminal reconnects the civilian distress channel.
-6. **Operations:** a roofed records building with two side approaches, desks,
-   lockers and emergency beds. The recovered manifest reveals Mira's distress call.
-7. **AEGIS Excavation:** heavy security surrounds the core and exposed black ribs.
-   Cancelling its firing order saves Shelter 12 and accelerates shield recovery.
-8. **Service Yard / Gate 07:** four pursuers pressure the return route. Reaching
-   the LZ starts a 60-second holdout with three reinforcement pairs. Stay within
-   the defended area, clear nearby enemies, and hold E to board Kestrel.
+## Score
 
-The ending resolves the strike while leaving a concrete next-mission question:
-Mira is alive beneath the station, and something there answers her instruments.
+The original Suno WAV masters are retained. Salt Moon Drift accompanies the basin
+and quiet human discoveries. Moon Outpost Drift accompanies occupied facilities
+and the return. Orbital Catacomb accompanies the excavation and Choir discoveries.
+First Light uses a separate spatial score controller with crossfades, a stable
+selection delay and a minimum track residence time. Small combat boundaries do
+not replace the exploration cue. Temporary synthesized radio remains provisional.
 
-## Scope and review
+## Validation
 
-This is a playable first-level build, not a finished commercial release. Temporary
-radio dialogue uses local Windows speech synthesis. Lighting, prop scale, encounter
-balance and navigation need a human playthrough. The optional native QA mode
-teleports between stations and removes active enemies to exercise loading,
-physics and progression; it does not qualify combat feel.
+Structural tests check Lua mission rules, model imports, encrypted map integrity,
+required assets/scripts/audio, portable project binding and native material IDs.
+Licensed references resolve against the installed MAX assets rather than requiring
+DLC folders in Git. Native QA records actual floor heights, animation frames,
+character movement and global-sound playback state in local diagnostics.
 
-Run `tools/test_firstlight.py` for Lua 5.1 progression checks, installed Assimp model
-imports, required references and encrypted archive validation. Run
-`tools/firstlight_playtest.py qa` for the opt-in native MAX smoke test. The runtime
-log is in Documents/GameGuruApps/GameGuruMAX/Files/first-light-runtime.log.
+Native review results for this pass are recorded in `native-review.md`.
+A completed diagnostic route does not prove combat balance or visual quality.
 
-## Authoring
+Human checks still required: opening vista and terrain texture appearance;
+walking gradients and thresholds; character skinning/animation appearance;
+cover and weapon pickup accessibility; audible score/radio mix; every combat
+approach, reinforcement reveal, return route and extraction; floating/clipping
+props; and readability of the excavation reveal. No screenshots are fabricated
+from the layout data. The native screenshot/control tool was unavailable in this
+session, so diagram previews are not presented as engine captures.
 
-`tools/build_first_light.py` owns this mission's layout, terrain and asset placement.
-It creates the separate First Light FPM and never rewrites Relayfall.
-`tools/firstlight_storyboard.py` binds this mission and refreshes the native menus.
-`tools/make_firstlight_radio.ps1` regenerates the temporary radio performances.
-The three Suno files remain original full-quality masters imported by
-`tools/import_music.py`; they are not replaced by procedural music.
+## Authoring and dependencies
 
-The original local checkout and its unsaved maps remain untouched. The external
-MAX project registration now points to this isolated working copy so the actual
-engine tests the version being developed here.
+`tools/firstlight_world.py` defines native terrain and architecture.
+`tools/build_first_light.py` creates First Light only; it never rewrites Relayfall.
+`tools/firstlight_storyboard.py` rebuilds the storyboard and layout previews.
+`tools/firstlight_playtest.py` registers and launches this checkout.
+
+Local asset dependencies include the Military Pack, Industrial Collection and
+MAX Collection. Their payloads stay in the licensed installation. Original
+project meshes/signs and the supplied Suno masters are repository assets.

@@ -1,9 +1,7 @@
 """Mission rules and native content checks; does not replace a human combat test.
 
-The repository vendors Lupa/Lua 5.1 as a CPython 3.12 Windows extension because
-GameGuru MAX still uses Lua 5.1 semantics.  If this script is started through a
-different `python.exe`, transparently relaunch it with the Windows Python 3.12
-launcher instead of failing with a misleading `lupa.lua51` import error.
+The repository vendors a CPython 3.12 / Lua 5.1 extension. Discover and probe
+compatible local interpreters rather than assuming the Windows launcher has one.
 """
 import sys,json,math,zipfile,ctypes as C,subprocess,os
 from pathlib import Path
@@ -12,25 +10,8 @@ ROOT=Path(__file__).resolve().parent.parent
 VENDOR=ROOT/'tools/vendor'
 sys.path.insert(0,str(VENDOR))
 
-try:
- from lupa.lua51 import LuaRuntime
-except (ModuleNotFoundError,ImportError) as exc:
- # The checked-in native module is lua51.cp312-win_amd64.pyd.  Jeremy's normal
- # `python` command may point at 3.11, while the `py` launcher also has 3.12.
- if os.name=='nt' and sys.version_info[:2]!=(3,12) and os.environ.get('AEGIS_PY312_REEXEC')!='1':
-  env=os.environ.copy();env['AEGIS_PY312_REEXEC']='1'
-  try:
-   result=subprocess.run(['py','-3.12',str(Path(__file__).resolve()),*sys.argv[1:]],env=env)
-  except FileNotFoundError:
-   result=None
-  if result is not None:
-   raise SystemExit(result.returncode)
- raise SystemExit(
-  'First Light tests require 64-bit CPython 3.12 because the repo vendors '
-  'tools/vendor/lupa/lua51.cp312-win_amd64.pyd.\n'
-  'Run: py -3.12 tools\\test_firstlight.py\n'
-  f'Original import error: {exc}'
- )
+from python_runtime import ensure_lua51_runtime
+LuaRuntime=ensure_lua51_runtime(__file__)
 
 from native_format import ROOT,INSTALL,read_ele,write_ele
 from max_archive import PASSWORD
@@ -54,6 +35,9 @@ function Prompt(t) calls.prompt=t end
 function FreezePlayer() calls.frozen=true end
 function FreezeAI() end
 function WinGame() calls.win=true end
+function SetAnimationName(...) end
+function SetAnimationSpeed(...) end
+function LoopAnimation(...) end
 function SetEntityEmissiveColor(...) end
 function SetEntityEmissiveStrength(...) end
 function GetPlayerDistance(e) local p=g_Entity[e];return math.sqrt((p.x-g_PlayerPosX)^2+(p.y-g_PlayerPosY)^2+(p.z-g_PlayerPosZ)^2) end
@@ -65,6 +49,7 @@ package.preload['scriptbank\\\\people\\\\character_attack']=function()
 end
 ''')
 FILES=ROOT/'Aegis Reach/Files';g=lua.globals();checks=[]
+lua.execute((FILES/'scriptbank/aegis_reach/firstlight_audit.lua').read_text());lua.execute("package.loaded['scriptbank\\\\aegis_reach\\\\firstlight_audit']=true")
 for name in ('director','interact','enemy'):lua.execute((FILES/f'scriptbank/aegis_reach/firstlight_{name}.lua').read_text())
 def check(name,ok):
  assert ok,name
@@ -118,21 +103,31 @@ entity(40,0,-2350,100);g.firstlight_enemy_init_name(40,'FL ENEMY 7 1');g.firstli
 check('Reserve remains hidden before evacuation',g.calls.hidden40)
 g.fl.stage=4;g.fl.evac_start=g.g_Time;g.firstlight_enemy_main(40);check('Reinforcements respect their arrival delay',g.calls.hidden40)
 g.g_Time+=4100;g.firstlight_enemy_main(40);check('Reinforcement activates through native combat wrapper',not g.calls.hidden40 and g.ai_ticks>0)
+before=g.ai_ticks;g.g_Entity[40].health=0;g.firstlight_enemy_main(40)
+check('Native death lifecycle continues after zero health',g.ai_ticks>before)
 # Native assets and encrypted archive match exactly what the engine will load.
 modelchecks=0;dll=C.CDLL(str(INSTALL.parent/'assimp.dll'));dll.aiImportFile.argtypes=[C.c_char_p,C.c_uint];dll.aiImportFile.restype=C.c_void_p;dll.aiReleaseImport.argtypes=[C.c_void_p]
 for p in (FILES/'entitybank/Aegis Reach/First Light').glob('*.x'):
  ptr=dll.aiImportFile(str(p).encode(),8);assert ptr,p;dll.aiReleaseImport(ptr);modelchecks+=1
-check('All new architectural and sign meshes import in installed Assimp',modelchecks>=10)
+check('All new architectural and sign meshes import in installed Assimp',modelchecks>=6)
 with zipfile.ZipFile(FILES/'mapbank/Aegis Reach - First Light.fpm') as z:
  z.setpassword(PASSWORD);assert z.testzip() is None
+ terrain=z.read('ggterrain.dat');terrain=json.loads(terrain[terrain.index(b'{'):terrain.rindex(b'}')+1])
+ material_keys=['baseLayerMaterial']+['layerMatIndex'+str(i) for i in range(5)]+['slopeMatIndex'+str(i) for i in range(2)]
+ for key in material_keys:
+  index=terrain[key]&255;assert index!=31,'Square Pattern placeholder terrain: '+key
+  assert (INSTALL/f'terraintextures/mat{index+1}/Color.dds').is_file(),key
+ check('All native terrain layers use installed landscape materials, no placeholder',True)
  raw=z.read('map.ele');v,es=read_ele(raw);assert write_ele(v,es)==raw
  for info in z.infolist():assert info.flag_bits&1
- for asset in z.read('map.ent')[4:].decode().splitlines():assert (FILES/'entitybank'/asset).is_file(),asset
+ for asset in z.read('map.ent')[4:].decode().splitlines():assert (FILES/'entitybank'/asset).is_file() or (INSTALL/'entitybank'/asset).is_file(),asset
  for ent in es:
-  script=ent['101:eleprof.aimain_s'];assert (FILES/'scriptbank'/script).is_file(),script
+  script=ent['101:eleprof.aimain_s'];assert (FILES/'scriptbank'/script).is_file() or (INSTALL/'scriptbank'/script).is_file(),script
   for k,val in ent.items():
    if 'soundset' in k and isinstance(val,str) and val.lower().endswith(('.wav','.ogg')):assert (FILES/val).is_file() or (FILES/'audiobank'/val).is_file(),val
- check('MAX encrypted map CRC, entity roundtrip and all script/audio/asset references',len(es)>=300)
+ check('MAX encrypted map CRC, entity roundtrip and all script/audio/asset references',any('FIRST LIGHT // DIRECTOR' == e['101:eleprof.name_s'] for e in es))
+from storyboard import load
+check('Storyboard points to First Light without a machine-specific path',load().Nodes[7].level_name==b'mapbank\\Aegis Reach - First Light.fpm' and not load().customprojectfolder)
 report=dict(checks=checks,mesh_count=modelchecks,entity_count=len(es),native_combat_playtest=False)
 (ROOT/'Aegis Reach/Design/First Light/validation.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))

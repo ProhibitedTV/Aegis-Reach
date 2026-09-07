@@ -16,3 +16,14 @@ Aegis Reach/Files/entitybank/Booster Pack/
 Aegis Reach/Files/entitybank/Industrial Collection/
 Aegis Reach/Files/entitybank/Max Collection/Rocks/
 Aegis Reach/Files/entitybank/Cyberpunk Streets Booster Pack/
+
+# Native review artifacts and engine output
+.local-review/
+Aegis Reach/Design/First Light/material-review.*
+Aegis Reach/Design/First Light/native-*.log
+
+
+# MAX generates compiled copies of authored text meshes during loading.
+Aegis Reach/Files/entitybank/Aegis Reach/First Light/*.dbo
+
+Aegis Reach/Files/titlesbank/default/custom.lua

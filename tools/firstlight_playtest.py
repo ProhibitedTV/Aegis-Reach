@@ -1,12 +1,24 @@
 """Deploy/launch First Light using MAX's native external-project registration."""
 from pathlib import Path
-import argparse,shutil,subprocess,os,json
+import argparse,shutil,subprocess,os,json,time
 from native_format import ROOT,INSTALL
 GAME=ROOT/'Aegis Reach';FILES=GAME/'Files'
 TARGET=Path(os.environ['USERPROFILE'])/'Documents/GameGuruApps/GameGuruMAX/Files'
 REG=TARGET/'projectbank/Aegis Reach';DESIGN=GAME/'Design/First Light'
 def deploy():
  REG.mkdir(parents=True,exist_ok=True)
+ DESIGN.mkdir(parents=True,exist_ok=True)
+ # MAX load_storyboard consults remoteproject.txt only when no local project DAT exists.
+ # Preserve the conflicting installed project before registering the external checkout.
+ backup_dir=TARGET.parent/'aegis-registration-backups'
+ for name in ('project203.dat','project.dat'):
+  source=REG/name
+  if source.is_file():
+   backup_dir.mkdir(parents=True,exist_ok=True)
+   destination=backup_dir/(time.strftime('%Y%m%d-%H%M%S')+'-'+name)
+   if destination.exists():raise FileExistsError(destination)
+   shutil.move(str(source),str(destination))
+   print('Preserved conflicting local storyboard:',destination)
  old=REG/'remoteproject.txt'
  backup=DESIGN/'previous-remoteproject.txt'
  if old.exists() and not backup.exists():shutil.copy2(old,backup)

@@ -1,3 +1,4 @@
+require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- Mission 01 physical interactions; objectives have distinct consequences.
 local items={}
 local records={
@@ -66,3 +67,7 @@ function firstlight_interact_main(e)
  if PlayNon3DSound then PlayNon3DSound(e,1) end
  fl_log('objective '..role..' stage='..fl.stage)
 end
+
+firstlight_interact_init_name=firstlight_guard('firstlight_interact_init_name',firstlight_interact_init_name)
+
+firstlight_interact_main=firstlight_guard('firstlight_interact_main',firstlight_interact_main)
