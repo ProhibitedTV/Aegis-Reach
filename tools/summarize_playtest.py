@@ -1,12 +1,12 @@
-"""Summarize Aegis Reach runtime combat telemetry after a GameGuru MAX playtest.
+"""Summarize Aegis Reach runtime combat and presentation telemetry after a MAX playtest.
 
 Usage:
     python tools/summarize_playtest.py
     python tools/summarize_playtest.py --json
     python tools/summarize_playtest.py path/to/native-runtime.log
 
-The director intentionally writes simple append-only text so a failed or aborted MAX
-session still leaves useful balancing evidence behind.
+The director and score controller intentionally write simple append-only text so a
+failed or aborted MAX session still leaves useful balancing/presentation evidence.
 """
 from __future__ import annotations
 
@@ -38,12 +38,16 @@ BREAK_RE = re.compile(
 )
 SIGNAL_RE = re.compile(r"signal_mode (?P<mode>\w+) phase=(?P<phase>\d+)")
 MISSION_RE = re.compile(r"mission_started .* player=(?P<position>.+)$")
+MUSIC_RE = re.compile(
+    r"music_state state=(?P<state>[\w_]+) track=(?P<track>[\w_]+) volume=(?P<volume>\d+)"
+)
 
 
 def parse_log(path: Path) -> dict:
     encounters: dict[int, dict] = {}
     signal_events: list[dict] = []
     shield_events: list[dict] = []
+    music_events: list[dict] = []
     mission_starts = 0
 
     if not path.exists():
@@ -58,6 +62,18 @@ def parse_log(path: Path) -> dict:
         line = raw.strip()
         if MISSION_RE.search(line):
             mission_starts += 1
+
+        match = MUSIC_RE.search(line)
+        if match:
+            music_events.append(
+                {
+                    "line": line_number,
+                    "state": match.group("state"),
+                    "track": match.group("track"),
+                    "volume": int(match.group("volume")),
+                }
+            )
+            continue
 
         match = START_RE.search(line)
         if match:
@@ -154,6 +170,7 @@ def parse_log(path: Path) -> dict:
         },
         "signal_events": signal_events,
         "shield_events": shield_events,
+        "music_events": music_events,
     }
 
 
@@ -195,11 +212,17 @@ def print_human(summary: dict) -> None:
         for event in summary["signal_events"]:
             print(f"  phase {event['phase']}: {event['mode']}")
 
+    if summary["music_events"]:
+        print("\nAdaptive score transitions:")
+        for event in summary["music_events"]:
+            print(f"  {event['state']}: {event['track']} @ {event['volume']}%")
+
     print("\nInterpretation targets:")
     print("  - Opening breach: ideally ~20-35 seconds once navigation is healthy.")
     print("  - Repeated shield breaks without armour loss can be exciting; repeated armour loss means pressure may be too sticky.")
     print("  - AEGIS-core combat should be the longest offensive beat, not an endless attrition fight.")
     print("  - Extraction should feel faster and more aggressive after the uplink boost.")
+    print("  - Music transitions should be sparse enough to feel authored, not like a playlist reacting to every two-second lull.")
 
 
 def main() -> None:
