@@ -1,8 +1,8 @@
 """Headless structural test for the integrated Relayfall production pipeline.
 
 Exercises the map-transform sequence in memory: environment -> Vesper world -> layered
-terrain story -> story bindings -> optional shelf combat -> native MAX presentation
-bindings. It never replaces the checked-in .fpm.
+terrain story -> story bindings -> optional shelf combat -> native MAX presentation and
+adaptive music bindings. It never replaces the checked-in .fpm.
 """
 from __future__ import annotations
 
@@ -15,7 +15,12 @@ from world_story_pass import build_assets as build_world_assets, patch_world
 from terrain_story_pass import build_assets as build_terrain_assets, patch_terrain, PLACEMENTS as TERRAIN_PLACEMENTS
 from world_story_logic_pass import patch as patch_story_logic, STORY_NAMES
 from shelf_encounter_pass import patch_encounter
-from native_integration_pass import patch as patch_native, CONTROLLER_NAME
+from native_integration_pass import (
+    patch as patch_native,
+    CONTROLLER_NAME,
+    MUSIC_CONTROLLER_NAME,
+    MUSIC_TRACKS,
+)
 
 
 def name_set(data: bytes) -> set[str]:
@@ -55,6 +60,7 @@ def main():
 
     names = name_set(native_ele)
     assert CONTROLLER_NAME in names
+    assert MUSIC_CONTROLLER_NAME in names
     for expected in STORY_NAMES:
         assert expected in names
     for placement in TERRAIN_PLACEMENTS:
@@ -62,16 +68,26 @@ def main():
     for i in range(21, 25):
         assert any(f"SHELF WARDEN {i}" in name for name in names), i
 
-    version, entities = read_ele(native_ele)
-    scripts = {
-        str(get_suffix(entity, "eleprof.name_s", "")): str(get_suffix(entity, "eleprof.aimain_s", ""))
+    _, entities = read_ele(native_ele)
+    by_name = {
+        str(get_suffix(entity, "eleprof.name_s", "")): entity
         for entity in entities
     }
+    scripts = {
+        name: str(get_suffix(entity, "eleprof.aimain_s", ""))
+        for name, entity in by_name.items()
+    }
     assert scripts[CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_world.lua")
+    assert scripts[MUSIC_CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_music.lua")
     for name in beacons:
         assert scripts[name].lower().endswith(r"aegis_reach\aegis_beacon.lua")
     for name in STORY_NAMES:
         assert scripts[name].lower().endswith(r"aegis_reach\aegis_story.lua")
+
+    music = by_name[MUSIC_CONTROLLER_NAME]
+    assert str(get_suffix(music, "eleprof.soundset_s", "")) == MUSIC_TRACKS[0]
+    assert str(get_suffix(music, "eleprof.soundset1_s", "")) == MUSIC_TRACKS[1]
+    assert str(get_suffix(music, "eleprof.soundset2_s", "")) == MUSIC_TRACKS[2]
 
     print("AEGIS REACH // MAX-NATIVE PIPELINE TEST PASS")
     print("Environment placements:", len(env_added))
@@ -80,6 +96,7 @@ def main():
     print("Shelf enemies:", len(shelf_enemies))
     print("Story bindings:", len(story_bound))
     print("Mission-reactive beacons:", len(beacons))
+    print("Adaptive score slots:", len(MUSIC_TRACKS))
     print("Final map entities:", entity_count)
     print("Binary .ele round-trip: OK")
 
