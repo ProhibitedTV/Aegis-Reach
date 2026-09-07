@@ -1,8 +1,9 @@
 """Fail-fast preflight for native First Light playtests.
 
 This is deliberately stricter than the general structural test: it verifies the
-runtime map that MAX is about to load, the three authored score masters, and the
-absence of known load-blocking stock weapon.lua pickups. It also runs the Lua 5.2
+runtime map that MAX is about to load, the three authored score masters, the
+absence of known load-blocking stock weapon.lua pickups, and that QA instrumentation
+cannot teleport/control the player or kill actors. It also runs the Lua 5.2
 compatibility and mission-rule suites before a native launch.
 """
 from pathlib import Path
@@ -26,6 +27,14 @@ TRACKS = [
     'orbital_catacomb.wav',
 ]
 BAD_SCRIPTS = {'weapon.lua', 'scriptbank\\weapon.lua'}
+QA_FORBIDDEN = [
+    'TransportToFreezePositionOnly',
+    'SetFreezePosition',
+    'SetEntityHealth(e,0)',
+    'SetPlayerHealth(',
+    'g_KeyPressE=1',
+    'QuitGame()',
+]
 
 
 def sha256(path):
@@ -87,12 +96,21 @@ def main():
         'firstlight_director.lua',
         'firstlight_enemy.lua',
         'firstlight_interact.lua',
+        'firstlight_qa.lua',
         'firstlight_score.lua',
     ]
     for name in required_scripts:
         path = FILES / 'scriptbank/aegis_reach' / name
         if not path.is_file():
             raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: missing runtime script {name}')
+
+    qa_text = (FILES / 'scriptbank/aegis_reach/firstlight_qa.lua').read_text(errors='replace')
+    destructive = [token for token in QA_FORBIDDEN if token in qa_text]
+    if destructive:
+        raise SystemExit(
+            'FIRST LIGHT // PREFLIGHT FAILED: QA instrumentation is destructive: '
+            + ', '.join(destructive)
+        )
 
     score_text = (FILES / 'scriptbank/aegis_reach/firstlight_score.lua').read_text(errors='replace')
     for name in TRACKS:
@@ -107,6 +125,8 @@ def main():
         'entity_count': len(entities),
         'unsafe_weapon_pickups': bad,
         'archive_encrypted': encrypted,
+        'qa_observational': True,
+        'qa_forbidden_tokens_found': destructive,
         'tracks': track_info,
         'tests': ['test_firstlight_lua_compat.py', 'test_firstlight.py'],
         'native_playtest_required': True,
@@ -119,6 +139,7 @@ def main():
     print('Map SHA256:', report['map_sha256'][:16])
     print('Score masters:', ', '.join(TRACKS))
     print('Unsafe stock weapon pickups: 0')
+    print('QA instrumentation: observational / non-destructive')
     print('Native MAX playtest is still required.')
 
 
