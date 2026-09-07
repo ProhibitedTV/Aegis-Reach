@@ -2,7 +2,7 @@
 -- Uses GameGuru MAX's native ambience/exposure and Visual Logic APIs.
 -- One hidden Always Active instance is injected by tools/native_integration_pass.py.
 -- Also exposes aegis.music_state so authored audio can react without being coupled to
--- combat/director internals. The music files themselves are intentionally supplied later.
+-- combat/director internals.
 local world={}
 
 local function approach(value,target,amount)
@@ -12,20 +12,19 @@ local function approach(value,target,amount)
 end
 
 local function target_grade()
- -- The Vesper shelf is colder, clearer and slightly more exposed than the fort.
+ -- Readability floor: Relayfall is dramatic blue-hour sci-fi, not a horror game.
+ -- The earlier values looked acceptable in static screenshots but became muddy once
+ -- weapon/viewmodel exposure and dark modular assets were all on screen together.
  if (g_PlayerPosZ or 0)<-3300 then
-  return 158,188,218,1.32,"vesper_shelf"
+  return 170,198,225,1.46,"vesper_shelf"
  end
- -- The active AEGIS core subtly suppresses the environment instead of just
- -- making the player's shield numbers worse.
  if aegis and aegis.signal_mode=="interference" then
-  return 152,165,202,1.19,"aegis_interference"
+  return 165,180,210,1.30,"aegis_interference"
  end
- -- After capture, the same infrastructure feels electrically alive and friendly.
  if aegis and aegis.signal_mode=="overcharge" then
-  return 168,208,221,1.30,"aegis_overcharge"
+  return 178,214,230,1.43,"aegis_overcharge"
  end
- return 176,196,224,1.28,"fortress"
+ return 188,205,228,1.40,"fortress"
 end
 
 local function target_music_state(mode)
@@ -47,7 +46,7 @@ local function pulse_logic(e)
  SetActivated(e,1)
  PerformLogicConnections(e)
  ActivateIfUsed(e)
- SetActivated(e,0)
+ SetActivated(e,1)
 end
 
 function aegis_world_init(e)
@@ -57,7 +56,7 @@ function aegis_world_init(e)
  }
  Hide(e)
  CollisionOff(e)
- SetActivated(e,0)
+ SetActivated(e,1)
 end
 
 function aegis_world_main(e)
@@ -78,8 +77,6 @@ function aegis_world_main(e)
 
  if mode~=w.mode then
   w.mode=mode
-  -- Visual Logic can subscribe to presentation-state changes without coupling
-  -- external set pieces to the mission director's implementation.
   pulse_logic(e)
  end
 
@@ -88,7 +85,6 @@ function aegis_world_main(e)
  if music~=w.music then
   w.music=music
   aegis.music_changed_at=g_Time
-  -- This same native endpoint can be wired to future sound/music entities.
   pulse_logic(e)
  end
 
