@@ -53,6 +53,17 @@ local function subtle_emissive(e,name,distance)
  end
 end
 
+local function story_music_hint(name)
+ if not aegis then return end
+ if string.find(name,"RESONANCE CUT",1,true) then
+  aegis.music_sting="discovery_choir"
+  aegis.music_sting_until=g_Time+9000
+ elseif string.find(name,"MERIDIAN SHELTER",1,true) or string.find(name,"MIRA SURVEY WRECK",1,true) then
+  aegis.music_sting="discovery_human"
+  aegis.music_sting_until=g_Time+6500
+ end
+end
+
 function aegis_story_main(e)
  local s=story[e]
  if not s or not aegis or not aegis.started or aegis.extracted then return end
@@ -64,6 +75,7 @@ function aegis_story_main(e)
  local text,seconds=line_for(s.name)
  if text then
   aegis_message(text,seconds)
+  story_music_hint(s.name)
   s.fired=true
   SetActivated(e,1)
   PerformLogicConnections(e)
