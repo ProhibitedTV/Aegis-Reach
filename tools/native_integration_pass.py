@@ -1,13 +1,14 @@
 """Bind Aegis Reach presentation systems to GameGuru MAX-native Lua/logic hooks.
 
-Runs after environment_pass/world_story_pass. It does not replace MAX Visual Logic;
-it creates stable script endpoints that Visual Logic, IfUsed, CineGuru, lights, particles,
-doors, audio emitters and other DLC systems can connect to in the editor.
+Runs after environment/world passes. It does not replace MAX Visual Logic; it creates
+stable script endpoints that Visual Logic, CineGuru, lights, particles, doors, audio
+emitters and other DLC systems can connect to in the editor.
 
 Bindings:
-  * one hidden global world-state controller -> aegis_world.lua
+  * hidden global world-state controller -> aegis_world.lua
+  * hidden adaptive score controller -> aegis_music.lua
   * horizon beacons -> aegis_beacon.lua
-  * existing relay/story scripts expose PerformLogicConnections/ActivateIfUsed themselves
+  * existing relay/story scripts expose PerformLogicConnections/ActivateIfUsed
 """
 from __future__ import annotations
 
@@ -27,6 +28,12 @@ GAME = ROOT / "Aegis Reach"
 MAP = GAME / "Files" / "mapbank" / "Aegis Reach - Relayfall.fpm"
 REPORT = GAME / "Design" / "native-integration-pass.json"
 CONTROLLER_NAME = "NATIVE // WORLD STATE CONTROLLER"
+MUSIC_CONTROLLER_NAME = "NATIVE // ADAPTIVE MUSIC"
+MUSIC_TRACKS = {
+    0: r"aegis_reach\music\salt_moon_drift.wav",
+    1: r"aegis_reach\music\moon_outpost_drift.wav",
+    2: r"aegis_reach\music\orbital_catacomb.wav",
+}
 
 
 def clean_clone(entity: dict) -> dict:
@@ -52,13 +59,21 @@ def configure_dynamic(entity: dict, script: str) -> None:
     set_suffix(entity, "eleprof.strength", 0)
 
 
+def clear_payload(entity: dict) -> None:
+    for suffix in (
+        "eleprof.soundset_s", "eleprof.soundset1_s", "eleprof.soundset2_s",
+        "eleprof.soundset3_s", "eleprof.soundset4_s", "eleprof.hasweapon_s",
+    ):
+        set_suffix(entity, suffix, "")
+
+
 def patch(map_ele: bytes):
     version, entities = read_ele(map_ele)
 
     # Deterministic reruns.
     entities = [
         entity for entity in entities
-        if str(get_suffix(entity, "eleprof.name_s", "")) != CONTROLLER_NAME
+        if str(get_suffix(entity, "eleprof.name_s", "")) not in {CONTROLLER_NAME, MUSIC_CONTROLLER_NAME}
     ]
 
     mission_controller = None
@@ -80,10 +95,23 @@ def patch(map_ele: bytes):
     set_suffix(world, "y", 620.0)
     set_suffix(world, "z", -2850.0)
     configure_dynamic(world, r"aegis_reach\aegis_world.lua")
-    # World controller does not need inherited sounds or weapon data.
-    for suffix in ("eleprof.soundset_s", "eleprof.soundset1_s", "eleprof.soundset2_s", "eleprof.soundset3_s", "eleprof.soundset4_s", "eleprof.hasweapon_s"):
-        set_suffix(world, suffix, "")
+    clear_payload(world)
     entities.append(world)
+
+    # A single hidden entity owns the three supplied score cues as Sound0..Sound2.
+    # aegis_music.lua maps the world controller's semantic music states onto these
+    # slots and crossfades using MAX's native non-3D sound controls.
+    music = clean_clone(mission_controller)
+    set_suffix(music, "eleprof.name_s", MUSIC_CONTROLLER_NAME)
+    set_suffix(music, "x", 40.0)
+    set_suffix(music, "y", 620.0)
+    set_suffix(music, "z", -2850.0)
+    configure_dynamic(music, r"aegis_reach\aegis_music.lua")
+    clear_payload(music)
+    set_suffix(music, "eleprof.soundset_s", MUSIC_TRACKS[0])
+    set_suffix(music, "eleprof.soundset1_s", MUSIC_TRACKS[1])
+    set_suffix(music, "eleprof.soundset2_s", MUSIC_TRACKS[2])
+    entities.append(music)
 
     result = write_ele(version, entities)
     check_version, check_entities = read_ele(result)
@@ -106,13 +134,16 @@ def rewrite_archive(path: Path = MAP, *, dry_run=False, backup=False):
         "map": str(path),
         "dry_run": dry_run,
         "world_controller": CONTROLLER_NAME,
+        "music_controller": MUSIC_CONTROLLER_NAME,
+        "music_tracks": {str(slot): path for slot, path in MUSIC_TRACKS.items()},
         "beacons": beacons,
         "entity_count": entity_count,
         "native_apis": [
             "SetActivated", "PerformLogicConnections", "ActivateIfUsed",
             "SetEntityEmissiveColor", "SetEntityEmissiveStrength",
             "GetAmbienceRed/Green/Blue", "SetAmbienceRed/Green/Blue",
-            "GetExposure", "SetExposure",
+            "GetExposure", "SetExposure", "LoopNon3DSound", "StopSound",
+            "SetSound", "SetSoundVolume",
         ],
     }
     if dry_run:
@@ -153,6 +184,8 @@ def main():
     report = rewrite_archive(args.map, dry_run=args.dry_run, backup=args.backup)
     print("AEGIS REACH // MAX-NATIVE INTEGRATION")
     print("World controller:", report["world_controller"])
+    print("Adaptive music controller:", report["music_controller"])
+    print("Score cues:", len(report["music_tracks"]))
     print("Mission-reactive beacons:", len(report["beacons"]))
     print("Map entities after pass:", report["entity_count"])
     if args.dry_run:
