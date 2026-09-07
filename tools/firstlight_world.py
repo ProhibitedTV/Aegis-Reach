@@ -1,9 +1,8 @@
 """Vesper native terrain and authored First Light landmark composition.
 
 World coordinates are GameGuru MAX inches. Native terrain owns every grounded
-walking surface. Installed MAX modular kits provide most human architecture and
-infrastructure; bespoke meshes are reserved for unique silhouettes and Choir forms.
-The route must remain readable with the HUD disabled.
+walking surface. Installed MAX modular kits provide ordinary human architecture.
+Bespoke meshes are reserved for a handful of silhouettes and the Choir.
 """
 import math
 from native_terrain_pass import gauss, rect_mask, smoothstep
@@ -21,7 +20,7 @@ RETURN=[
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
 PADS=[
- (-1700,-7160,900,720,500),
+ (-1700,-7160,760,600,500),
  (0,-3100,900,620,640),
  (-1450,-650,1080,1120,900),
  (1250,700,1120,1020,1080),
@@ -48,7 +47,10 @@ def ground(x,z):
  h+=1950*gauss(x,z,0,3900,3450,2850)
  h+=1750*gauss(x,z,0,7400,2100,1000)
  h+=40*math.sin(x/270+z/590)*math.sin(z/390)
- for route,width in ((ROUTE,360),(RETURN,300)):
+ h+=230*gauss(x,z,-2700,-7350,1050,1500)
+ h+=170*gauss(x,z,-1650,-8250,1650,720)
+ h+=120*gauss(x,z,-650,-7600,700,1150)
+ for route,width in ((ROUTE,390),(RETURN,300)):
   distance,y=road_sample(x,z,route)
   blend=1-smoothstep(width,width+470,distance)
   h=h*(1-blend)+y*blend
@@ -72,176 +74,125 @@ TERRAIN_MATERIALS={
 }
 
 def architecture(Mesh,own,add,prop,P,I):
- """Compose First Light from installed modular kits plus a few bespoke landmarks."""
+ """Compose First Light with one clear visual owner per space."""
  def beam(m,x,y,z,w,h,d,c=1):m.box(x,y,z,w,h,d,c)
- def endwall(m,z,left,right,opening,h=390,color=1):
-  lo,hi=opening
-  if lo>left:beam(m,(lo+left)/2,0,z,lo-left,h,45,color)
-  if right>hi:beam(m,(right+hi)/2,0,z,right-hi,h,45,color)
-  beam(m,(lo+hi)/2,280,z,hi-lo,h-280,45,color)
- def sidewall(m,x,near,far,opening,h=390,color=1):
-  lo,hi=opening
-  if lo>near:beam(m,x,0,(near+lo)/2,45,h,lo-near,color)
-  if far>hi:beam(m,x,0,(hi+far)/2,45,h,far-hi,color)
-  beam(m,x,280,(lo+hi)/2,45,h-280,hi-lo,color)
 
  C='Booster Pack\\Construction Pack\\'
  CYB='Cyberpunk Streets Booster Pack\\Buildings\\'
  CYM='Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\'
  CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
 
- # GATE 07 — unique massing plus real sci-fi facade/construction pieces.
+ camp_y=500
  m=Mesh()
- for x in (-760,760):
-  beam(m,x,0,0,250,780,980,2)
-  beam(m,x,720,-120,310,70,760,5)
- beam(m,-425,0,40,190,620,860,1);beam(m,425,0,40,190,620,860,1)
- beam(m,0,570,-80,680,150,820,2)
- for z in (-360,330):beam(m,0,555,z,720,12,22,5)
- for x in (-585,585):beam(m,x,180,-360,18,420,18,5)
- gate=own('Gate 07 Cut Portal',m)
- add(gate,'Gate 07 / military sea-wall threshold',0,-3100,y=640)
- prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3190,y=640,ry=0,scale=68)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-610,-3190,y=640,ry=0,scale=68)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',610,-3190,y=640,ry=180,scale=68)
+ beam(m,0,0,0,22,360,22,2)
+ beam(m,0,320,0,230,16,16,5)
+ beam(m,-92,245,0,16,105,16,2)
+ beam(m,92,270,0,16,80,16,2)
+ mast=own('Camp 12 Survey Mast',m)
+ add(mast,'Camp 12 / Meridian survey mast',-2180,-7380,y=camp_y)
+ prop(CYB+'CS_Wall_01_Entry_01.fpe',-2140,-7040,y=camp_y,ry=90,scale=58)
+ prop(CYB+'CS_Wall_01.fpe',-2140,-7350,y=camp_y,ry=90,scale=58)
+ prop(CYB+'CS_Wall_01_Window.fpe',-2140,-6730,y=camp_y,ry=90,scale=58)
+ prop(CYB+'CS_Wall_01_Overhang.fpe',-1990,-7040,y=camp_y+8,ry=90,scale=58)
+ prop(CYB+'CS_Roof_Tile_2x2.fpe',-1980,-7040,y=camp_y+260,ry=0,scale=58)
+ prop(C+'Light Generator.fpe',-1460,-7380,y=camp_y,ry=175,scale=86)
+ prop(C+'CableReel.fpe',-1370,-7260,y=camp_y,ry=35,scale=84)
+ prop(C+'SurveyorStand1.fpe',-1770,-6810,y=camp_y,ry=18,scale=102)
+ prop(C+'SurveyorStand2.fpe',-1590,-6760,y=camp_y,ry=-20,scale=102)
+ prop(C+'Freight Container.fpe',-1110,-7350,y=camp_y,ry=180,scale=68)
+ prop(P+'Container 01a.fpe',-1130,-7080,y=camp_y,ry=180,scale=78)
+ for x,z,ry in [(-1290,-6940,8),(-1170,-6860,-6)]:
+  prop(P+'Wooden Crate 01a.fpe',x,z,y=camp_y,ry=ry,scale=88)
+ prop(I+'Cylinder - Oxygen.fpe',-1470,-6900,y=camp_y,ry=0,scale=92)
+ prop(C+'Roadblock2.fpe',-1140,-6580,y=ground(-1140,-6580),ry=12,scale=86)
+ prop(C+'Roadblock3.fpe',-900,-6480,y=ground(-900,-6480),ry=-8,scale=86)
+
+ gate_y=640
+ prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3160,y=gate_y,ry=0,scale=72)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-610,-3160,y=gate_y,ry=0,scale=72)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',610,-3160,y=gate_y,ry=180,scale=72)
+ prop(CYB+'CS_Building_Entrance_Overpass_Wall.fpe',-800,-3110,y=gate_y,ry=90,scale=65)
+ prop(CYB+'CS_Building_Entrance_Overpass_Wall.fpe',800,-3110,y=gate_y,ry=-90,scale=65)
  prop(CYB+'CS_Building_Entrance_Steps.fpe',0,-3470,y=ground(0,-3470),ry=0,scale=72)
  prop(C+'Roadblock2.fpe',-430,-3540,y=ground(-430,-3540),ry=8,scale=90)
  prop(C+'Roadblock3.fpe',430,-3540,y=ground(430,-3540),ry=-8,scale=90)
- prop(C+'Light Generator.fpe',870,-2860,y=ground(870,-2860),ry=90,scale=85)
- prop(P+'Concrete Barrier 01.fpe',-690,-3470,y=ground(-690,-3470),ry=15)
- prop(P+'Concrete Barrier 01.fpe',640,-2750,y=ground(640,-2750),ry=-12)
- prop(P+'Container 02a.fpe',1050,-3000,y=ground(1050,-3000),ry=90,scale=90)
-
- # NORTHSTAR — industrial cathedral, with real stairs/storage/cable work.
- m=Mesh()
- endwall(m,-1000,-950,950,(-30,470),560)
- beam(m,0,0,1000,1900,560,45)
- sidewall(m,950,-1000,1000,(-240,260),560)
- beam(m,-950,0,0,45,390,2000)
- beam(m,230,560,0,1440,30,2000,2)
- beam(m,-720,390,0,450,30,2000,2)
- for z in (-760,140,760):beam(m,-500,0,z,60,560,60,2)
- for z in (-800,0,800):beam(m,230,520,z,1440,40,65,2)
- for x in (-650,650):
-  beam(m,x,0,440,150,980,150,2)
-  beam(m,x,900,440,205,80,205,5)
- beam(m,0,760,440,1120,55,90,2)
- shell=own('Northstar Turbine Hall',m)
- add(shell,'Northstar / turbine nave and stack pair',-1450,-650,y=900)
- for z in (-1000,-50):prop(P+'Generator 04a.fpe',-1590,z,y=902,ry=90)
- for z in (-1110,-120):prop(I+'Storage Tank - Small.fpe',-2210,z,y=902)
- for x in (-1350,-1070):prop(I+'Control Box - Large.fpe',x,170,y=902,ry=180)
- prop(I+'Industrial Stairs.fpe',-2160,-880,y=900,ry=90,scale=95)
- prop(I+'Industrial Shelves.fpe',-2130,-120,y=900,ry=90,scale=90)
- prop(C+'CableReel.fpe',-1960,260,y=ground(-1960,260),ry=25,scale=90)
- prop(C+'Spool.fpe',-1810,320,y=ground(-1810,320),ry=-10,scale=90)
- for x,z in [(-2050,250),(-1900,380),(-1750,250)]:
-  prop(P+'Wooden Crate 01a.fpe',x,z,y=ground(x,z),ry=(x+z)%30)
-
- # OPERATIONS — human-scale shell with installed sci-fi facade modules.
- m=Mesh()
- endwall(m,-840,-1000,1000,(-620,-180),330)
- sidewall(m,-1000,-840,660,(-100,340),330)
- sidewall(m,1000,-840,920,(450,890),330)
- beam(m,-520,0,660,960,330,35);beam(m,440,0,920,1120,330,35)
- beam(m,-40,0,790,35,330,260)
- beam(m,0,330,-90,2000,25,1500,1);beam(m,460,330,790,1080,25,260,1)
- beam(m,130,0,60,35,250,600,1);beam(m,130,245,60,35,12,620,4)
- shell=own('Meridian Operations House',m)
- add(shell,'Operations / requisitioned civilian workplace',1250,600,y=1080)
- prop(CYB+'CS_Wall_01_Entry_01.fpe',850,-235,y=1080,ry=0,scale=65)
- prop(CYB+'CS_Wall_01.fpe',1420,-235,y=1080,ry=0,scale=65)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue.fpe',1800,-235,y=1080,ry=0,scale=58)
- prop(CYM+'CS_Sidewalk_Light.fpe',520,-340,y=ground(520,-340),ry=0,scale=75)
- for x,z in [(620,40),(950,720),(1670,1000)]:
-  prop(P+'Desk 01a.fpe',x,z,y=1082,ry=90);prop(P+'Computer 01a.fpe',x,z,y=1157,ry=90)
- for z in (0,260,520):prop(P+'Locker 01a.fpe',2100,z,y=1082,ry=-90)
- for x in (1550,1820):prop(P+'Portable Cot 01a.fpe',x,1370,y=1082,ry=90)
- prop(P+'Desk Chair 01a.fpe',1720,900,y=1082,ry=135)
- prop(I+'Industrial Shelves.fpe',2050,720,y=1080,ry=90,scale=85)
- prop(I+'Hand Trolly.fpe',1900,1180,y=1080,ry=-20,scale=90)
- for x,z,ry in [(550,1180,0),(780,1280,8),(2050,900,90)]:
-  prop(P+'Wooden Crate 01a.fpe',x,z,y=ground(x,z),ry=ry)
- prop(I+'Cylinder - Oxygen.fpe',1950,1250,y=ground(1950,1250),ry=0)
-
- # AEGIS — finished military/science threshold plus active excavation dressing.
- m=Mesh()
- endwall(m,-875,-1250,1250,(-300,300),680,2)
- sidewall(m,-1250,-875,875,(-280,280),680,2)
- sidewall(m,1250,-875,875,(-380,220),680,2)
- beam(m,0,680,-525,2500,45,700,2)
- for x in (-1130,-800,-470,-140,190,520,850,1180):beam(m,x,0,875,12,100,12,2)
- beam(m,0,95,875,2500,12,12,2);beam(m,0,45,875,2500,8,10,2)
- for x in (-1080,1080):
-  beam(m,x,0,-760,125,1050,125,2)
-  beam(m,x,180,-835,22,650,22,5)
- beam(m,0,930,-760,2050,110,170,2)
- beam(m,0,900,-850,1650,16,20,5)
- for x in (-1210,1210):
-  beam(m,x,0,80,55,680,80,2);beam(m,x,450,-20,22,110,160,5)
- shell=own('AEGIS Cliff Gallery',m)
- add(shell,'AEGIS / armoured gallery and excavation portal',0,3090,y=1540)
- prop(CYB+'CS_Wall_01_Entry_02.fpe',0,2280,y=ground(0,2280),ry=0,scale=72)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',-860,2410,y=ground(-860,2410),ry=0,scale=60)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',860,2410,y=ground(860,2410),ry=180,scale=60)
- prop(CYS+'CS_Steps_01.fpe',0,2520,y=ground(0,2520),ry=0,scale=70)
- prop(C+'Light Generator.fpe',-1080,3480,y=ground(-1080,3480),ry=45,scale=85)
- prop(C+'CableReel.fpe',-900,3550,y=ground(-900,3550),ry=20,scale=90)
- prop(C+'Rebar1.fpe',980,3500,y=ground(980,3500),ry=70,scale=85)
- for x in (-880,880):prop(I+'Control Box - Tall.fpe',x,3250,y=1542,ry=180)
- for x,z,ry in [(-1050,2650,0),(980,2760,90),(780,3500,90)]:
-  prop(P+'Concrete Barrier 01.fpe',x,z,y=ground(x,z),ry=ry)
-
- # SURVEY CAMP 12 — use the actual Construction Pack for survey/worksite identity.
- m=Mesh()
- beam(m,0,0,0,28,650,28,2)
- beam(m,0,500,0,520,22,22,5)
- beam(m,-190,410,0,22,150,22,2);beam(m,190,410,0,22,150,22,2)
- beam(m,0,600,0,170,42,90,5)
- beam(m,-140,325,0,210,18,18,1);beam(m,140,370,0,210,18,18,1)
- mast=own('Camp 12 Survey Mast',m)
- add(mast,'Meridian survey mast / Camp 12',-1870,-7160,y=500)
+ prop(C+'Light Generator.fpe',850,-2860,y=ground(850,-2860),ry=90,scale=82)
+ prop(P+'Concrete Barrier 01.fpe',-690,-3470,y=ground(-690,-3470),ry=15,scale=92)
+ prop(P+'Container 02a.fpe',1030,-3000,y=ground(1030,-3000),ry=90,scale=86)
 
  m=Mesh()
- for x in (-230,230):
-  for z in (-170,170):beam(m,x,0,z,24,250,24,1)
- beam(m,0,245,0,520,25,400,1)
- canopy=own('Camp 12 Equipment Canopy',m)
- add(canopy,'Camp 12 / survey equipment shelter',-1280,-7050,y=500,ry=8)
- prop(P+'Container 01a.fpe',-2300,-7420,y=500,ry=0,scale=88)
- prop(C+'Freight Container.fpe',-1120,-7460,y=500,ry=180,scale=72)
- prop(C+'SurveyorStand1.fpe',-1900,-6980,y=500,ry=15,scale=110)
- prop(C+'SurveyorStand2.fpe',-1600,-7030,y=500,ry=-20,scale=110)
- prop(C+'Light Generator.fpe',-1320,-6740,y=500,ry=180,scale=90)
- prop(C+'CableReel.fpe',-1210,-6840,y=500,ry=45,scale=90)
- prop(C+'Ladder Open.fpe',-2220,-7240,y=500,ry=80,scale=85)
- prop(C+'Trafficbarrier.fpe',-1040,-6500,y=ground(-1040,-6500),ry=10,scale=95)
- for x,z,ry in [(-2240,-6810,10),(-2120,-6750,-5),(-1180,-6820,12),(-1060,-6760,0)]:
-  prop(P+'Wooden Crate 01a.fpe',x,z,y=500,ry=ry)
- prop(I+'Cylinder - Oxygen.fpe',-1450,-6760,y=500)
- prop(I+'Cylinder - Oxygen.fpe',-1510,-6760,y=500)
- for x,z,ry in [(-2420,-7000,15),(-970,-7060,-10)]:
-  prop(P+'Concrete Barrier 01.fpe',x,z,y=500,ry=ry)
+ for x in (-430,430):
+  beam(m,x,0,0,125,930,125,2)
+  beam(m,x,850,0,175,70,175,5)
+ beam(m,0,700,0,900,40,90,2)
+ stacks=own('Northstar Stack Pair',m)
+ add(stacks,'Northstar / stack pair',-1510,-540,y=900)
+ prop(CYB+'CS_Building_Entrance_Overpass_02.fpe',-1420,-760,y=900,ry=90,scale=64)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-1420,-1230,y=900,ry=90,scale=64)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-1420,-280,y=900,ry=-90,scale=64)
+ for z in (-1120,-250):
+  prop(P+'Generator 04a.fpe',-1700,z,y=902,ry=90,scale=92)
+  prop(I+'Storage Tank - Small.fpe',-2180,z,y=902,ry=0,scale=95)
+ prop(I+'Industrial Stairs.fpe',-2150,-840,y=900,ry=90,scale=92)
+ prop(I+'Industrial Shelves.fpe',-2110,-50,y=900,ry=90,scale=86)
+ for x,z in [(-1320,-80),(-1080,-80)]:
+  prop(I+'Control Box - Large.fpe',x,z,y=902,ry=180,scale=92)
+ prop(C+'CableReel.fpe',-1950,250,y=ground(-1950,250),ry=25,scale=86)
 
- # Small bespoke route markers remain only as close-range punctuation.
- m=Mesh();beam(m,0,0,0,12,125,12,2);beam(m,0,108,0,56,16,22,5)
+ op_y=1080
+ prop(CYB+'CS_Wall_01_Entry_01.fpe',720,-230,y=op_y,ry=0,scale=62)
+ prop(CYB+'CS_Wall_01_Window.fpe',1260,-230,y=op_y,ry=0,scale=62)
+ prop(CYB+'CS_Wall_01.fpe',1800,-230,y=op_y,ry=0,scale=62)
+ prop(CYB+'CS_Wall_01.fpe',2110,280,y=op_y,ry=90,scale=62)
+ prop(CYB+'CS_Wall_01_Entry_03.fpe',2110,820,y=op_y,ry=90,scale=62)
+ prop(CYB+'CS_Wall_01.fpe',2110,1360,y=op_y,ry=90,scale=62)
+ prop(CYB+'CS_Wall_01_Overhang.fpe',1180,-70,y=op_y+6,ry=0,scale=62)
+ prop(CYB+'CS_Roof_Tile_4x4.fpe',1450,580,y=op_y+260,ry=0,scale=60)
+ prop(CYM+'CS_Sidewalk_Light.fpe',540,-340,y=ground(540,-340),ry=0,scale=72)
+ for x,z in [(900,300),(1280,600)]:
+  prop(P+'Desk 01a.fpe',x,z,y=op_y+2,ry=90,scale=90)
+  prop(P+'Computer 01a.fpe',x,z,y=op_y+77,ry=90,scale=90)
+ for z in (300,560):
+  prop(P+'Locker 01a.fpe',1900,z,y=op_y+2,ry=-90,scale=90)
+ prop(I+'Industrial Shelves.fpe',1850,1100,y=op_y,ry=90,scale=82)
+ prop(I+'Hand Trolly.fpe',1660,1180,y=op_y,ry=-20,scale=86)
+ prop(P+'Portable Cot 01a.fpe',1350,1180,y=op_y+2,ry=90,scale=88)
+
+ aegis_y=1540
+ m=Mesh()
+ for x in (-720,720):
+  beam(m,x,0,0,100,900,100,2)
+  beam(m,x,210,-65,18,520,18,5)
+ beam(m,0,820,0,1540,95,150,2)
+ frame=own('AEGIS Arrival Frame',m)
+ add(frame,'AEGIS / arrival frame',0,3090,y=aegis_y)
+ prop(CYB+'CS_Wall_01_Entry_02.fpe',0,2320,y=ground(0,2320),ry=0,scale=70)
+ prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',-760,2470,y=ground(-760,2470),ry=0,scale=58)
+ prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',760,2470,y=ground(760,2470),ry=180,scale=58)
+ prop(CYS+'CS_Steps_01.fpe',0,2550,y=ground(0,2550),ry=0,scale=68)
+ prop(CYB+'CS_Building_Entrance_Overpass_02.fpe',0,3260,y=aegis_y,ry=0,scale=62)
+ prop(C+'Light Generator.fpe',-1060,3500,y=ground(-1060,3500),ry=45,scale=82)
+ prop(C+'CableReel.fpe',-890,3560,y=ground(-890,3560),ry=20,scale=86)
+ prop(C+'Rebar1.fpe',960,3500,y=ground(960,3500),ry=70,scale=82)
+ for x in (-820,820):
+  prop(I+'Control Box - Tall.fpe',x,3250,y=aegis_y+2,ry=180,scale=92)
+ for x,z,ry in [(-980,2700,0),(930,2780,90)]:
+  prop(P+'Concrete Barrier 01.fpe',x,z,y=ground(x,z),ry=ry,scale=92)
+
+ m=Mesh();beam(m,0,0,0,10,105,10,2);beam(m,0,90,0,42,13,18,5)
  marker=own('Meridian Route Beacon',m)
  for i,(x,z,ry) in enumerate([
-  (-1260,-6460,5),(-780,-6100,-5),(-360,-5600,8),(210,-5050,0),
-  (430,-4480,10),(360,-3920,-8),(180,-3500,5),(120,-3260,0)
+  (-1180,-6380,5),(-430,-5650,8),(280,-5000,0),(350,-4010,-8),(140,-3380,0)
  ],1):
   add(marker,'Meridian route marker '+str(i),x,z,y=ground(x,z),ry=ry)
 
- # Real installed electrical infrastructure replaces the old generated black pylons.
  for i,(x,z,ry) in enumerate([
-  (-2150,-7600,0),(-1060,-6660,0),(-300,-5750,0),(520,-4650,0),
-  (500,-3750,0),(-520,-2980,0)
+  (-1120,-6610,0),(-320,-5660,0),(470,-4630,0),(-500,-3030,0)
  ],1):
-  prop(CYM+'CS_Street_Electrical_Pole_01.fpe',x,z,y=ground(x,z),ry=ry,scale=72)
-  if i in (2,4,6):
-   prop(CYM+'CS_Street_Lamp.fpe',x+110,z+40,y=ground(x+110,z+40),ry=ry,scale=72)
+  prop(CYM+'CS_Street_Electrical_Pole_01.fpe',x,z,y=ground(x,z),ry=ry,scale=68)
+  if i in (1,3,4):
+   prop(CYM+'CS_Street_Lamp.fpe',x+95,z+35,y=ground(x+95,z+35),ry=ry,scale=68)
 
- # Choir deliberately uses a vocabulary unavailable in the human asset kits.
  m=Mesh()
  for x,y,z,w,h,d,angle in [
   (-420,0,0,210,2850,310,-11),(490,0,180,260,3300,340,9),
@@ -252,7 +203,6 @@ def architecture(Mesh,own,add,prop,P,I):
  arch=own('Choir Breach Arch',m)
  add(arch,'Choir / buried arch exposed by the receded sea',0,5100,y=180,ry=16)
 
- # Elevated inspection bridge stays bespoke because terrain falls away below it.
  m=Mesh();beam(m,0,-16,0,500,22,980,2)
  for x in (-245,245):
   beam(m,x,95,0,12,12,980,2)
