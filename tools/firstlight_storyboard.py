@@ -5,7 +5,7 @@ import math,json
 GAME=ROOT/'Aegis Reach';FILES=GAME/'Files';out=FILES/'imagebank/aegis_reach/firstlight';out.mkdir(parents=True,exist_ok=True)
 s=load();backup=GAME/'Design/First Light/previous-storyboard.dat'
 if not backup.exists():shutil.copy2(PROJECT,backup)
-s.customprojectfolder=(str(ROOT)+'\\').encode();s.game_description=b'FIRST LIGHT // MISSION 01\nFind out why Relayfall went dark. Restore Northstar, recover the missing survey crew\'s records, and stop AEGIS firing on Shelter 12.'
+s.customprojectfolder=b'';s.game_description=b'FIRST LIGHT // MISSION 01\nFind out why Relayfall went dark. Restore Northstar, recover the missing survey crew\'s records, and stop AEGIS firing on Shelter 12.'
 s.game_world_edge_text=b'Return to the Meridian service route.'
 s.Nodes[7].title=b'FIRST LIGHT';s.Nodes[7].levelnumber=b'MISSION 01';s.Nodes[7].level_name=b'mapbank\\Aegis Reach - First Light.fpm'
 base=Image.new('RGB',(1920,1080),(10,21,32));d=ImageDraw.Draw(base)

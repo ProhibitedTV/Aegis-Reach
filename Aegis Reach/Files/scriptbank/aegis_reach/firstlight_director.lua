@@ -1,3 +1,4 @@
+require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- Mission 01: FIRST LIGHT. Native MAX mission state and presentation.
 fl=fl or {}
 local native_qa=os.getenv('AEGIS_FIRSTLIGHT_QA')=='1'
@@ -69,10 +70,10 @@ function firstlight_director_main(e)
  for id,state in pairs(fl.enemies) do if state.active and g_Entity[id] and g_Entity[id].health<=0 then fl.kills=fl.kills+1 end end
  local contacts=fl_hostiles(g_PlayerPosX,g_PlayerPosZ,1700)
  if fl.discovery_until and g_Time<fl.discovery_until then aegis.music_state=fl.discovery_track
- elseif contacts>0 then aegis.music_state=fl.stage==3 and 'combat_interference' or 'combat'
+
  elseif fl.stage==4 then aegis.music_state='resolution_aegis'
  elseif g_PlayerPosZ<-3500 then aegis.music_state='exploration_vesper'
- elseif fl.stage==3 then aegis.music_state='tension_aegis'
+ elseif g_PlayerPosZ>2100 then aegis.music_state='tension_aegis'
  else aegis.music_state='exploration_fortress' end
  local zone=fl.zone
  for _,v in ipairs(zones) do if g_PlayerPosZ>=v[2] and g_PlayerPosZ<v[3] then zone=v[1] end end
@@ -113,3 +114,7 @@ function firstlight_director_main(e)
   fl_log('tick stage='..fl.stage..' y='..string.format('%.1f',g_PlayerPosY)..' x='..math.floor(g_PlayerPosX)..' z='..math.floor(g_PlayerPosZ)..' contacts='..contacts..' health='..g_PlayerHealth..' kills='..fl.kills)
  end
 end
+
+firstlight_director_init=firstlight_guard('firstlight_director_init',firstlight_director_init)
+
+firstlight_director_main=firstlight_guard('firstlight_director_main',firstlight_director_main)

@@ -1,0 +1,13 @@
+desc = Excavation Service Bridge
+model = Excavation Service Bridge.x
+scale = 100
+textured = aegis_atlas.png
+baseColorMap = aegis_atlas.png
+effect = effectbank\reloaded\apbr_basic.fx
+collisionmode = 1
+defaultstatic = 1
+strength = 0
+materialindex = 2
+roughnessStrength = 0.82
+metalnessStrength = 0.22
+aimain = no_behavior_selected.lua
