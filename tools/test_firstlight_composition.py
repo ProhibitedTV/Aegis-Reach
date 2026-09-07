@@ -1,11 +1,9 @@
 """Regression checks for First Light's production environment composition.
 
-Run after build_first_light.py (preflight does this automatically). The test cannot
-judge art quality, but it prevents known structural regressions: duplicate Camp 12
-dressing, giant legacy bespoke shells, repeated custom floodlights/revetments, and
-unbounded prop growth in the opening camp.
+Run after build_first_light.py. The test cannot judge art quality, but it prevents
+known structural regressions: duplicate Camp 12 dressing, giant legacy bespoke
+shells, repeated custom floodlights/revetments, and unbounded prop growth.
 """
-from pathlib import Path
 import json
 
 from native_format import ROOT
@@ -47,7 +45,6 @@ for p in camp:
  for banned in ('Tent 01','Portable Cot','Desk 01','Desk Chair','Camping Pack'):
   assert banned not in asset, 'Camp 12 secondary dressing returned: '+asset
 
-# The camp should contain one lab family, survey equipment, power and logistics.
 assets='\n'.join(str(p.get('asset','')) for p in camp)
 for required in (
  'CS_Wall_01_Entry_01.fpe',
@@ -60,7 +57,8 @@ for required in (
 route_markers=[p for p in placements if str(p.get('name','')).startswith('Meridian route marker ')]
 assert 3<=len(route_markers)<=6, 'route beacon count is no longer sparse: '+str(len(route_markers))
 
-# Bespoke environment meshes are allowed only when they earn a unique silhouette.
+# Bespoke meshes must earn their keep. Human-readable field-board supports are
+# allowed because they support authored story signs rather than forming architecture.
 custom_environment=[]
 for p in placements:
  if p.get('kind','environment')!='environment':continue
@@ -74,6 +72,8 @@ allowed={
  'Meridian Route Beacon.fpe',
  'Choir Breach Arch.fpe',
  'Excavation Service Bridge.fpe',
+ 'Evacuation Board Supports.fpe',
+ 'Extraction Sign Supports.fpe',
 }
 unexpected=sorted(set(custom_environment)-allowed)
 assert not unexpected, 'unexpected bespoke environment meshes: '+', '.join(unexpected)
