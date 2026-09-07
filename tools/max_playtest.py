@@ -47,9 +47,10 @@ def copy_tree(source: Path, target: Path) -> int:
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
-    from terrain_story_pass import rewrite_archive as terrain_archive
-    from world_story_logic_pass import rewrite_archive as story_logic_archive
+    from terrain_story_pass import rewrite_archive as terrain_story_archive
     from shelf_encounter_pass import rewrite_archive as shelf_encounter_archive
+    from native_terrain_pass import rewrite_archive as native_terrain_archive
+    from world_story_logic_pass import rewrite_archive as story_logic_archive
     from native_integration_pass import rewrite_archive as native_integration_archive
     from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
@@ -75,48 +76,56 @@ def prepare_production_content() -> None:
 
     environment = environment_archive(MAP, dry_run=False, backup=False)
     print(
-        "Environment pass applied:",
+        "Environment skyline pass:",
         len(environment["generated_assets"]),
         "assets /",
         len(environment["placements"]),
         "placements",
     )
 
+    # The two older passes now exist only to author props/history layers. Their broad
+    # temporary ground meshes are explicitly removed by native_terrain_pass below.
     world = world_archive(MAP, dry_run=False, backup=False)
     print(
-        "Vesper world-story pass applied:",
-        len(world["generated_assets"]),
-        "assets /",
+        "Vesper story-prop pass:",
         len(world["placements"]),
         "placements /",
         world["south_gate_segments_removed"],
         "south-gate segments removed",
     )
 
-    terrain = terrain_archive(MAP, dry_run=False, backup=False)
-    print(
-        "Layered Vesper terrain/story pass applied:",
-        len(terrain["generated_assets"]),
-        "assets /",
-        len(terrain["placements"]),
-        "placements",
-    )
-
-    story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
-    print("Environmental story triggers bound:", len(story_logic["story_entities"]))
+    terrain_story = terrain_story_archive(MAP, dry_run=False, backup=False)
+    print("Vesper geological/story prop pass:", len(terrain_story["placements"]), "placements")
 
     shelf = shelf_encounter_archive(MAP, dry_run=False, backup=False)
     print(
-        "Optional Vesper shelf encounter applied:",
+        "Optional Vesper shelf encounter:",
         shelf["enemy_count"],
         "enemies /",
         shelf["reward_count"],
         "field rewards",
     )
 
+    # IMPORTANT: this is the real landscape. It writes MAX's native 4096x4096 sculpt
+    # buffer, removes the old slab/ridge substitutes, and snaps exterior props/enemies
+    # onto the resulting editable terrain.
+    native_terrain = native_terrain_archive(MAP, dry_run=False, backup=False)
+    print(
+        "GameGuru MAX native terrain authored:",
+        native_terrain["terrain"]["cells_authored"],
+        "sculpt cells /",
+        len(native_terrain["entities"]["removed_mesh_ground"]),
+        "prototype ground meshes removed /",
+        len(native_terrain["entities"]["snapped_entities"]),
+        "entities terrain-snapped",
+    )
+
+    story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
+    print("Environmental story triggers bound:", len(story_logic["story_entities"]))
+
     native = native_integration_archive(MAP, dry_run=False, backup=False)
     print(
-        "MAX-native presentation endpoints applied:",
+        "MAX-native presentation endpoints:",
         len(native["beacons"]),
         "beacons + world-state + adaptive music controllers",
     )
@@ -144,8 +153,6 @@ def apply_visual_polish() -> None:
 
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
-    # Production is the preferred integrated path: ecosystem discovery and authored
-    # world/gameplay/presentation first, visual settings second, then validated deploy.
     if production:
         prepare_production_content()
     if polish or production:
@@ -153,8 +160,6 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
 
     target.mkdir(parents=True, exist_ok=True)
 
-    # These are the project-authored/runtime-critical areas. Stock/DLC GameGuru
-    # assets stay in the user's licensed MAX install and are discovered separately.
     mappings = [
         (FILES / "mapbank", target / "mapbank"),
         (FILES / "scriptbank" / "aegis_reach", target / "scriptbank" / "aegis_reach"),
@@ -175,19 +180,17 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + layered Vesper + recon combat + adaptive score + native MAX logic + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (native MAX terrain + Vesper story + recon combat + adaptive score + presentation)")
+        print("Terrain report: Aegis Reach\\Design\\native-terrain-pass.json")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
-        print("World report: Aegis Reach\\Design\\world-story-pass.json")
-        print("Terrain report: Aegis Reach\\Design\\terrain-story-pass.json")
         print("Music manifest: Aegis Reach\\Design\\music-manifest.json")
         print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
-        print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
     else:
         print("Mode: FAST SCRIPT/MAP SYNC")
-    print("Restart GameGuru MAX before testing so scripts and map data reload cleanly.")
+    print("Restart GameGuru MAX before testing so scripts, terrain and map data reload cleanly.")
 
 
 def collect(target: Path) -> None:
@@ -216,21 +219,13 @@ def collect(target: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "command",
-        choices=("deploy", "collect"),
-        help="deploy repo content to MAX or collect the latest runtime log",
-    )
+    parser.add_argument("command", choices=("deploy", "collect"), help="deploy repo content to MAX or collect the latest runtime log")
     parser.add_argument("--target", type=Path, help="override GameGuru MAX user Files directory")
-    parser.add_argument(
-        "--polish",
-        action="store_true",
-        help="apply tools/polish_relayfall.py before deploying",
-    )
+    parser.add_argument("--polish", action="store_true", help="apply tools/polish_relayfall.py before deploying")
     parser.add_argument(
         "--production",
         action="store_true",
-        help="stage score + scan ecosystem + build layered world/story/recon/native/cinematic systems + visual polish before deploying",
+        help="stage score + build native terrain/world/story/recon/cinematic systems + visual polish before deploying",
     )
     args = parser.parse_args()
 
