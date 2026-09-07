@@ -1,0 +1,17 @@
+; Original Aegis Reach / Vesper environment asset
+desc = Vesper Brine Shelf
+model = Vesper Brine Shelf.x
+scale = 100
+textured = vesper_brine_surface.png
+baseColorMap = vesper_brine_surface.png
+effect = effectbank\reloaded\apbr_basic.fx
+collisionmode = 1
+materialindex = 13
+defaultstatic = 1
+strength = 0
+castshadow = 1
+roughnessStrength = 0.9
+metalnessStrength = 0.12
+reflectance = 0.08
+basecolor = 4294967295
+aimain = no_behavior_selected.lua

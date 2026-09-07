@@ -1,0 +1,370 @@
+{
+  "searched_roots": [
+    "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+    "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+    "C:\\Program Files\\Steam\\steamapps\\common\\GameGuru MAX\\Files"
+  ],
+  "existing_roots": [
+    "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+    "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files"
+  ],
+  "cineguru_entities": [
+    {
+      "kind": "actor",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\actor mark.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\actor mark.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera marker.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera marker.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera node.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera node.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera shake trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera shake trigger.fpe"
+    },
+    {
+      "kind": "trigger",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\cine-trigger entity.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\cine-trigger entity.fpe"
+    },
+    {
+      "kind": "trigger_zone",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\cine-trigger zone.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\cine-trigger zone.fpe"
+    },
+    {
+      "kind": "trigger",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\credits trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\credits trigger.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\endpoint marker.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\endpoint marker.fpe"
+    },
+    {
+      "kind": "focus",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\focal point.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\focal point.fpe"
+    },
+    {
+      "kind": "focus",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\focal target.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\focal target.fpe"
+    },
+    {
+      "kind": "trigger",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\image trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\image trigger.fpe"
+    },
+    {
+      "kind": "light",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\light marker.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\light marker.fpe"
+    },
+    {
+      "kind": "light",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\light node.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\light node.fpe"
+    },
+    {
+      "kind": "trigger",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\sound trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\sound trigger.fpe"
+    },
+    {
+      "kind": "trigger",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\trigger.fpe"
+    },
+    {
+      "kind": "other",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "User\\charactercreatorplus\\Bob.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\User\\charactercreatorplus\\Bob.fpe"
+    },
+    {
+      "kind": "other",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "User\\charactercreatorplus\\Jane.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\User\\charactercreatorplus\\Jane.fpe"
+    }
+  ],
+  "cineguru_scripts": [
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_actor.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_actor.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_camera_endpoint.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_camera_endpoint.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_camera_node.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_camera_node.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_cinematic_camera.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_cinematic_camera.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_credits.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_credits.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_focal_point.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_focal_point.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_image_trigger.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_image_trigger.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_lib.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_lib.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_light_marker.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_light_marker.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_light_node.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_light_node.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_mark.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_mark.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_pnoise.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_pnoise.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_post_trigger.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_post_trigger.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_shake.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_shake.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_sound_trigger.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_sound_trigger.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_target_entity.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_target_entity.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_trigger.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_trigger.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_trigger_entity.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_trigger_entity.lua"
+    },
+    {
+      "root": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files",
+      "path": "Cine Guru MAX\\cg_trigger_zone.lua",
+      "full_path": "C:\\Users\\RhythmicCarnage\\Documents\\GameGuruApps\\GameGuruMAX\\Files\\scriptbank\\Cine Guru MAX\\cg_trigger_zone.lua"
+    }
+  ],
+  "by_kind": {
+    "actor": [
+      {
+        "kind": "actor",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\actor mark.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\actor mark.fpe"
+      }
+    ],
+    "camera": [
+      {
+        "kind": "camera",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\camera marker.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera marker.fpe"
+      },
+      {
+        "kind": "camera",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\camera node.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera node.fpe"
+      },
+      {
+        "kind": "camera",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\camera shake trigger.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera shake trigger.fpe"
+      },
+      {
+        "kind": "camera",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\endpoint marker.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\endpoint marker.fpe"
+      }
+    ],
+    "trigger": [
+      {
+        "kind": "trigger",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\cine-trigger entity.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\cine-trigger entity.fpe"
+      },
+      {
+        "kind": "trigger",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\credits trigger.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\credits trigger.fpe"
+      },
+      {
+        "kind": "trigger",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\image trigger.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\image trigger.fpe"
+      },
+      {
+        "kind": "trigger",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\sound trigger.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\sound trigger.fpe"
+      },
+      {
+        "kind": "trigger",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\trigger.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\trigger.fpe"
+      }
+    ],
+    "trigger_zone": [
+      {
+        "kind": "trigger_zone",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\cine-trigger zone.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\cine-trigger zone.fpe"
+      }
+    ],
+    "focus": [
+      {
+        "kind": "focus",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\focal point.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\focal point.fpe"
+      },
+      {
+        "kind": "focus",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\focal target.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\focal target.fpe"
+      }
+    ],
+    "light": [
+      {
+        "kind": "light",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\light marker.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\light marker.fpe"
+      },
+      {
+        "kind": "light",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "Cine Guru MAX\\light node.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\light node.fpe"
+      }
+    ],
+    "other": [
+      {
+        "kind": "other",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "User\\charactercreatorplus\\Bob.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\User\\charactercreatorplus\\Bob.fpe"
+      },
+      {
+        "kind": "other",
+        "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+        "path": "User\\charactercreatorplus\\Jane.fpe",
+        "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\User\\charactercreatorplus\\Jane.fpe"
+      }
+    ]
+  },
+  "example_maps": [],
+  "generated_original_assets": [
+    "imagebank\\aegis_reach\\cine\\relayfall_location_card.png",
+    "imagebank\\aegis_reach\\cine\\relayfall_warning_card.png"
+  ],
+  "shotlist": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Design\\cineguru-shotlist.json",
+  "camera_candidates": [
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera marker.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera marker.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera node.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera node.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\camera shake trigger.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\camera shake trigger.fpe"
+    },
+    {
+      "kind": "camera",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\endpoint marker.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\endpoint marker.fpe"
+    }
+  ],
+  "trigger_zone_candidates": [
+    {
+      "kind": "trigger_zone",
+      "root": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files",
+      "path": "Cine Guru MAX\\cine-trigger zone.fpe",
+      "full_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GameGuru MAX\\Files\\entitybank\\Cine Guru MAX\\cine-trigger zone.fpe"
+    }
+  ]
+}

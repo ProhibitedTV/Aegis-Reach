@@ -1,0 +1,53 @@
+{
+  "world": "Vesper / Relayfall Meridian Shelf",
+  "heightmap": "vesper_relayfall_height_16bit.png",
+  "basecolor_reference": "vesper_relayfall_basecolor.png",
+  "resolution": 2048,
+  "conceptual_extent_units": [
+    -11000.0,
+    11000.0
+  ],
+  "conceptual_height_meters": {
+    "min": 41.85,
+    "max": 176.93
+  },
+  "terrain_generator_starting_range_meters": 180,
+  "composition": [
+    "fortress mesa",
+    "south threshold slope",
+    "evaporite combat basin",
+    "dried brine channel",
+    "west and east basalt benches",
+    "outer shelf",
+    "east tidal fracture",
+    "north escarpment",
+    "distant geological rim"
+  ],
+  "landmarks": {
+    "relayfall_fortress": [
+      0,
+      -200
+    ],
+    "south_breach": [
+      0,
+      -3100
+    ],
+    "mira_wreck_zone": [
+      -1700,
+      -5500
+    ],
+    "meridian_shelter_12": [
+      2050,
+      -6400
+    ],
+    "resonance_cut_03": [
+      3250,
+      -5750
+    ],
+    "future_undertide_entry": [
+      3500,
+      -7000
+    ]
+  },
+  "design_rule": "large geological sentences first; combat and structures inherit the terrain"
+}

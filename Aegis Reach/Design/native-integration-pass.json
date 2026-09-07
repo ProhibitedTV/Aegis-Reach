@@ -1,0 +1,23 @@
+{
+  "map": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Files\\mapbank\\Aegis Reach - Relayfall.fpm",
+  "dry_run": false,
+  "world_controller": "NATIVE // WORLD STATE CONTROLLER",
+  "beacons": [
+    "ENV // BEACON WEST 01",
+    "ENV // BEACON EAST 01",
+    "ENV // BEACON WEST 02",
+    "ENV // BEACON EAST 02"
+  ],
+  "entity_count": 160,
+  "native_apis": [
+    "SetActivated",
+    "PerformLogicConnections",
+    "ActivateIfUsed",
+    "SetEntityEmissiveColor",
+    "SetEntityEmissiveStrength",
+    "GetAmbienceRed/Green/Blue",
+    "SetAmbienceRed/Green/Blue",
+    "GetExposure",
+    "SetExposure"
+  ]
+}

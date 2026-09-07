@@ -1,0 +1,17 @@
+; Original Aegis Reach environment asset
+desc = Orbital Spine
+model = Orbital Spine.x
+scale = 100
+textured = aegis_atlas.png
+baseColorMap = aegis_atlas.png
+effect = effectbank\reloaded\apbr_basic.fx
+collisionmode = 11
+materialindex = 2
+defaultstatic = 1
+strength = 0
+castshadow = 1
+roughnessStrength = 0.82
+metalnessStrength = 0.32
+reflectance = 0.12
+basecolor = 4294967295
+aimain = no_behavior_selected.lua

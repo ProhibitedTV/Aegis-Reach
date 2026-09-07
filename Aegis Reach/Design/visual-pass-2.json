@@ -1,0 +1,198 @@
+{
+  "map": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Files\\mapbank\\Aegis Reach - Relayfall.fpm",
+  "dry_run": false,
+  "visual_settings": {
+    "sky$": {
+      "before": "highcloud",
+      "after": "highcloud"
+    },
+    "DisableSkybox": {
+      "before": "0",
+      "after": "0"
+    },
+    "TimeOfday": {
+      "before": "8",
+      "after": "8"
+    },
+    "Simulate24Hours": {
+      "before": "0",
+      "after": "0"
+    },
+    "Exposure": {
+      "before": "1.28",
+      "after": "1.28"
+    },
+    "PostBrightness#": {
+      "before": "0.075",
+      "after": "0.075"
+    },
+    "PostContrast#": {
+      "before": "1.08",
+      "after": "1.08"
+    },
+    "Gamma": {
+      "before": "2.2",
+      "after": "2.2"
+    },
+    "DeSaturate": {
+      "before": "1",
+      "after": "1"
+    },
+    "AmbienceIntensity#": {
+      "before": "205",
+      "after": "205"
+    },
+    "AmbienceRed#": {
+      "before": "176",
+      "after": "176"
+    },
+    "AmbienceGeen#": {
+      "before": "196",
+      "after": "196"
+    },
+    "AmbienceBlue#": {
+      "before": "224",
+      "after": "224"
+    },
+    "SurfaceIntensity#": {
+      "before": "1.18",
+      "after": "1.18"
+    },
+    "SunIntensity": {
+      "before": "1.42",
+      "after": "1.42"
+    },
+    "SunRed": {
+      "before": "1.0",
+      "after": "1.0"
+    },
+    "SunGreen": {
+      "before": "0.86",
+      "after": "0.86"
+    },
+    "SunBlue": {
+      "before": "0.72",
+      "after": "0.72"
+    },
+    "SunAngleX": {
+      "before": "38",
+      "after": "38"
+    },
+    "SunAngleY": {
+      "before": "318",
+      "after": "318"
+    },
+    "ZenithRed": {
+      "before": "52",
+      "after": "52"
+    },
+    "ZenithGreen": {
+      "before": "78",
+      "after": "78"
+    },
+    "ZenithBlue": {
+      "before": "112",
+      "after": "112"
+    },
+    "FogNearest#": {
+      "before": "5200",
+      "after": "5200"
+    },
+    "FogDistance#": {
+      "before": "28500",
+      "after": "28500"
+    },
+    "FogR#": {
+      "before": "52",
+      "after": "52"
+    },
+    "FogG#": {
+      "before": "72",
+      "after": "72"
+    },
+    "FogB#": {
+      "before": "96",
+      "after": "96"
+    },
+    "BloomThreshold": {
+      "before": "1.2",
+      "after": "1.2"
+    },
+    "BloomStrength": {
+      "before": "0.22",
+      "after": "0.22"
+    },
+    "EnvProbeBrightness": {
+      "before": "1.18",
+      "after": "1.18"
+    },
+    "SkyCloudiness": {
+      "before": "0.46",
+      "after": "0.46"
+    },
+    "SkyCloudCoverage": {
+      "before": "0.88",
+      "after": "0.88"
+    },
+    "MotionIntensity#": {
+      "before": "0",
+      "after": "0"
+    },
+    "LevelVSyncEnabled": {
+      "before": "1",
+      "after": "1"
+    },
+    "AmbientMusicTrack": {
+      "before": "audiobank\u0007egis_reach",
+      "after": "audiobank\\aegis_reach\\reach-underscore.wav"
+    },
+    "AmbientMusicTrackVolume": {
+      "before": "55",
+      "after": "55"
+    }
+  },
+  "lights": [
+    {
+      "name": "Relay illumination 1",
+      "range_before": 1750,
+      "range_after": 1750,
+      "color_before": 6805738,
+      "color_after": "0x67d8ea"
+    },
+    {
+      "name": "Relay illumination 2",
+      "range_before": 1750,
+      "range_after": 1750,
+      "color_before": 15901786,
+      "color_after": "0xf2a45a"
+    },
+    {
+      "name": "Relay illumination 3",
+      "range_before": 1750,
+      "range_after": 1750,
+      "color_before": 6805738,
+      "color_after": "0x67d8ea"
+    },
+    {
+      "name": "Relay illumination 4",
+      "range_before": 1750,
+      "range_after": 1750,
+      "color_before": 15901786,
+      "color_after": "0xf2a45a"
+    },
+    {
+      "name": "Relay illumination 5",
+      "range_before": 1550,
+      "range_after": 1550,
+      "color_before": 6805738,
+      "color_after": "0x67d8ea"
+    },
+    {
+      "name": "Relay illumination 6",
+      "range_before": 1550,
+      "range_after": 1550,
+      "color_before": 15901786,
+      "color_after": "0xf2a45a"
+    }
+  ]
+}

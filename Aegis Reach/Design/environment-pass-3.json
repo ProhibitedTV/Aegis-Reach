@@ -1,0 +1,126 @@
+{
+  "map": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Files\\mapbank\\Aegis Reach - Relayfall.fpm",
+  "dry_run": false,
+  "generated_assets": [
+    "Aurelia.fpe",
+    "Aurelia.x",
+    "aurelia_surface.png",
+    "Orbital Spine.fpe",
+    "Orbital Spine.x",
+    "Relay Crown.fpe",
+    "Relay Crown.x",
+    "Service Gantry.fpe",
+    "Service Gantry.x",
+    "Horizon Beacon.fpe",
+    "Horizon Beacon.x"
+  ],
+  "placements": [
+    {
+      "name": "ENV // AURELIA",
+      "asset": "Aurelia",
+      "x": -15000,
+      "y": 11800,
+      "z": 22000
+    },
+    {
+      "name": "ENV // ORBITAL SPINE 01",
+      "asset": "Orbital Spine",
+      "x": 8200,
+      "y": 7200,
+      "z": 15800
+    },
+    {
+      "name": "ENV // ORBITAL SPINE 02",
+      "asset": "Orbital Spine",
+      "x": 10600,
+      "y": 8500,
+      "z": 17600
+    },
+    {
+      "name": "ENV // ORBITAL SPINE 03",
+      "asset": "Orbital Spine",
+      "x": 12600,
+      "y": 6800,
+      "z": 19400
+    },
+    {
+      "name": "ENV // ORBITAL SPINE 04",
+      "asset": "Orbital Spine",
+      "x": -11200,
+      "y": 9000,
+      "z": 19000
+    },
+    {
+      "name": "ENV // NORTHSTAR CROWN",
+      "asset": "Relay Crown",
+      "x": -700,
+      "y": 600,
+      "z": -1100
+    },
+    {
+      "name": "ENV // LANTERN CROWN",
+      "asset": "Relay Crown",
+      "x": 800,
+      "y": 600,
+      "z": 850
+    },
+    {
+      "name": "ENV // AEGIS CROWN",
+      "asset": "Relay Crown",
+      "x": 0,
+      "y": 600,
+      "z": 2870
+    },
+    {
+      "name": "ENV // INSERTION GANTRY",
+      "asset": "Service Gantry",
+      "x": 0,
+      "y": 600,
+      "z": -2510
+    },
+    {
+      "name": "ENV // NORTHSTAR GANTRY",
+      "asset": "Service Gantry",
+      "x": -700,
+      "y": 600,
+      "z": -1510
+    },
+    {
+      "name": "ENV // CORE GANTRY",
+      "asset": "Service Gantry",
+      "x": 0,
+      "y": 600,
+      "z": 2440
+    },
+    {
+      "name": "ENV // BEACON WEST 01",
+      "asset": "Horizon Beacon",
+      "x": -3300,
+      "y": 600,
+      "z": -900
+    },
+    {
+      "name": "ENV // BEACON EAST 01",
+      "asset": "Horizon Beacon",
+      "x": 3300,
+      "y": 600,
+      "z": 700
+    },
+    {
+      "name": "ENV // BEACON WEST 02",
+      "asset": "Horizon Beacon",
+      "x": -3450,
+      "y": 600,
+      "z": 2250
+    },
+    {
+      "name": "ENV // BEACON EAST 02",
+      "asset": "Horizon Beacon",
+      "x": 3500,
+      "y": 600,
+      "z": 3350
+    }
+  ],
+  "entity_count": 145,
+  "bank_entries": 21
+}

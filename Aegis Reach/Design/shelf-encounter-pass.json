@@ -1,0 +1,55 @@
+{
+  "map": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Files\\mapbank\\Aegis Reach - Relayfall.fpm",
+  "dry_run": false,
+  "placements": [
+    {
+      "name": "SHELF // SHELF WARDEN 21",
+      "kind": "enemy",
+      "x": -1180,
+      "y": 586,
+      "z": -4470,
+      "weapon": "enhanced\\MK18"
+    },
+    {
+      "name": "SHELF // SHELF WARDEN 22",
+      "kind": "enemy",
+      "x": 1500,
+      "y": 760,
+      "z": -5650,
+      "weapon": "enhanced\\AR"
+    },
+    {
+      "name": "SHELF // SHELF WARDEN 23",
+      "kind": "enemy",
+      "x": 280,
+      "y": 586,
+      "z": -4870,
+      "weapon": "enhanced\\MK18"
+    },
+    {
+      "name": "SHELF // SHELF WARDEN 24",
+      "kind": "enemy",
+      "x": 920,
+      "y": 586,
+      "z": -6180,
+      "weapon": "enhanced\\MK18"
+    },
+    {
+      "name": "SHELF // MERIDIAN CACHE // MARKSMAN RIFLE",
+      "kind": "weapon",
+      "x": -1510,
+      "y": 610,
+      "z": -5415
+    },
+    {
+      "name": "SHELF // MERIDIAN CACHE // FRAG PAIR",
+      "kind": "weapon",
+      "x": -1440,
+      "y": 610,
+      "z": -5380
+    }
+  ],
+  "entity_count": 159,
+  "enemy_count": 4,
+  "reward_count": 2
+}

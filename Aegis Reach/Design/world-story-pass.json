@@ -1,0 +1,112 @@
+{
+  "map": "C:\\Users\\RhythmicCarnage\\Desktop\\Aegis Reach\\Aegis Reach\\Files\\mapbank\\Aegis Reach - Relayfall.fpm",
+  "dry_run": false,
+  "generated_assets": [
+    "vesper_story_atlas.png",
+    "vesper_brine_surface.png",
+    "Vesper Brine Shelf.x",
+    "Vesper Brine Shelf.fpe",
+    "Vesper Gate Apron.x",
+    "Vesper Gate Apron.fpe",
+    "Vesper Basalt Ridge.x",
+    "Vesper Basalt Ridge.fpe",
+    "Vesper Tide Gauge.x",
+    "Vesper Tide Gauge.fpe",
+    "Vesper Survey Skiff Wreck.x",
+    "Vesper Survey Skiff Wreck.fpe",
+    "Vesper Vent Cluster.x",
+    "Vesper Vent Cluster.fpe",
+    "Vesper Tide Scar.x",
+    "Vesper Tide Scar.fpe"
+  ],
+  "placements": [
+    {
+      "name": "WORLD // BRINE SHELF",
+      "asset": "Vesper Brine Shelf",
+      "x": 0,
+      "y": 540,
+      "z": -4800
+    },
+    {
+      "name": "WORLD // GATE APRON",
+      "asset": "Vesper Gate Apron",
+      "x": 0,
+      "y": 576,
+      "z": -3070
+    },
+    {
+      "name": "WORLD // BASALT RIDGE WEST",
+      "asset": "Vesper Basalt Ridge",
+      "x": -1450,
+      "y": 578,
+      "z": -5050
+    },
+    {
+      "name": "WORLD // BASALT RIDGE EAST",
+      "asset": "Vesper Basalt Ridge",
+      "x": 1500,
+      "y": 578,
+      "z": -5650
+    },
+    {
+      "name": "WORLD // BASALT RIDGE FAR",
+      "asset": "Vesper Basalt Ridge",
+      "x": 200,
+      "y": 578,
+      "z": -6350
+    },
+    {
+      "name": "WORLD // TIDE GAUGE 17",
+      "asset": "Vesper Tide Gauge",
+      "x": -1180,
+      "y": 580,
+      "z": -3900
+    },
+    {
+      "name": "WORLD // TIDE GAUGE 22",
+      "asset": "Vesper Tide Gauge",
+      "x": 1720,
+      "y": 580,
+      "z": -5200
+    },
+    {
+      "name": "WORLD // MIRA SURVEY WRECK",
+      "asset": "Vesper Survey Skiff Wreck",
+      "x": -1680,
+      "y": 580,
+      "z": -5480
+    },
+    {
+      "name": "WORLD // GEOTHERMAL VENT 01",
+      "asset": "Vesper Vent Cluster",
+      "x": 2050,
+      "y": 580,
+      "z": -6150
+    },
+    {
+      "name": "WORLD // GEOTHERMAL VENT 02",
+      "asset": "Vesper Vent Cluster",
+      "x": -2300,
+      "y": 580,
+      "z": -4450
+    },
+    {
+      "name": "WORLD // TIDE SCAR SOUTH A",
+      "asset": "Vesper Tide Scar",
+      "x": -1500,
+      "y": 705,
+      "z": -3004
+    },
+    {
+      "name": "WORLD // TIDE SCAR SOUTH B",
+      "asset": "Vesper Tide Scar",
+      "x": 1500,
+      "y": 705,
+      "z": -3004
+    }
+  ],
+  "south_gate_segments_removed": 4,
+  "entity_count": 153,
+  "bank_entries": 28,
+  "design_intent": "Walkable Vesper brine shelf + readable vanished-sea story layer"
+}
