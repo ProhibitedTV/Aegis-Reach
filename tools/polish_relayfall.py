@@ -28,53 +28,52 @@ from native_format import ROOT, read_ele, write_ele
 GAME = ROOT / "Aegis Reach"
 MAP = GAME / "Files" / "mapbank" / "Aegis Reach - Relayfall.fpm"
 TOP_LEVEL_VISUALS = GAME / "visuals.ini"
-REPORT = GAME / "Design" / "visual-pass-2.json"
+REPORT = GAME / "Design" / "visual-pass-3.json"
 
-# Stable exposure and strong ambient separation are intentional. This is not a
-# horror-night preset. The sky supplies the broad read; authored cyan/amber lights
-# supply local combat language.
+# This is intentionally brighter than the previous pass. The first-person weapon,
+# dark MAX materials and generated architecture were all consuming the same midtones,
+# so the result looked murky even when screenshots appeared technically exposed.
 VISUAL_SETTINGS = {
     "sky$": "highcloud",
     "DisableSkybox": 0,
     "TimeOfday": 8,
     "Simulate24Hours": 0,
-    "Exposure": 1.28,
-    "PostBrightness#": 0.075,
-    "PostContrast#": 1.08,
+    "Exposure": 1.42,
+    "PostBrightness#": 0.11,
+    "PostContrast#": 1.05,
     "Gamma": 2.2,
-    # MAX treats this as a saturation multiplier. 1.0 preserves authored color;
-    # 0.0 produced the monochrome second playtest despite better readability.
     "DeSaturate": 1,
-    "AmbienceIntensity#": 205,
-    "AmbienceRed#": 176,
-    "AmbienceGeen#": 196,
-    "AmbienceBlue#": 224,
-    "SurfaceIntensity#": 1.18,
-    "SunIntensity": 1.42,
+    "AmbienceIntensity#": 225,
+    "AmbienceRed#": 188,
+    "AmbienceGeen#": 205,
+    "AmbienceBlue#": 228,
+    "SurfaceIntensity#": 1.26,
+    "SunIntensity": 1.55,
     "SunRed": 1.0,
-    "SunGreen": 0.86,
-    "SunBlue": 0.72,
+    "SunGreen": 0.88,
+    "SunBlue": 0.76,
     "SunAngleX": 38,
     "SunAngleY": 318,
-    "ZenithRed": 52,
-    "ZenithGreen": 78,
-    "ZenithBlue": 112,
-    "FogNearest#": 5200,
-    "FogDistance#": 28500,
-    "FogR#": 52,
-    "FogG#": 72,
-    "FogB#": 96,
-    "BloomThreshold": 1.2,
-    "BloomStrength": 0.22,
-    "EnvProbeBrightness": 1.18,
-    "SkyCloudiness": 0.46,
-    "SkyCloudCoverage": 0.88,
+    "ZenithRed": 58,
+    "ZenithGreen": 84,
+    "ZenithBlue": 118,
+    "FogNearest#": 6500,
+    "FogDistance#": 32000,
+    "FogR#": 56,
+    "FogG#": 76,
+    "FogB#": 100,
+    "BloomThreshold": 1.3,
+    "BloomStrength": 0.18,
+    "EnvProbeBrightness": 1.28,
+    "SkyCloudiness": 0.38,
+    "SkyCloudCoverage": 0.68,
     "MotionIntensity#": 0,
     "LevelVSyncEnabled": 1,
-    # Remove the stock/template rainforest cue from the playable archive. Keep
-    # Relayfall's own low-volume underscore as the default atmospheric bed.
+    # Belt-and-suspenders fallback. aegis_music.lua takes over at runtime with the
+    # supplied score, but this checked-in bed prevents a silent scene if that controller
+    # is not initialized for any reason.
     "AmbientMusicTrack": r"audiobank\aegis_reach\reach-underscore.wav",
-    "AmbientMusicTrackVolume": 55,
+    "AmbientMusicTrackVolume": 42,
 }
 
 CYAN = 0x67D8EA
@@ -114,14 +113,6 @@ def get_suffix(entity: dict, suffix: str, default=None):
 
 
 def set_suffix(entity: dict, suffix: str, value) -> bool:
-    """Set a native .ele field while preserving the codec's decoded value type.
-
-    The MAX writer schema contains both integer and float numeric fields. Python's
-    struct.pack is intentionally strict for integer fields, so feeding a visually
-    harmless value such as 1750.0 into an integer light-range slot will fail the
-    archive rewrite. Preserve the decoded field type rather than guessing from the
-    setting name.
-    """
     key = suffix_key(entity, suffix)
     if not key:
         return False
@@ -150,11 +141,8 @@ def patch_lights(map_ele: bytes) -> tuple[bytes, list[dict]]:
             continue
 
         index = int(match.group(1))
-        # Cyan carries navigation/objective readability; amber creates warmer
-        # combat pockets and silhouette contrast. Larger ranges illuminate lanes
-        # without turning the whole fortress into flat fullbright.
         color = CYAN if index % 2 else AMBER
-        radius = 1750 if index in (1, 2, 3, 4) else 1550
+        radius = 2050 if index in (1, 2, 3, 4) else 1850
         old_range = get_suffix(entity, "eleprof.light.range")
         old_color = get_suffix(entity, "eleprof.light.color")
 
@@ -173,7 +161,6 @@ def patch_lights(map_ele: bytes) -> tuple[bytes, list[dict]]:
         )
 
     result = write_ele(version, entities)
-    # Protect against codec drift while touching a binary map format.
     roundtrip_version, roundtrip_entities = read_ele(result)
     assert roundtrip_version == version
     assert len(roundtrip_entities) == len(entities)
@@ -211,7 +198,7 @@ def rewrite_archive(path: Path, *, dry_run: bool, backup: bool) -> dict:
         return report
 
     if backup:
-        backup_path = path.with_name(path.stem + ".pre-visual-pass-2.fpm")
+        backup_path = path.with_name(path.stem + ".pre-visual-pass-3.fpm")
         if not backup_path.exists():
             shutil.copy2(path, backup_path)
             report["backup"] = str(backup_path)
@@ -227,7 +214,6 @@ def rewrite_archive(path: Path, *, dry_run: bool, backup: bool) -> dict:
                 output.writestr(info.filename, payload[info.filename])
         convert(temp_path)
 
-        # Validate the MAX-encrypted result before replacing the playable map.
         with zipfile.ZipFile(temp_path) as check:
             check.setpassword(PASSWORD)
             assert check.read("visuals.ini") == patched_visuals
@@ -238,7 +224,6 @@ def rewrite_archive(path: Path, *, dry_run: bool, backup: bool) -> dict:
         if temp_path.exists():
             temp_path.unlink()
 
-    # Keep the inspectable project-level visual preset in sync with the map.
     if TOP_LEVEL_VISUALS.exists():
         top, _ = patch_visuals(TOP_LEVEL_VISUALS.read_bytes())
         TOP_LEVEL_VISUALS.write_bytes(top)
@@ -256,7 +241,7 @@ def main() -> None:
     args = parser.parse_args()
 
     report = rewrite_archive(args.map, dry_run=args.dry_run, backup=args.backup)
-    print("AEGIS REACH // VISUAL READABILITY PASS 2")
+    print("AEGIS REACH // VISUAL READABILITY PASS 3")
     print("Map:", report["map"])
     print("Visual settings:", len(report["visual_settings"]))
     print("Authored lights tuned:", len(report["lights"]))
