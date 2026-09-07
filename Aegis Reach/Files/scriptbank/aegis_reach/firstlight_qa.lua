@@ -49,7 +49,7 @@ function firstlight_qa_tick()
  if fl.won then
   qa.done=true
   local visited=0
-  for _,_ in pairs(qa.stations) do visited=visited+1 end
+  for _name,_seen in pairs(qa.stations) do visited=visited+1 end
   fl_log('QA_NATIVE_COMPLETE stage='..fl.stage..' kills='..fl.kills..' elapsed='..fl.final_time..' stations='..visited..'/'..#stops)
  end
 end
