@@ -47,9 +47,11 @@ def copy_tree(source: Path, target: Path) -> int:
 def prepare_production_content() -> None:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
-    from terrain_story_pass import rewrite_archive as terrain_archive
-    from world_story_logic_pass import rewrite_archive as story_logic_archive
+    from terrain_story_pass import rewrite_archive as terrain_story_archive
     from shelf_encounter_pass import rewrite_archive as shelf_encounter_archive
+    from native_terrain_pass import rewrite_archive as native_terrain_archive
+    from terrain_interface_pass import rewrite_archive as terrain_interface_archive
+    from world_story_logic_pass import rewrite_archive as story_logic_archive
     from native_integration_pass import rewrite_archive as native_integration_archive
     from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
@@ -58,13 +60,7 @@ def prepare_production_content() -> None:
 
     ecosystem = scan_ecosystem()
     usable_categories = [name for name, paths in ecosystem["categories"].items() if paths]
-    print(
-        "GameGuru ecosystem scanned:",
-        len(ecosystem["existing_roots"]),
-        "roots /",
-        len(usable_categories),
-        "useful content categories",
-    )
+    print("GameGuru ecosystem scanned:", len(ecosystem["existing_roots"]), "roots /", len(usable_categories), "useful content categories")
 
     score = stage_music(strict=False)
     if score["ready"]:
@@ -74,52 +70,39 @@ def prepare_production_content() -> None:
         print("Run: python tools\\import_music.py --source <folder> --strict")
 
     environment = environment_archive(MAP, dry_run=False, backup=False)
-    print(
-        "Environment pass applied:",
-        len(environment["generated_assets"]),
-        "assets /",
-        len(environment["placements"]),
-        "placements",
-    )
+    print("Environment skyline pass:", len(environment["generated_assets"]), "assets /", len(environment["placements"]), "placements")
 
+    # Legacy world passes now contribute architecture/story props. Their broad mesh
+    # substitutes are deliberately removed after the real MAX sculpt field is built.
     world = world_archive(MAP, dry_run=False, backup=False)
+    print("Vesper story-prop pass:", len(world["placements"]), "placements /", world["south_gate_segments_removed"], "south-gate segments removed")
+
+    terrain_story = terrain_story_archive(MAP, dry_run=False, backup=False)
+    print("Vesper geological/story prop pass:", len(terrain_story["placements"]), "placements")
+
+    shelf = shelf_encounter_archive(MAP, dry_run=False, backup=False)
+    print("Optional Vesper shelf encounter:", shelf["enemy_count"], "enemies /", shelf["reward_count"], "field rewards")
+
+    # Actual landscape: same 4096x4096 sculpt representation MAX's Terrain Editing
+    # tools use. This replaces our earlier slab/ridge approximation.
+    native_terrain = native_terrain_archive(MAP, dry_run=False, backup=False)
     print(
-        "Vesper world-story pass applied:",
-        len(world["generated_assets"]),
-        "assets /",
-        len(world["placements"]),
-        "placements /",
-        world["south_gate_segments_removed"],
-        "south-gate segments removed",
+        "GameGuru MAX native terrain authored:",
+        native_terrain["terrain"]["cells_authored"], "sculpt cells /",
+        len(native_terrain["entities"]["removed_mesh_ground"]), "prototype ground meshes removed /",
+        len(native_terrain["entities"]["snapped_entities"]), "entities terrain-snapped",
     )
 
-    terrain = terrain_archive(MAP, dry_run=False, backup=False)
-    print(
-        "Layered Vesper terrain/story pass applied:",
-        len(terrain["generated_assets"]),
-        "assets /",
-        len(terrain["placements"]),
-        "placements",
-    )
+    # Environment-art grading stage: Level/Ramp-like transition where the natural
+    # shelf meets the modeled fortress threshold.
+    interface = terrain_interface_archive(MAP, dry_run=False, backup=False)
+    print("Relayfall terrain interface graded:", interface["terrain"]["cells_authored"], "cells /", interface["terrain"]["height_meters"], "m")
 
     story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
     print("Environmental story triggers bound:", len(story_logic["story_entities"]))
 
-    shelf = shelf_encounter_archive(MAP, dry_run=False, backup=False)
-    print(
-        "Optional Vesper shelf encounter applied:",
-        shelf["enemy_count"],
-        "enemies /",
-        shelf["reward_count"],
-        "field rewards",
-    )
-
     native = native_integration_archive(MAP, dry_run=False, backup=False)
-    print(
-        "MAX-native presentation endpoints applied:",
-        len(native["beacons"]),
-        "beacons + world-state + adaptive music controllers",
-    )
+    print("MAX-native presentation endpoints:", len(native["beacons"]), "beacons + world-state + adaptive music controllers")
 
     story_images = build_story_art()
     print("Original Vesper field-art assets generated:", len(story_images))
@@ -132,29 +115,17 @@ def prepare_production_content() -> None:
 
 def apply_visual_polish() -> None:
     from polish_relayfall import rewrite_archive, MAP
-
     report = rewrite_archive(MAP, dry_run=False, backup=False)
-    print(
-        "Visual pass applied:",
-        len(report["visual_settings"]),
-        "settings /",
-        len(report["lights"]),
-        "lights",
-    )
+    print("Visual pass applied:", len(report["visual_settings"]), "settings /", len(report["lights"]), "lights")
 
 
 def deploy(target: Path, polish: bool, production: bool) -> None:
-    # Production is the preferred integrated path: ecosystem discovery and authored
-    # world/gameplay/presentation first, visual settings second, then validated deploy.
     if production:
         prepare_production_content()
     if polish or production:
         apply_visual_polish()
 
     target.mkdir(parents=True, exist_ok=True)
-
-    # These are the project-authored/runtime-critical areas. Stock/DLC GameGuru
-    # assets stay in the user's licensed MAX install and are discovered separately.
     mappings = [
         (FILES / "mapbank", target / "mapbank"),
         (FILES / "scriptbank" / "aegis_reach", target / "scriptbank" / "aegis_reach"),
@@ -175,26 +146,22 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + layered Vesper + recon combat + adaptive score + native MAX logic + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (native MAX terrain + graded interfaces + Vesper story + recon combat + adaptive score + presentation)")
+        print("Terrain report: Aegis Reach\\Design\\native-terrain-pass.json")
+        print("Terrain interface: Aegis Reach\\Design\\terrain-interface-pass.json")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
-        print("World report: Aegis Reach\\Design\\world-story-pass.json")
-        print("Terrain report: Aegis Reach\\Design\\terrain-story-pass.json")
         print("Music manifest: Aegis Reach\\Design\\music-manifest.json")
         print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
-        print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
     elif polish:
         print("Mode: VISUAL POLISH")
     else:
         print("Mode: FAST SCRIPT/MAP SYNC")
-    print("Restart GameGuru MAX before testing so scripts and map data reload cleanly.")
+    print("Restart GameGuru MAX before testing so scripts, terrain and map data reload cleanly.")
 
 
 def collect(target: Path) -> None:
-    candidates = [
-        target / "aegis-native-runtime.log",
-        target.parent / "aegis-native-runtime.log",
-    ]
+    candidates = [target / "aegis-native-runtime.log", target.parent / "aegis-native-runtime.log"]
     available = [path for path in candidates if path.exists()]
     if not available:
         print("No new Aegis runtime log found in the MAX user area.")
@@ -207,7 +174,6 @@ def collect(target: Path) -> None:
     destination = GAME / "Design" / "native-runtime.log"
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)
-
     print("AEGIS REACH // PLAYTEST COLLECTED")
     print("Source:", source)
     print("Repo log:", destination)
@@ -216,22 +182,10 @@ def collect(target: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "command",
-        choices=("deploy", "collect"),
-        help="deploy repo content to MAX or collect the latest runtime log",
-    )
+    parser.add_argument("command", choices=("deploy", "collect"), help="deploy repo content to MAX or collect the latest runtime log")
     parser.add_argument("--target", type=Path, help="override GameGuru MAX user Files directory")
-    parser.add_argument(
-        "--polish",
-        action="store_true",
-        help="apply tools/polish_relayfall.py before deploying",
-    )
-    parser.add_argument(
-        "--production",
-        action="store_true",
-        help="stage score + scan ecosystem + build layered world/story/recon/native/cinematic systems + visual polish before deploying",
-    )
+    parser.add_argument("--polish", action="store_true", help="apply tools/polish_relayfall.py before deploying")
+    parser.add_argument("--production", action="store_true", help="stage score + build native terrain/world/story/recon/cinematic systems + visual polish before deploying")
     args = parser.parse_args()
 
     target = args.target or default_max_files()

@@ -1,8 +1,8 @@
 """Headless structural test for the integrated Relayfall production pipeline.
 
-Exercises the map-transform sequence in memory: environment -> Vesper world -> layered
-terrain story -> story bindings -> optional shelf combat -> native MAX presentation and
-adaptive music bindings. It never replaces the checked-in .fpm.
+Exercises the map transform sequence in memory and validates the GameGuru MAX-native
+terrain assumptions without allocating the full 80 MiB sculpt payload. Actual FPM
+sculpt serialization is validated by native_terrain_pass.py during production deploy.
 """
 from __future__ import annotations
 
@@ -12,9 +12,20 @@ from max_archive import PASSWORD
 from native_format import read_ele
 from environment_pass import MAP, build_assets as build_environment_assets, patch_environment, get_suffix
 from world_story_pass import build_assets as build_world_assets, patch_world
-from terrain_story_pass import build_assets as build_terrain_assets, patch_terrain, PLACEMENTS as TERRAIN_PLACEMENTS
-from world_story_logic_pass import patch as patch_story_logic, STORY_NAMES
+from terrain_story_pass import build_assets as build_terrain_assets, patch_terrain
 from shelf_encounter_pass import patch_encounter
+from native_terrain_pass import (
+    GRID,
+    SCULPT_BYTES,
+    TYPE_BYTES,
+    DEPRECATED_GROUND_NAMES,
+    patch_entities as patch_native_terrain_entities,
+    vesper_height_units,
+    world_to_grid,
+    sculpt_index,
+)
+from terrain_interface_pass import final_height_units
+from world_story_logic_pass import patch as patch_story_logic, STORY_NAMES
 from native_integration_pass import (
     patch as patch_native,
     CONTROLLER_NAME,
@@ -46,16 +57,23 @@ def main():
     assert len(world_added) >= 10, len(world_added)
 
     terrain_ele, terrain_ent, terrain_added, _, _ = patch_terrain(world_ele, world_ent)
-    assert len(terrain_added) == len(TERRAIN_PLACEMENTS), (len(terrain_added), len(TERRAIN_PLACEMENTS))
+    assert terrain_added
 
-    story_ele, story_bound = patch_story_logic(terrain_ele)
-    assert set(story_bound) == STORY_NAMES, story_bound
-
-    shelf_ele, shelf_ent, shelf_added, _ = patch_encounter(story_ele, terrain_ent)
+    shelf_ele, shelf_ent, shelf_added, _ = patch_encounter(terrain_ele, terrain_ent)
     shelf_enemies = [item for item in shelf_added if item["kind"] == "enemy"]
     assert len(shelf_enemies) == 4, len(shelf_enemies)
 
-    native_ele, beacons, entity_count = patch_native(shelf_ele)
+    native_terrain_ele, terrain_entity_report = patch_native_terrain_entities(shelf_ele)
+    names_after_terrain = name_set(native_terrain_ele)
+    for deprecated in DEPRECATED_GROUND_NAMES:
+        assert deprecated not in names_after_terrain, deprecated
+    assert len(terrain_entity_report["removed_mesh_ground"]) >= 10
+    assert len(terrain_entity_report["snapped_entities"]) >= 10
+
+    story_ele, story_bound = patch_story_logic(native_terrain_ele)
+    assert set(story_bound) == STORY_NAMES, story_bound
+
+    native_ele, beacons, entity_count = patch_native(story_ele)
     assert len(beacons) == 4, beacons
 
     names = name_set(native_ele)
@@ -63,20 +81,12 @@ def main():
     assert MUSIC_CONTROLLER_NAME in names
     for expected in STORY_NAMES:
         assert expected in names
-    for placement in TERRAIN_PLACEMENTS:
-        assert placement[0] in names, placement[0]
     for i in range(21, 25):
         assert any(f"SHELF WARDEN {i}" in name for name in names), i
 
     _, entities = read_ele(native_ele)
-    by_name = {
-        str(get_suffix(entity, "eleprof.name_s", "")): entity
-        for entity in entities
-    }
-    scripts = {
-        name: str(get_suffix(entity, "eleprof.aimain_s", ""))
-        for name, entity in by_name.items()
-    }
+    by_name = {str(get_suffix(entity, "eleprof.name_s", "")): entity for entity in entities}
+    scripts = {name: str(get_suffix(entity, "eleprof.aimain_s", "")) for name, entity in by_name.items()}
     assert scripts[CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_world.lua")
     assert scripts[MUSIC_CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_music.lua")
     for name in beacons:
@@ -89,14 +99,46 @@ def main():
     assert str(get_suffix(music, "eleprof.soundset1_s", "")) == MUSIC_TRACKS[1]
     assert str(get_suffix(music, "eleprof.soundset2_s", "")) == MUSIC_TRACKS[2]
 
+    # Engine-source invariants for the current Wicked/MAX terrain system.
+    assert GRID == 4096
+    assert TYPE_BYTES == 4096 * 4096
+    assert SCULPT_BYTES == 4096 * 4096 * 5
+    assert sculpt_index(2048, 2048) >= 0
+    assert world_to_grid(0, 50000) == 2048
+
+    # Final terrain composition includes the post-sculpt architectural grading stage.
+    fortress = final_height_units(0, 0)
+    spawn_ground = final_height_units(0, -2700)
+    breach = final_height_units(0, -3100)
+    basin = final_height_units(0, -5200)
+    west_ridge = final_height_units(-2350, -5000)
+    east_ridge = final_height_units(2450, -5700)
+    fracture = final_height_units(3300, -6500)
+    south_rim = final_height_units(0, -11500)
+
+    assert 500 < fortress < 590
+    assert 520 < spawn_ground < 600
+    assert 500 < breach < 600
+    assert west_ridge > basin + 250
+    assert east_ridge > basin + 300
+    assert fracture < east_ridge - 200
+    assert south_rim > basin + 500
+
     print("AEGIS REACH // MAX-NATIVE PIPELINE TEST PASS")
     print("Environment placements:", len(env_added))
-    print("Vesper base placements:", len(world_added))
-    print("Layered terrain placements:", len(terrain_added))
+    print("Vesper story placements:", len(world_added) + len(terrain_added))
+    print("Prototype mesh ground removed:", len(terrain_entity_report["removed_mesh_ground"]))
+    print("Terrain-snapped entities:", len(terrain_entity_report["snapped_entities"]))
     print("Shelf enemies:", len(shelf_enemies))
     print("Story bindings:", len(story_bound))
     print("Mission-reactive beacons:", len(beacons))
     print("Adaptive score slots:", len(MUSIC_TRACKS))
+    print("Native MAX sculpt layout:", GRID, "x", GRID, "/", SCULPT_BYTES, "bytes")
+    print("Terrain samples (units):", {
+        "fort": round(fortress), "spawn": round(spawn_ground), "breach": round(breach),
+        "basin": round(basin), "west": round(west_ridge), "east": round(east_ridge),
+        "fracture": round(fracture), "rim": round(south_rim),
+    })
     print("Final map entities:", entity_count)
     print("Binary .ele round-trip: OK")
 
