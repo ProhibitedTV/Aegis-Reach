@@ -24,6 +24,7 @@ from native_terrain_pass import (
     world_to_grid,
     sculpt_index,
 )
+from terrain_interface_pass import final_height_units
 from world_story_logic_pass import patch as patch_story_logic, STORY_NAMES
 from native_integration_pass import (
     patch as patch_native,
@@ -56,15 +57,12 @@ def main():
     assert len(world_added) >= 10, len(world_added)
 
     terrain_ele, terrain_ent, terrain_added, _, _ = patch_terrain(world_ele, world_ent)
-    assert terrain_added, "terrain story pass should still add architectural/story props"
+    assert terrain_added
 
     shelf_ele, shelf_ent, shelf_added, _ = patch_encounter(terrain_ele, terrain_ent)
     shelf_enemies = [item for item in shelf_added if item["kind"] == "enemy"]
     assert len(shelf_enemies) == 4, len(shelf_enemies)
 
-    # This is the production correction: mesh substitutes disappear and generated
-    # exterior entities move onto the same analytic shape written into MAX's native
-    # 4096x4096 terrain sculpt buffer.
     native_terrain_ele, terrain_entity_report = patch_native_terrain_entities(shelf_ele)
     names_after_terrain = name_set(native_terrain_ele)
     for deprecated in DEPRECATED_GROUND_NAMES:
@@ -87,14 +85,8 @@ def main():
         assert any(f"SHELF WARDEN {i}" in name for name in names), i
 
     _, entities = read_ele(native_ele)
-    by_name = {
-        str(get_suffix(entity, "eleprof.name_s", "")): entity
-        for entity in entities
-    }
-    scripts = {
-        name: str(get_suffix(entity, "eleprof.aimain_s", ""))
-        for name, entity in by_name.items()
-    }
+    by_name = {str(get_suffix(entity, "eleprof.name_s", "")): entity for entity in entities}
+    scripts = {name: str(get_suffix(entity, "eleprof.aimain_s", "")) for name, entity in by_name.items()}
     assert scripts[CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_world.lua")
     assert scripts[MUSIC_CONTROLLER_NAME].lower().endswith(r"aegis_reach\aegis_music.lua")
     for name in beacons:
@@ -107,21 +99,26 @@ def main():
     assert str(get_suffix(music, "eleprof.soundset1_s", "")) == MUSIC_TRACKS[1]
     assert str(get_suffix(music, "eleprof.soundset2_s", "")) == MUSIC_TRACKS[2]
 
-    # Engine-source invariants for the Wicked/MAX terrain system.
+    # Engine-source invariants for the current Wicked/MAX terrain system.
     assert GRID == 4096
     assert TYPE_BYTES == 4096 * 4096
     assert SCULPT_BYTES == 4096 * 4096 * 5
     assert sculpt_index(2048, 2048) >= 0
     assert world_to_grid(0, 50000) == 2048
 
-    # Composition sanity: the terrain is no longer a flat plane.
-    fortress = vesper_height_units(0, 0)
-    basin = vesper_height_units(0, -5200)
-    west_ridge = vesper_height_units(-2350, -5000)
-    east_ridge = vesper_height_units(2450, -5700)
-    fracture = vesper_height_units(3300, -6500)
-    south_rim = vesper_height_units(0, -11500)
-    assert fortress > basin
+    # Final terrain composition includes the post-sculpt architectural grading stage.
+    fortress = final_height_units(0, 0)
+    spawn_ground = final_height_units(0, -2700)
+    breach = final_height_units(0, -3100)
+    basin = final_height_units(0, -5200)
+    west_ridge = final_height_units(-2350, -5000)
+    east_ridge = final_height_units(2450, -5700)
+    fracture = final_height_units(3300, -6500)
+    south_rim = final_height_units(0, -11500)
+
+    assert 500 < fortress < 590
+    assert 520 < spawn_ground < 600
+    assert 500 < breach < 600
     assert west_ridge > basin + 250
     assert east_ridge > basin + 300
     assert fracture < east_ridge - 200
@@ -137,7 +134,11 @@ def main():
     print("Mission-reactive beacons:", len(beacons))
     print("Adaptive score slots:", len(MUSIC_TRACKS))
     print("Native MAX sculpt layout:", GRID, "x", GRID, "/", SCULPT_BYTES, "bytes")
-    print("Terrain samples (units):", {"fort": round(fortress), "basin": round(basin), "west": round(west_ridge), "east": round(east_ridge), "fracture": round(fracture), "rim": round(south_rim)})
+    print("Terrain samples (units):", {
+        "fort": round(fortress), "spawn": round(spawn_ground), "breach": round(breach),
+        "basin": round(basin), "west": round(west_ridge), "east": round(east_ridge),
+        "fracture": round(fracture), "rim": round(south_rim),
+    })
     print("Final map entities:", entity_count)
     print("Binary .ele round-trip: OK")
 
