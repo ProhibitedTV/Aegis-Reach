@@ -12,6 +12,35 @@ local TRACK_OUTPOST=1
 local TRACK_CATACOMB=2
 local TRACK_COUNT=3
 
+local audit_paths={}
+local userprofile=os.getenv and os.getenv("USERPROFILE") or nil
+if userprofile and userprofile~="" then
+ table.insert(audit_paths,userprofile.."/Documents/GameGuruApps/GameGuruMAX/Files/aegis-native-runtime.log")
+end
+table.insert(audit_paths,"aegis-native-runtime.log")
+table.insert(audit_paths,"../Design/native-runtime.log")
+table.insert(audit_paths,"Design/native-runtime.log")
+
+local function audit(message)
+ pcall(function()
+  for _,path in ipairs(audit_paths) do
+   local file=io.open(path,"a")
+   if file then
+    file:write(os.date("%Y-%m-%d %H:%M:%S")," ",message,"\n")
+    file:close()
+    return
+   end
+  end
+ end)
+end
+
+local function track_name(slot)
+ if slot==TRACK_SALT then return "salt_moon_drift" end
+ if slot==TRACK_OUTPOST then return "moon_outpost_drift" end
+ if slot==TRACK_CATACOMB then return "orbital_catacomb" end
+ return "unknown"
+end
+
 local function track_for_state(state)
  if state=="exploration_vesper" then return TRACK_SALT,48 end
  if state=="discovery_human" then return TRACK_SALT,54 end
@@ -46,7 +75,7 @@ end
 
 function aegis_music_init(e)
  music[e]={
-  current=-1,target=-1,pending=-1,pending_since=0,
+  target=-1,pending=-1,pending_since=0,
   volumes={[0]=0,[1]=0,[2]=0},playing={[0]=false,[1]=false,[2]=false},
   last_state="",last_update=0,target_volume=46
  }
@@ -54,6 +83,7 @@ function aegis_music_init(e)
  CollisionOff(e)
  SetActivated(e,0)
  for slot=0,TRACK_COUNT-1 do set_slot_volume(e,slot,0) end
+ audit("music_init entity="..e)
 end
 
 function aegis_music_main(e)
@@ -82,6 +112,7 @@ function aegis_music_main(e)
    ensure_playing(e,m,m.target)
    aegis.music_track=m.target
    aegis.music_track_changed_at=g_Time
+   audit("music_state state="..state.." track="..track_name(m.target).." volume="..math.floor(desired_volume))
   end
  else
   m.target_volume=desired_volume
