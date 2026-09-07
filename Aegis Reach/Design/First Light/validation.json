@@ -1,0 +1,29 @@
+{
+  "checks": [
+    "Mission starts with shield and armour, exploration score",
+    "Records cannot bypass power objective",
+    "Interrupted hold resets progress",
+    "Nearby active defender blocks terminal",
+    "Power activates phase 2 after a continuous clear hold",
+    "Manifest advances story and discovery music",
+    "Core reverses network and enables extraction",
+    "Arrival starts extraction timer",
+    "Boarding cannot bypass holdout",
+    "Leaving LZ pauses landing progress",
+    "Final living defender prevents extraction",
+    "Clean LZ completes mission with debrief",
+    "Debrief triggers native WinGame",
+    "Damage drains shield before armour",
+    "Shield recharges after contact breaks",
+    "Field repair restores armour",
+    "Field records are collectible",
+    "Reserve remains hidden before evacuation",
+    "Reinforcements respect their arrival delay",
+    "Reinforcement activates through native combat wrapper",
+    "All new architectural and sign meshes import in installed Assimp",
+    "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references"
+  ],
+  "mesh_count": 14,
+  "entity_count": 307,
+  "native_combat_playtest": false
+}
