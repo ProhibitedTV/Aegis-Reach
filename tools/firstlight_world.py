@@ -1,14 +1,13 @@
 """Vesper native terrain and authored First Light landmark composition.
 
 World coordinates are GameGuru MAX inches. Native terrain owns every grounded
-walking surface; authored meshes provide structures, silhouettes, railings and
-purpose-built machinery. The route must remain readable with the HUD disabled.
+walking surface. Installed MAX modular kits provide most human architecture and
+infrastructure; bespoke meshes are reserved for unique silhouettes and Choir forms.
+The route must remain readable with the HUD disabled.
 """
 import math
 from native_terrain_pass import gauss, rect_mask, smoothstep
 
-# x,z,height. The main road intentionally reads as a continuous human intervention
-# through the basin rather than a collection of disconnected named rooms.
 ROUTE=[
  (0,-9600,1080),(-700,-8350,810),(-1700,-7350,500),(-1450,-6400,310),
  (0,-5150,120),(300,-4150,290),(0,-3100,640),(0,-2350,650),
@@ -21,16 +20,14 @@ RETURN=[
  (-900,3020,1540),(-1500,3020,1520),(-2250,2100,1280),(-2900,1000,1010),
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
-# Worked pads are broad enough to look deliberately graded into the terrain.
 PADS=[
- (-1700,-7160,900,720,500),     # Survey Camp 12
- (0,-3100,900,620,640),         # Gate 07 threshold
- (-1450,-650,1080,1120,900),    # Northstar
- (1250,700,1120,1020,1080),     # Operations
- (0,3090,1480,980,1540),        # AEGIS gallery
- (0,-2350,1150,500,650),        # extraction
+ (-1700,-7160,900,720,500),
+ (0,-3100,900,620,640),
+ (-1450,-650,1080,1120,900),
+ (1250,700,1120,1020,1080),
+ (0,3090,1480,980,1540),
+ (0,-2350,1150,500,650),
 ]
-
 
 def road_sample(x,z,points):
  best=(1e9,0)
@@ -41,10 +38,7 @@ def road_sample(x,z,points):
   if dist<best[0]:best=(dist,a[2]+(b[2]-a[2])*t)
  return best
 
-
 def ground(x,z):
- # Broad salt floor and broken basalt shelves. The road is the strongest low-frequency
- # authored shape so the player can read where human activity continues.
  h=145+35*math.sin(x/1200)*math.cos(z/1000)
  h+=1080*gauss(x,z,-1400,-10000,4100,1350)
  h+=1980*gauss(x,z,-4650,-4900,1350,2600)
@@ -61,11 +55,9 @@ def ground(x,z):
  for cx,cz,hx,hz,y in PADS:
   blend=rect_mask(x,z,cx,cz,hx,hz,280)
   h=h*(1-blend)+y*blend
- # Excavation bowl creates the late reveal and a meaningful need for the service bridge.
  pit=1-smoothstep(650,1450,math.hypot(x*.92,(z-5500)*1.10))
  h=h*(1-pit)+180*pit
  return h
-
 
 TERRAIN_MATERIALS={
  'baseLayerMaterial':256|13,
@@ -79,9 +71,8 @@ TERRAIN_MATERIALS={
  'reflectance':.02,'bumpiness':.55,
 }
 
-
 def architecture(Mesh,own,add,prop,P,I):
- """Landmark-scale composition using stable terrain as the floor everywhere."""
+ """Compose First Light from installed modular kits plus a few bespoke landmarks."""
  def beam(m,x,y,z,w,h,d,c=1):m.box(x,y,z,w,h,d,c)
  def endwall(m,z,left,right,opening,h=390,color=1):
   lo,hi=opening
@@ -94,32 +85,34 @@ def architecture(Mesh,own,add,prop,P,I):
   if far>hi:beam(m,x,0,(hi+far)/2,45,h,far-hi,color)
   beam(m,x,280,(lo+hi)/2,45,h-280,hi-lo,color)
 
- # -------------------------------------------------------------------------
- # GATE 07 — first monumental landmark. A civilian road is visibly swallowed by
- # a military threshold embedded in the shelf rather than ending at a small arch.
- # -------------------------------------------------------------------------
+ C='Booster Pack\\Construction Pack\\'
+ CYB='Cyberpunk Streets Booster Pack\\Buildings\\'
+ CYM='Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\'
+ CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
+
+ # GATE 07 — unique massing plus real sci-fi facade/construction pieces.
  m=Mesh()
- # Outer shelf buttresses.
  for x in (-760,760):
   beam(m,x,0,0,250,780,980,2)
   beam(m,x,720,-120,310,70,760,5)
- # Inner portal leaves a generous readable opening.
  beam(m,-425,0,40,190,620,860,1);beam(m,425,0,40,190,620,860,1)
  beam(m,0,570,-80,680,150,820,2)
- # Recessed accent bars keep the threshold readable at night.
  for z in (-360,330):beam(m,0,555,z,720,12,22,5)
  for x in (-585,585):beam(m,x,180,-360,18,420,18,5)
  gate=own('Gate 07 Cut Portal',m)
  add(gate,'Gate 07 / military sea-wall threshold',0,-3100,y=640)
- # Occupation clutter is intentionally asymmetric so the road still reads.
+ prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3190,y=640,ry=0,scale=68)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-610,-3190,y=640,ry=0,scale=68)
+ prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',610,-3190,y=640,ry=180,scale=68)
+ prop(CYB+'CS_Building_Entrance_Steps.fpe',0,-3470,y=ground(0,-3470),ry=0,scale=72)
+ prop(C+'Roadblock2.fpe',-430,-3540,y=ground(-430,-3540),ry=8,scale=90)
+ prop(C+'Roadblock3.fpe',430,-3540,y=ground(430,-3540),ry=-8,scale=90)
+ prop(C+'Light Generator.fpe',870,-2860,y=ground(870,-2860),ry=90,scale=85)
  prop(P+'Concrete Barrier 01.fpe',-690,-3470,y=ground(-690,-3470),ry=15)
  prop(P+'Concrete Barrier 01.fpe',640,-2750,y=ground(640,-2750),ry=-12)
  prop(P+'Container 02a.fpe',1050,-3000,y=ground(1050,-3000),ry=90,scale=90)
 
- # -------------------------------------------------------------------------
- # NORTHSTAR — industrial cathedral. Twin exhaust stacks make it identifiable
- # from the road before the player reaches the power objective.
- # -------------------------------------------------------------------------
+ # NORTHSTAR — industrial cathedral, with real stairs/storage/cable work.
  m=Mesh()
  endwall(m,-1000,-950,950,(-30,470),560)
  beam(m,0,0,1000,1900,560,45)
@@ -129,7 +122,6 @@ def architecture(Mesh,own,add,prop,P,I):
  beam(m,-720,390,0,450,30,2000,2)
  for z in (-760,140,760):beam(m,-500,0,z,60,560,60,2)
  for z in (-800,0,800):beam(m,230,520,z,1440,40,65,2)
- # Two tall stacks and a high service bridge create the long-distance silhouette.
  for x in (-650,650):
   beam(m,x,0,440,150,980,150,2)
   beam(m,x,900,440,205,80,205,5)
@@ -139,13 +131,14 @@ def architecture(Mesh,own,add,prop,P,I):
  for z in (-1000,-50):prop(P+'Generator 04a.fpe',-1590,z,y=902,ry=90)
  for z in (-1110,-120):prop(I+'Storage Tank - Small.fpe',-2210,z,y=902)
  for x in (-1350,-1070):prop(I+'Control Box - Large.fpe',x,170,y=902,ry=180)
+ prop(I+'Industrial Stairs.fpe',-2160,-880,y=900,ry=90,scale=95)
+ prop(I+'Industrial Shelves.fpe',-2130,-120,y=900,ry=90,scale=90)
+ prop(C+'CableReel.fpe',-1960,260,y=ground(-1960,260),ry=25,scale=90)
+ prop(C+'Spool.fpe',-1810,320,y=ground(-1810,320),ry=-10,scale=90)
  for x,z in [(-2050,250),(-1900,380),(-1750,250)]:
   prop(P+'Wooden Crate 01a.fpe',x,z,y=ground(x,z),ry=(x+z)%30)
 
- # -------------------------------------------------------------------------
- # OPERATIONS — civilian scale and evidence of people. A lower roof, porch and
- # interior partitions contrast with the industrial mass of Northstar.
- # -------------------------------------------------------------------------
+ # OPERATIONS — human-scale shell with installed sci-fi facade modules.
  m=Mesh()
  endwall(m,-840,-1000,1000,(-620,-180),330)
  sidewall(m,-1000,-840,660,(-100,340),330)
@@ -154,25 +147,24 @@ def architecture(Mesh,own,add,prop,P,I):
  beam(m,-40,0,790,35,330,260)
  beam(m,0,330,-90,2000,25,1500,1);beam(m,460,330,790,1080,25,260,1)
  beam(m,130,0,60,35,250,600,1);beam(m,130,245,60,35,12,620,4)
- # Exterior awning announces a human entrance without creating another floor plane.
- beam(m,-390,250,-900,520,28,300,1)
- for x in (-620,-160):beam(m,x,0,-900,24,250,24,2)
  shell=own('Meridian Operations House',m)
  add(shell,'Operations / requisitioned civilian workplace',1250,600,y=1080)
+ prop(CYB+'CS_Wall_01_Entry_01.fpe',850,-235,y=1080,ry=0,scale=65)
+ prop(CYB+'CS_Wall_01.fpe',1420,-235,y=1080,ry=0,scale=65)
+ prop(CYB+'CS_Wall_01_NeonDecor_Blue.fpe',1800,-235,y=1080,ry=0,scale=58)
+ prop(CYM+'CS_Sidewalk_Light.fpe',520,-340,y=ground(520,-340),ry=0,scale=75)
  for x,z in [(620,40),(950,720),(1670,1000)]:
   prop(P+'Desk 01a.fpe',x,z,y=1082,ry=90);prop(P+'Computer 01a.fpe',x,z,y=1157,ry=90)
  for z in (0,260,520):prop(P+'Locker 01a.fpe',2100,z,y=1082,ry=-90)
  for x in (1550,1820):prop(P+'Portable Cot 01a.fpe',x,1370,y=1082,ry=90)
  prop(P+'Desk Chair 01a.fpe',1720,900,y=1082,ry=135)
+ prop(I+'Industrial Shelves.fpe',2050,720,y=1080,ry=90,scale=85)
+ prop(I+'Hand Trolly.fpe',1900,1180,y=1080,ry=-20,scale=90)
  for x,z,ry in [(550,1180,0),(780,1280,8),(2050,900,90)]:
   prop(P+'Wooden Crate 01a.fpe',x,z,y=ground(x,z),ry=ry)
  prop(I+'Cylinder - Oxygen.fpe',1950,1250,y=ground(1950,1250),ry=0)
 
- # -------------------------------------------------------------------------
- # AEGIS — clean military construction grows vertically around the excavation.
- # A monumental cyan-edged portal creates a second major skyline event before the
- # darker Choir geometry is revealed beyond it.
- # -------------------------------------------------------------------------
+ # AEGIS — finished military/science threshold plus active excavation dressing.
  m=Mesh()
  endwall(m,-875,-1250,1250,(-300,300),680,2)
  sidewall(m,-1250,-875,875,(-280,280),680,2)
@@ -180,7 +172,6 @@ def architecture(Mesh,own,add,prop,P,I):
  beam(m,0,680,-525,2500,45,700,2)
  for x in (-1130,-800,-470,-140,190,520,850,1180):beam(m,x,0,875,12,100,12,2)
  beam(m,0,95,875,2500,12,12,2);beam(m,0,45,875,2500,8,10,2)
- # High arrival frame; accents face the route and separate AEGIS from civilian Meridian.
  for x in (-1080,1080):
   beam(m,x,0,-760,125,1050,125,2)
   beam(m,x,180,-835,22,650,22,5)
@@ -190,21 +181,23 @@ def architecture(Mesh,own,add,prop,P,I):
   beam(m,x,0,80,55,680,80,2);beam(m,x,450,-20,22,110,160,5)
  shell=own('AEGIS Cliff Gallery',m)
  add(shell,'AEGIS / armoured gallery and excavation portal',0,3090,y=1540)
+ prop(CYB+'CS_Wall_01_Entry_02.fpe',0,2280,y=ground(0,2280),ry=0,scale=72)
+ prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',-860,2410,y=ground(-860,2410),ry=0,scale=60)
+ prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',860,2410,y=ground(860,2410),ry=180,scale=60)
+ prop(CYS+'CS_Steps_01.fpe',0,2520,y=ground(0,2520),ry=0,scale=70)
+ prop(C+'Light Generator.fpe',-1080,3480,y=ground(-1080,3480),ry=45,scale=85)
+ prop(C+'CableReel.fpe',-900,3550,y=ground(-900,3550),ry=20,scale=90)
+ prop(C+'Rebar1.fpe',980,3500,y=ground(980,3500),ry=70,scale=85)
  for x in (-880,880):prop(I+'Control Box - Tall.fpe',x,3250,y=1542,ry=180)
  for x,z,ry in [(-1050,2650,0),(980,2760,90),(780,3500,90)]:
   prop(P+'Concrete Barrier 01.fpe',x,z,y=ground(x,z),ry=ry)
 
- # -------------------------------------------------------------------------
- # SURVEY CAMP 12 — recognisable civilian worksite. The mast, canopy and paired
- # habitat modules create a silhouette; clutter is grouped into work zones instead
- # of sprinkled uniformly.
- # -------------------------------------------------------------------------
+ # SURVEY CAMP 12 — use the actual Construction Pack for survey/worksite identity.
  m=Mesh()
  beam(m,0,0,0,28,650,28,2)
  beam(m,0,500,0,520,22,22,5)
  beam(m,-190,410,0,22,150,22,2);beam(m,190,410,0,22,150,22,2)
  beam(m,0,600,0,170,42,90,5)
- # angled sensor outriggers
  beam(m,-140,325,0,210,18,18,1);beam(m,140,370,0,210,18,18,1)
  mast=own('Camp 12 Survey Mast',m)
  add(mast,'Meridian survey mast / Camp 12',-1870,-7160,y=500)
@@ -213,14 +206,16 @@ def architecture(Mesh,own,add,prop,P,I):
  for x in (-230,230):
   for z in (-170,170):beam(m,x,0,z,24,250,24,1)
  beam(m,0,245,0,520,25,400,1)
- beam(m,0,232,-185,520,18,18,5)
  canopy=own('Camp 12 Equipment Canopy',m)
  add(canopy,'Camp 12 / survey equipment shelter',-1280,-7050,y=500,ry=8)
-
- # Two real MAX military containers are repurposed as civilian survey modules.
  prop(P+'Container 01a.fpe',-2300,-7420,y=500,ry=0,scale=88)
- prop(P+'Container 02a.fpe',-1170,-7460,y=500,ry=180,scale=88)
- prop(P+'Generator 04a.fpe',-1320,-6740,y=500,ry=180,scale=90)
+ prop(C+'Freight Container.fpe',-1120,-7460,y=500,ry=180,scale=72)
+ prop(C+'SurveyorStand1.fpe',-1900,-6980,y=500,ry=15,scale=110)
+ prop(C+'SurveyorStand2.fpe',-1600,-7030,y=500,ry=-20,scale=110)
+ prop(C+'Light Generator.fpe',-1320,-6740,y=500,ry=180,scale=90)
+ prop(C+'CableReel.fpe',-1210,-6840,y=500,ry=45,scale=90)
+ prop(C+'Ladder Open.fpe',-2220,-7240,y=500,ry=80,scale=85)
+ prop(C+'Trafficbarrier.fpe',-1040,-6500,y=ground(-1040,-6500),ry=10,scale=95)
  for x,z,ry in [(-2240,-6810,10),(-2120,-6750,-5),(-1180,-6820,12),(-1060,-6760,0)]:
   prop(P+'Wooden Crate 01a.fpe',x,z,y=500,ry=ry)
  prop(I+'Cylinder - Oxygen.fpe',-1450,-6760,y=500)
@@ -228,7 +223,7 @@ def architecture(Mesh,own,add,prop,P,I):
  for x,z,ry in [(-2420,-7000,15),(-970,-7060,-10)]:
   prop(P+'Concrete Barrier 01.fpe',x,z,y=500,ry=ry)
 
- # Route beacons are small repeated punctuation, not giant goalposts.
+ # Small bespoke route markers remain only as close-range punctuation.
  m=Mesh();beam(m,0,0,0,12,125,12,2);beam(m,0,108,0,56,16,22,5)
  marker=own('Meridian Route Beacon',m)
  for i,(x,z,ry) in enumerate([
@@ -237,19 +232,16 @@ def architecture(Mesh,own,add,prop,P,I):
  ],1):
   add(marker,'Meridian route marker '+str(i),x,z,y=ground(x,z),ry=ry)
 
- # A sparse utility spine gives the road continuity over long sight lines.
- m=Mesh();beam(m,0,0,0,16,270,16,2);beam(m,0,245,0,145,18,18,1)
- beam(m,-55,238,0,12,52,12,5);beam(m,55,238,0,12,52,12,5)
- utility=own('Meridian Utility Pylon',m)
+ # Real installed electrical infrastructure replaces the old generated black pylons.
  for i,(x,z,ry) in enumerate([
   (-2150,-7600,0),(-1060,-6660,0),(-300,-5750,0),(520,-4650,0),
   (500,-3750,0),(-520,-2980,0)
  ],1):
-  add(utility,'Meridian utility pylon '+str(i),x,z,y=ground(x,z),ry=ry)
+  prop(CYM+'CS_Street_Electrical_Pole_01.fpe',x,z,y=ground(x,z),ry=ry,scale=72)
+  if i in (2,4,6):
+   prop(CYM+'CS_Street_Lamp.fpe',x+110,z+40,y=ground(x+110,z+40),ry=ry,scale=72)
 
- # -------------------------------------------------------------------------
- # Choir — intentionally unlike the human construction vocabulary.
- # -------------------------------------------------------------------------
+ # Choir deliberately uses a vocabulary unavailable in the human asset kits.
  m=Mesh()
  for x,y,z,w,h,d,angle in [
   (-420,0,0,210,2850,310,-11),(490,0,180,260,3300,340,9),
@@ -260,8 +252,7 @@ def architecture(Mesh,own,add,prop,P,I):
  arch=own('Choir Breach Arch',m)
  add(arch,'Choir / buried arch exposed by the receded sea',0,5100,y=180,ry=16)
 
- # Elevated inspection bridge is one of the few places where authored deck geometry
- # is required because the native terrain drops away beneath it.
+ # Elevated inspection bridge stays bespoke because terrain falls away below it.
  m=Mesh();beam(m,0,-16,0,500,22,980,2)
  for x in (-245,245):
   beam(m,x,95,0,12,12,980,2)
