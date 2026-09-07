@@ -113,6 +113,28 @@ def architecture(Mesh,own,add,prop,P,I):
  shell=own('AEGIS Cliff Gallery',m);add(shell,'AEGIS / armoured hall above the Choir cut',0,3090,y=1540)
  for x in (-880,880):prop(I+'Control Box - Tall.fpe',x,3250,y=1542,ry=180)
 
+ # Camp 12 gets one unmistakable silhouette instead of relying on floating HUD text.
+ m=Mesh()
+ beam(m,0,0,0,30,620,30,2)
+ beam(m,0,490,0,500,24,24,5)
+ beam(m,-180,410,0,22,130,22,2);beam(m,180,410,0,22,130,22,2)
+ beam(m,0,590,0,150,35,80,5)
+ mast=own('Camp 12 Survey Mast',m);add(mast,'Meridian survey mast / Camp 12',-1870,-7160,y=500)
+
+ # A small open equipment canopy makes the camp read as a worked site, without a floor plane.
+ m=Mesh()
+ for x in (-230,230):
+  for z in (-170,170):beam(m,x,0,z,26,250,26,1)
+ beam(m,0,245,0,520,25,400,1)
+ beam(m,0,235,-180,520,20,20,5)
+ canopy=own('Camp 12 Equipment Canopy',m);add(canopy,'Camp 12 / survey equipment shelter',-1330,-7080,y=500,ry=8)
+
+ # Small shoulder markers trace the human route through the basin. They deliberately sit off-center.
+ m=Mesh();beam(m,0,0,0,18,155,18,2);beam(m,0,132,0,70,18,24,5)
+ marker=own('Meridian Route Beacon',m)
+ for i,(x,z,ry) in enumerate([(-1260,-6460,5),(-520,-5850,-8),(260,-5050,0),(520,-4250,12),(260,-3650,-8),(420,-3260,0)],1):
+  add(marker,'Meridian route marker '+str(i),x,z,y=ground(x,z),ry=ry)
+
  # Choir arch remains purpose-built non-height-field geometry.
  m=Mesh()
  for x,y,z,w,h,d,angle in [(-420,0,0,210,2850,310,-11),(490,0,180,260,3300,340,9),(20,2520,100,980,300,400,-8)]:
