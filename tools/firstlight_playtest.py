@@ -1,11 +1,17 @@
 """Deploy/launch First Light using MAX's native external-project registration."""
 from pathlib import Path
-import argparse,shutil,subprocess,os,json,time
+import argparse,shutil,subprocess,os,json,time,sys
 from native_format import ROOT,INSTALL
 GAME=ROOT/'Aegis Reach';FILES=GAME/'Files'
 TARGET=Path(os.environ['USERPROFILE'])/'Documents/GameGuruApps/GameGuruMAX/Files'
 REG=TARGET/'projectbank/Aegis Reach';DESIGN=GAME/'Design/First Light'
+
+def apply_load_safety():
+ cmd=[sys.executable,str(ROOT/'tools/firstlight_load_safety.py')]
+ subprocess.run(cmd,cwd=ROOT,check=True)
+
 def deploy():
+ apply_load_safety()
  REG.mkdir(parents=True,exist_ok=True)
  DESIGN.mkdir(parents=True,exist_ok=True)
  # MAX load_storyboard consults remoteproject.txt only when no local project DAT exists.
