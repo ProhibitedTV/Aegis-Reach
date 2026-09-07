@@ -1,16 +1,26 @@
--- DESCRIPTION: Adaptive Aegis Reach score controller using GameGuru MAX native sound APIs.
--- One hidden instance is injected by tools/native_integration_pass.py with three Sound slots:
--- Sound0 = Salt Moon Drift, Sound1 = Moon Outpost Drift, Sound2 = Orbital Catacomb.
+-- DESCRIPTION: Robust adaptive Aegis Reach score controller for GameGuru MAX.
 --
--- MAX's shipped fadeinsound.lua demonstrates LoopNon3DSound + SetSoundVolume. We use
--- SetSound to select each slot before changing volume so the score can crossfade instead
--- of hard-cutting every time the world controller changes aegis.music_state.
+-- The previous version depended on three entity Sound slots. That was fragile: the
+-- large Suno masters are staged locally at deploy time, so a missing slot produced a
+-- completely silent game. MAX has a simpler native path for persistent music:
+-- LoadGlobalSound / LoopGlobalSound / SetGlobalSoundVolume.
+--
+-- This controller loads the three authored cues directly and ALWAYS loads the small
+-- checked-in reach-underscore.wav as a fallback. If any Suno master is absent, the
+-- game still has music instead of failing silently.
 local music={}
 
 local TRACK_SALT=0
 local TRACK_OUTPOST=1
 local TRACK_CATACOMB=2
 local TRACK_COUNT=3
+
+local GLOBAL_IDS={
+ [TRACK_SALT]=211,
+ [TRACK_OUTPOST]=212,
+ [TRACK_CATACOMB]=213
+}
+local FALLBACK_ID=214
 
 local audit_paths={}
 local userprofile=os.getenv and os.getenv("USERPROFILE") or nil
@@ -42,77 +52,123 @@ local function track_name(slot)
 end
 
 local function track_for_state(state)
- if state=="exploration_vesper" then return TRACK_SALT,48 end
- if state=="discovery_human" then return TRACK_SALT,54 end
- if state=="exploration_fortress" then return TRACK_OUTPOST,46 end
- if state=="combat" then return TRACK_OUTPOST,64 end
- if state=="combat_overcharge" then return TRACK_OUTPOST,68 end
+ if state=="exploration_vesper" then return TRACK_SALT,52 end
+ if state=="discovery_human" then return TRACK_SALT,58 end
+ if state=="exploration_fortress" then return TRACK_OUTPOST,48 end
+ if state=="combat" then return TRACK_OUTPOST,66 end
+ if state=="combat_overcharge" then return TRACK_OUTPOST,70 end
  if state=="resolution_aegis" then return TRACK_OUTPOST,62 end
- if state=="tension_aegis" then return TRACK_CATACOMB,52 end
- if state=="combat_interference" then return TRACK_CATACOMB,62 end
- if state=="discovery_choir" then return TRACK_CATACOMB,58 end
- return TRACK_SALT,42
+ if state=="tension_aegis" then return TRACK_CATACOMB,56 end
+ if state=="combat_interference" then return TRACK_CATACOMB,66 end
+ if state=="discovery_choir" then return TRACK_CATACOMB,62 end
+ return TRACK_SALT,46
 end
 
-local function set_slot_volume(e,slot,volume)
- SetSound(e,slot)
- SetSoundVolume(math.max(0,math.min(100,math.floor(volume))))
+local function delete_if_loaded(id)
+ if GetGlobalSoundExist and GetGlobalSoundExist(id)==1 then DeleteGlobalSound(id) end
 end
 
-local function ensure_playing(e,m,slot)
- if m.playing[slot] then return end
- set_slot_volume(e,slot,0)
- LoopNon3DSound(e,slot)
- m.playing[slot]=true
+local function load_score()
+ for slot=0,TRACK_COUNT-1 do delete_if_loaded(GLOBAL_IDS[slot]) end
+ delete_if_loaded(FALLBACK_ID)
+
+ -- Keep these calls literal. MAX's standalone collector scans Lua for literal
+ -- LoadGlobalSound references and can therefore package the score correctly.
+ LoadGlobalSound("audiobank\\aegis_reach\\music\\salt_moon_drift.wav",GLOBAL_IDS[TRACK_SALT])
+ LoadGlobalSound("audiobank\\aegis_reach\\music\\moon_outpost_drift.wav",GLOBAL_IDS[TRACK_OUTPOST])
+ LoadGlobalSound("audiobank\\aegis_reach\\music\\orbital_catacomb.wav",GLOBAL_IDS[TRACK_CATACOMB])
+ LoadGlobalSound("audiobank\\aegis_reach\\reach-underscore.wav",FALLBACK_ID)
 end
 
-local function stop_slot(e,m,slot)
- if not m.playing[slot] then return end
- set_slot_volume(e,slot,0)
- StopSound(e,slot)
- m.playing[slot]=false
+local function exists(id)
+ return GetGlobalSoundExist and GetGlobalSoundExist(id)==1
+end
+
+local function resolved_id(slot)
+ local id=GLOBAL_IDS[slot]
+ if exists(id) then return id,false end
+ if exists(FALLBACK_ID) then return FALLBACK_ID,true end
+ return -1,true
+end
+
+local function ensure_looping(id)
+ if id<0 or not exists(id) then return end
+ if GetGlobalSoundPlaying and GetGlobalSoundPlaying(id)==0 then
+  LoopGlobalSound(id)
+ end
+end
+
+local function set_volume(id,volume)
+ if id<0 or not exists(id) then return end
+ SetGlobalSoundVolume(id,math.max(0,math.min(100,math.floor(volume))))
+end
+
+local function stop_if_silent(id,volume,keep)
+ if id<0 or not exists(id) or keep then return end
+ if volume<=0.1 and StopGlobalSound then StopGlobalSound(id) end
 end
 
 function aegis_music_init(e)
+ load_score()
+
  music[e]={
-  target=-1,pending=-1,pending_since=0,
-  volumes={[0]=0,[1]=0,[2]=0},playing={[0]=false,[1]=false,[2]=false},
-  last_state="",last_update=0,target_volume=46
+  target=TRACK_SALT,pending=-1,pending_since=0,
+  volumes={[211]=0,[212]=0,[213]=0,[214]=0},
+  last_state="",last_update=g_Time or 0,target_volume=46,
+  fallback_announced=false
  }
+
  Hide(e)
  CollisionOff(e)
- SetActivated(e,0)
- for slot=0,TRACK_COUNT-1 do set_slot_volume(e,slot,0) end
- audit("music_init entity="..e)
+ -- Do not deactivate the controller. Always Active is supplied by the map entity and
+ -- this script must keep ticking even when no Visual Logic connection is firing.
+ SetActivated(e,1)
+
+ -- MAX may also start visuals.ini's ambient track. The adaptive controller owns music
+ -- from this point onward so there is never a doubled loop.
+ if StopAmbientMusicTrack then StopAmbientMusicTrack() end
+
+ local first,fallback=resolved_id(TRACK_SALT)
+ if first>=0 then
+  ensure_looping(first)
+  set_volume(first,34)
+  music[e].volumes[first]=34
+ end
+
+ audit(
+  "music_init salt="..tostring(exists(GLOBAL_IDS[TRACK_SALT]))..
+  " outpost="..tostring(exists(GLOBAL_IDS[TRACK_OUTPOST]))..
+  " catacomb="..tostring(exists(GLOBAL_IDS[TRACK_CATACOMB]))..
+  " fallback="..tostring(exists(FALLBACK_ID))
+ )
 end
 
 function aegis_music_main(e)
  local m=music[e]
- if not m or not aegis or not aegis.started then return end
+ if not m then return end
+ if not aegis or not aegis.started then return end
  if g_Time-(m.last_update or 0)<50 then return end
  local elapsed=math.max(1,g_Time-(m.last_update or g_Time))
  m.last_update=g_Time
 
  local state=aegis.music_state or "exploration_fortress"
  local desired,desired_volume=track_for_state(state)
-
- -- Discovery cues should answer the player's action immediately. Normal tactical state
- -- changes wait briefly so stepping across a boundary or a two-second combat lull does
- -- not constantly restart the score.
  local immediate=(state=="discovery_choir" or state=="discovery_human")
+
  if desired~=m.target then
   if desired~=m.pending then
    m.pending=desired
    m.pending_since=g_Time
   end
-  if immediate or g_Time-m.pending_since>=1200 then
+  if immediate or g_Time-m.pending_since>=900 then
    m.target=desired
    m.target_volume=desired_volume
    m.pending=-1
-   ensure_playing(e,m,m.target)
    aegis.music_track=m.target
    aegis.music_track_changed_at=g_Time
-   audit("music_state state="..state.." track="..track_name(m.target).." volume="..math.floor(desired_volume))
+   local id,fallback=resolved_id(m.target)
+   if id>=0 then ensure_looping(id) end
+   audit("music_state state="..state.." track="..track_name(m.target).." fallback="..tostring(fallback).." volume="..math.floor(desired_volume))
   end
  else
   m.target_volume=desired_volume
@@ -120,20 +176,29 @@ function aegis_music_main(e)
  end
  m.last_state=state
 
- -- Crossfade in roughly 2.2 seconds. Music stays deliberately below full volume so
- -- weapons, Kestrel and environmental detail retain headroom.
- local step=elapsed*0.032
- for slot=0,TRACK_COUNT-1 do
-  local goal=(slot==m.target) and m.target_volume or 0
-  local v=m.volumes[slot] or 0
+ local target_id,fallback=resolved_id(m.target)
+ if fallback and not m.fallback_announced then
+  m.fallback_announced=true
+  audit("music_fallback active=true requested="..track_name(m.target))
+ end
+
+ -- Crossfade global music in roughly two seconds. Multiple authored cues can overlap
+ -- briefly, but if several semantic tracks resolve to the same fallback sound there is
+ -- only one actual global sound instance.
+ local step=elapsed*0.035
+ local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
+ for _,id in ipairs(ids) do
+  local goal=(id==target_id) and m.target_volume or 0
+  local v=m.volumes[id] or 0
   if v<goal then v=math.min(goal,v+step) end
   if v>goal then v=math.max(goal,v-step) end
-  m.volumes[slot]=v
+  m.volumes[id]=v
   if v>0.1 then
-   ensure_playing(e,m,slot)
-   set_slot_volume(e,slot,v)
-  elseif slot~=m.target then
-   stop_slot(e,m,slot)
+   ensure_looping(id)
+   set_volume(id,v)
+  else
+   set_volume(id,0)
+   stop_if_silent(id,v,id==target_id)
   end
  end
 end
