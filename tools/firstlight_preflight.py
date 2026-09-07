@@ -1,10 +1,8 @@
 """Fail-fast preflight for native First Light playtests.
 
-This is deliberately stricter than the general structural test: it verifies the
-runtime map that MAX is about to load, the three authored score masters, the
-absence of known load-blocking stock weapon.lua pickups, and that QA instrumentation
-cannot teleport/control the player or kill actors. It also runs the Lua 5.2
-compatibility and mission-rule suites before a native launch.
+Verifies the exact runtime map MAX is about to load, authored score masters,
+absence of known load-blocking stock weapon.lua pickups, non-destructive QA,
+mission/Lua compatibility, and production environment composition invariants.
 """
 from pathlib import Path
 import hashlib
@@ -60,8 +58,13 @@ def main():
     if not MAP.is_file():
         raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: missing map {MAP}')
 
-    run_test('test_firstlight_lua_compat.py')
-    run_test('test_firstlight.py')
+    tests = [
+        'test_firstlight_lua_compat.py',
+        'test_firstlight.py',
+        'test_firstlight_composition.py',
+    ]
+    for name in tests:
+        run_test(name)
 
     with zipfile.ZipFile(MAP) as archive:
         archive.setpassword(PASSWORD)
@@ -128,7 +131,8 @@ def main():
         'qa_observational': True,
         'qa_forbidden_tokens_found': destructive,
         'tracks': track_info,
-        'tests': ['test_firstlight_lua_compat.py', 'test_firstlight.py'],
+        'tests': tests,
+        'environment_composition_gate': True,
         'native_playtest_required': True,
     }
     DESIGN.mkdir(parents=True, exist_ok=True)
@@ -140,6 +144,7 @@ def main():
     print('Score masters:', ', '.join(TRACKS))
     print('Unsafe stock weapon pickups: 0')
     print('QA instrumentation: observational / non-destructive')
+    print('Environment composition regression gate: PASS')
     print('Native MAX playtest is still required.')
 
 
