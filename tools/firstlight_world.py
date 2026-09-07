@@ -9,7 +9,7 @@ import math
 from native_terrain_pass import gauss, rect_mask, smoothstep
 
 ROUTE=[
- (0,-9600,1080),(-700,-8350,810),(-1700,-7350,475),(-1450,-6400,330),
+ (0,-9600,1080),(-700,-8350,810),(-1700,-7350,500),(-1450,-6400,310),
  (0,-5150,120),(300,-4150,290),(0,-3100,640),(0,-2350,650),
  (-1250,-1750,900),(-1300,-850,900),(-650,-520,900),(-250,-520,930),
  (250,-250,1000),(850,-260,1080),(1300,1050,1080),(2100,1250,1080),
@@ -21,7 +21,7 @@ RETURN=[
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
 PADS=[
- (-1700,-7160,760,580,475),     # Camp 12 floor inside the sheltered bowl
+ (-1700,-7160,900,720,500),
  (0,-3100,900,620,640),
  (-1450,-650,1080,1120,900),
  (1250,700,1120,1020,1080),
@@ -48,19 +48,6 @@ def ground(x,z):
  h+=1950*gauss(x,z,0,3900,3450,2850)
  h+=1750*gauss(x,z,0,7400,2100,1000)
  h+=40*math.sin(x/270+z/590)*math.sin(z/390)
-
- # Camp 12 sits in a weathered impact hollow cut into the old salt shelf. A
- # protective crescent of terrain wraps the west/north sides while the southeast
- # remains open as the engineered road toward Gate 07. MAX terrain cannot make a
- # true overhang, so installed cliff pieces finish the rock-cut recess in architecture().
- for cx,cz,amp,sx,sz in [
-  (-2850,-7350,760,760,1120),(-1900,-8350,650,1080,620),
-  (-760,-7900,520,820,880),(-2780,-6480,430,620,840)
- ]:
-  h+=amp*gauss(x,z,cx,cz,sx,sz)
- h-=165*gauss(x,z,-1700,-7160,1180,900)
- h-=80*gauss(x,z,-1250,-6350,720,980)
-
  for route,width in ((ROUTE,360),(RETURN,300)):
   distance,y=road_sample(x,z,route)
   blend=1-smoothstep(width,width+470,distance)
@@ -99,13 +86,9 @@ def architecture(Mesh,own,add,prop,P,I):
   beam(m,x,280,(lo+hi)/2,45,h-280,hi-lo,color)
 
  C='Booster Pack\\Construction Pack\\'
- CAMP='Booster Pack\\Camping Pack\\'
  CYB='Cyberpunk Streets Booster Pack\\Buildings\\'
  CYM='Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\'
- CYF='Cyberpunk Streets Booster Pack\\Store Fronts\\'
  CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
- ARC='Arctic Collection\\Cliffs\\'
- ARR='Arctic Collection\\Rocks\\'
 
  # GATE 07 — unique massing plus real sci-fi facade/construction pieces.
  m=Mesh()
@@ -209,72 +192,36 @@ def architecture(Mesh,own,add,prop,P,I):
  for x,z,ry in [(-1050,2650,0),(980,2760,90),(780,3500,90)]:
   prop(P+'Concrete Barrier 01.fpe',x,z,y=ground(x,z),ry=ry)
 
- # -------------------------------------------------------------------------
- # SURVEY CAMP 12 — a sheltered crater outpost, not an open prop yard.
- # Geography explains the camp: rock crescent to the west/north, a warm communal
- # core in the lee, a high-tech field lab against the rock wall, logistics on the
- # exposed edge, and one clear road spilling southeast toward Gate 07.
- # -------------------------------------------------------------------------
- # Rock-cut recess / pseudo cave mouth. Terrain supplies the crater; installed
- # cliff/outcrop pieces provide the overhang and close-range geology MAX terrain
- # cannot make by itself.
- for path,x,z,ry,scale in [
-  (ARC+'Rock Cliff B.fpe',-2600,-7460,78,72),
-  (ARC+'Rock Cliff E.fpe',-2360,-7900,118,76),
-  (ARC+'Rock Cliff H.fpe',-1600,-8080,168,70),
-  (ARR+'Windbreak.fpe',-2580,-7000,70,92),
-  (ARR+'Pillared Rock.fpe',-2470,-7190,20,82),
-  (ARR+'Outcrop.fpe',-2180,-7720,145,88),
- ]:
-  prop(path,x,z,y=ground(x,z)-18,ry=ry,scale=scale)
-
- # A small bespoke mast remains because it gives Camp 12 a unique long-range
- # silhouette without pretending to be the camp itself.
- m=Mesh();beam(m,0,0,0,24,520,24,2);beam(m,0,410,0,360,18,18,5)
- beam(m,-120,335,0,160,14,14,1);beam(m,120,360,0,160,14,14,1)
+ # SURVEY CAMP 12 — use the actual Construction Pack for survey/worksite identity.
+ m=Mesh()
+ beam(m,0,0,0,28,650,28,2)
+ beam(m,0,500,0,520,22,22,5)
+ beam(m,-190,410,0,22,150,22,2);beam(m,190,410,0,22,150,22,2)
+ beam(m,0,600,0,170,42,90,5)
+ beam(m,-140,325,0,210,18,18,1);beam(m,140,370,0,210,18,18,1)
  mast=own('Camp 12 Survey Mast',m)
- add(mast,'Meridian survey mast / Camp 12',-2150,-7470,y=ground(-2150,-7470))
+ add(mast,'Meridian survey mast / Camp 12',-1870,-7160,y=500)
 
- # High-tech field lab is tucked into the rock recess. A freight container gives
- # it believable field-module mass while sci-fi entry/blue trim sell the research
- # purpose. Nothing sits on a generated floor plane.
- prop(C+'Freight Container.fpe',-2290,-7070,y=ground(-2290,-7070),ry=90,scale=72)
- prop(CYF+'CS_Store_Front_01_Entrance_Blue.fpe',-2220,-6810,y=ground(-2220,-6810),ry=180,scale=48)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue.fpe',-2520,-6930,y=ground(-2520,-6930),ry=90,scale=46)
- prop(CYM+'CS_Neon_06.fpe',-2440,-6840,y=ground(-2440,-6840)+55,ry=90,scale=48)
- prop(C+'SurveyorStand1.fpe',-2050,-6970,y=ground(-2050,-6970),ry=18,scale=105)
- prop(C+'SurveyorStand2.fpe',-1880,-6880,y=ground(-1880,-6880),ry=-22,scale=105)
- prop(C+'CableReel.fpe',-2080,-6740,y=ground(-2080,-6740),ry=40,scale=88)
-
- # Cozy human core. These familiar objects are intentionally clustered instead of
- # scattered: the player should read a tiny exhausted team living here together.
- prop(CAMP+'Tent2.fpe',-1820,-7420,y=ground(-1820,-7420),ry=20,scale=92)
- prop(CAMP+'Tent4.fpe',-1450,-7480,y=ground(-1450,-7480),ry=-18,scale=90)
- prop(CAMP+'Picnic-Table.fpe',-1630,-7140,y=ground(-1630,-7140),ry=8,scale=92)
- prop(CAMP+'Log-Bench.fpe',-1460,-7020,y=ground(-1460,-7020),ry=-12,scale=92)
- prop(CAMP+'Chair.fpe',-1780,-7000,y=ground(-1780,-7000),ry=145,scale=92)
- prop(CAMP+'Lantern.fpe',-1570,-7070,y=ground(-1570,-7070),ry=0,scale=100)
- prop(CAMP+'Radio.fpe',-1710,-7040,y=ground(-1710,-7040),ry=35,scale=95)
- prop(CAMP+'Sleeping-Bag1.fpe',-1860,-7280,y=ground(-1860,-7280),ry=25,scale=92)
- prop(CAMP+'Water-Cooler.fpe',-1370,-7200,y=ground(-1370,-7200),ry=-15,scale=92)
- prop(CAMP+'Cooker-Stove.fpe',-1510,-7240,y=ground(-1510,-7240),ry=30,scale=92)
- prop(CAMP+'CoffeePot.fpe',-1550,-7190,y=ground(-1550,-7190),ry=10,scale=95)
-
- # Exposed eastern/southern edge: military and construction logistics form a loose
- # perimeter between the living hollow and the road out, making the camp feel like
- # a civilian survey team operating under a security umbrella.
- prop(P+'Container 01a.fpe',-1040,-7420,y=ground(-1040,-7420),ry=180,scale=86)
- prop(P+'Generator 04a.fpe',-1140,-7000,y=ground(-1140,-7000),ry=180,scale=88)
- prop(C+'Light Generator.fpe',-1220,-6750,y=ground(-1220,-6750),ry=165,scale=88)
- prop(C+'PortableWaterTank.fpe',-980,-7130,y=ground(-980,-7130),ry=0,scale=88)
- prop(C+'Ladder Open.fpe',-1040,-7310,y=ground(-1040,-7310),ry=80,scale=82)
- for x,z,ry in [(-1180,-6840,12),(-1060,-6790,-8),(-930,-6890,20)]:
-  prop(P+'Wooden Crate 01a.fpe',x,z,y=ground(x,z),ry=ry)
- for x,z,ry in [(-920,-6550,12),(-1190,-6510,-10)]:
-  prop(C+'Trafficbarrier.fpe',x,z,y=ground(x,z),ry=ry,scale=92)
- prop(P+'Hesco Barrier 01.fpe',-930,-7350,y=ground(-930,-7350),ry=90,scale=88)
- prop(I+'Cylinder - Oxygen.fpe',-1260,-6900,y=ground(-1260,-6900))
- prop(I+'Cylinder - Spare Oxygen.fpe',-1320,-6900,y=ground(-1320,-6900))
+ m=Mesh()
+ for x in (-230,230):
+  for z in (-170,170):beam(m,x,0,z,24,250,24,1)
+ beam(m,0,245,0,520,25,400,1)
+ canopy=own('Camp 12 Equipment Canopy',m)
+ add(canopy,'Camp 12 / survey equipment shelter',-1280,-7050,y=500,ry=8)
+ prop(P+'Container 01a.fpe',-2300,-7420,y=500,ry=0,scale=88)
+ prop(C+'Freight Container.fpe',-1120,-7460,y=500,ry=180,scale=72)
+ prop(C+'SurveyorStand1.fpe',-1900,-6980,y=500,ry=15,scale=110)
+ prop(C+'SurveyorStand2.fpe',-1600,-7030,y=500,ry=-20,scale=110)
+ prop(C+'Light Generator.fpe',-1320,-6740,y=500,ry=180,scale=90)
+ prop(C+'CableReel.fpe',-1210,-6840,y=500,ry=45,scale=90)
+ prop(C+'Ladder Open.fpe',-2220,-7240,y=500,ry=80,scale=85)
+ prop(C+'Trafficbarrier.fpe',-1040,-6500,y=ground(-1040,-6500),ry=10,scale=95)
+ for x,z,ry in [(-2240,-6810,10),(-2120,-6750,-5),(-1180,-6820,12),(-1060,-6760,0)]:
+  prop(P+'Wooden Crate 01a.fpe',x,z,y=500,ry=ry)
+ prop(I+'Cylinder - Oxygen.fpe',-1450,-6760,y=500)
+ prop(I+'Cylinder - Oxygen.fpe',-1510,-6760,y=500)
+ for x,z,ry in [(-2420,-7000,15),(-970,-7060,-10)]:
+  prop(P+'Concrete Barrier 01.fpe',x,z,y=500,ry=ry)
 
  # Small bespoke route markers remain only as close-range punctuation.
  m=Mesh();beam(m,0,0,0,12,125,12,2);beam(m,0,108,0,56,16,22,5)
@@ -286,12 +233,12 @@ def architecture(Mesh,own,add,prop,P,I):
   add(marker,'Meridian route marker '+str(i),x,z,y=ground(x,z),ry=ry)
 
  # Real installed electrical infrastructure replaces the old generated black pylons.
- # The first pole sits outside the crater lip so the camp interior remains intimate.
  for i,(x,z,ry) in enumerate([
-  (-930,-6510,0),(-300,-5750,0),(520,-4650,0),(500,-3750,0),(-520,-2980,0)
+  (-2150,-7600,0),(-1060,-6660,0),(-300,-5750,0),(520,-4650,0),
+  (500,-3750,0),(-520,-2980,0)
  ],1):
   prop(CYM+'CS_Street_Electrical_Pole_01.fpe',x,z,y=ground(x,z),ry=ry,scale=72)
-  if i in (1,3,5):
+  if i in (2,4,6):
    prop(CYM+'CS_Street_Lamp.fpe',x+110,z+40,y=ground(x+110,z+40),ry=ry,scale=72)
 
  # Choir deliberately uses a vocabulary unavailable in the human asset kits.
