@@ -19,6 +19,12 @@ local function line_for(name)
  if string.find(name,"TIDE GAUGE 22",1,true) then
   return "KESTREL: Same mineral line. Whatever drained this basin, it wasn't local weather.",7
  end
+ if string.find(name,"MERIDIAN SHELTER 12",1,true) then
+  return "KESTREL: Meridian shelter twelve. Field heaters, tide charts... this place was a worksite long before it was a fortress.",7
+ end
+ if string.find(name,"RESONANCE CUT 03",1,true) then
+  return "KESTREL: That black rib is below the old waterline. Survey crews didn't put it there.",7
+ end
  return nil,0
 end
 
@@ -29,6 +35,21 @@ local function subtle_emissive(e,name,distance)
   local pulse=(math.sin(g_Time*0.0022)+1)*0.5
   SetEntityEmissiveColor(e,72,190,202)
   SetEntityEmissiveStrength(e,15+near*55+pulse*12)
+  return
+ end
+ if string.find(name,"MERIDIAN SHELTER",1,true) then
+  local near=math.max(0,1-math.min(1,distance/900))
+  SetEntityEmissiveColor(e,219,151,78)
+  SetEntityEmissiveStrength(e,6+near*22)
+  return
+ end
+ if string.find(name,"RESONANCE CUT",1,true) then
+  -- The Choir should never look like a magic neon collectible. The signal is a faint,
+  -- slow mineral response that becomes noticeable only after the player is already near it.
+  local near=math.max(0,1-math.min(1,distance/850))
+  local pulse=(math.sin(g_Time*0.00115)+1)*0.5
+  SetEntityEmissiveColor(e,70,118,122)
+  SetEntityEmissiveStrength(e,2+near*(7+pulse*8))
  end
 end
 
