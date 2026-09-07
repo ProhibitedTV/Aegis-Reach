@@ -1,0 +1,18 @@
+# Local Git worktrees / generated interpreter caches
+.worktrees/
+**/__pycache__/
+*.py[cod]
+
+# Local MAX/editor recovery state and generated runtime reports
+Aegis Reach/Design/map-backups/
+Aegis Reach/Design/First Light/last-launch.json
+Aegis Reach/Design/First Light/previous-remoteproject.txt
+Aegis Reach/Design/First Light/previous-storyboard.dat
+Aegis Reach/Design/music-manifest.json
+
+# Licensed GameGuru MAX/DLC payloads may be staged locally by authoring tools.
+# Maps may reference these packs, but do not add their source payloads to Git.
+Aegis Reach/Files/entitybank/Booster Pack/
+Aegis Reach/Files/entitybank/Industrial Collection/
+Aegis Reach/Files/entitybank/Max Collection/Rocks/
+Aegis Reach/Files/entitybank/Cyberpunk Streets Booster Pack/
