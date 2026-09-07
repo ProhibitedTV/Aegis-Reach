@@ -6,17 +6,17 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'tools'))
 sys.path.insert(0, str(ROOT / 'tools/vendor'))
 
-from python_runtime import ensure_lua51_runtime
+from python_runtime import ensure_max_lua_runtime
 
-LuaRuntime = ensure_lua51_runtime(__file__)
+LuaRuntime = ensure_max_lua_runtime(__file__)
 lua = LuaRuntime(unpack_returned_tuples=True)
 
-# MAX's runtime exposed table.unpack but not the legacy Lua 5.1 global unpack in the
-# native First Light run. Simulate that API shape while still using our vendored Lua
-# 5.1 harness so the guard remains portable across both environments.
+# GameGuru MAX ships Lua 5.2.3. In that runtime table.unpack exists and the legacy
+# Lua 5.1 global unpack does not. Keep the shape explicit so this exact native crash
+# remains covered even if the vendored runtime changes later.
 lua.execute('''
 FIRSTLIGHT_TEST=true
-table.unpack = table.unpack or unpack
+assert(table.unpack ~= nil)
 unpack = nil
 ''')
 
@@ -30,4 +30,4 @@ firstlight_probe = firstlight_guard('firstlight_probe', firstlight_probe)
 result = lua.globals().firstlight_probe(17, 25)
 assert result == 42, result
 print('FIRST LIGHT // LUA RUNTIME COMPAT PASS')
-print('guard works with table.unpack and no global unpack')
+print('GameGuru MAX Lua 5.2 guard path verified: table.unpack / no global unpack')
