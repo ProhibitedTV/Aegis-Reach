@@ -54,6 +54,7 @@ def prepare_production_content() -> None:
     from story_art import build as build_story_art
     from cineguru_bootstrap import build_original_cine_assets, shotlist, SHOTLIST
     from ecosystem_scan import scan as scan_ecosystem
+    from import_music import stage_music
 
     ecosystem = scan_ecosystem()
     usable_categories = [name for name, paths in ecosystem["categories"].items() if paths]
@@ -64,6 +65,13 @@ def prepare_production_content() -> None:
         len(usable_categories),
         "useful content categories",
     )
+
+    score = stage_music(strict=False)
+    if score["ready"]:
+        print("Adaptive score staged: 3/3 supplied Suno masters")
+    else:
+        print("Adaptive score staged:", 3 - len(score["missing"]), "/ 3 masters; missing", ", ".join(score["missing"]))
+        print("Run: python tools\\import_music.py --source <folder> --strict")
 
     environment = environment_archive(MAP, dry_run=False, backup=False)
     print(
@@ -110,7 +118,7 @@ def prepare_production_content() -> None:
     print(
         "MAX-native presentation endpoints applied:",
         len(native["beacons"]),
-        "beacons + world-state controller",
+        "beacons + world-state + adaptive music controllers",
     )
 
     story_images = build_story_art()
@@ -167,10 +175,11 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (ecosystem + layered Vesper terrain + recon combat + native MAX logic + presentation + polish)")
+        print("Mode: PRODUCTION SLICE (ecosystem + layered Vesper + recon combat + adaptive score + native MAX logic + presentation + polish)")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("World report: Aegis Reach\\Design\\world-story-pass.json")
         print("Terrain report: Aegis Reach\\Design\\terrain-story-pass.json")
+        print("Music manifest: Aegis Reach\\Design\\music-manifest.json")
         print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
         print("Story art: Aegis Reach\\Files\\imagebank\\aegis_reach\\story")
         print("CineGuru setup: python tools\\cineguru_bootstrap.py")
@@ -221,7 +230,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="scan ecosystem + build layered world/story/recon/native/cinematic systems + visual polish before deploying",
+        help="stage score + scan ecosystem + build layered world/story/recon/native/cinematic systems + visual polish before deploying",
     )
     args = parser.parse_args()
 
