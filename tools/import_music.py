@@ -10,9 +10,8 @@ Examples:
     python tools/import_music.py --source "%USERPROFILE%\Downloads" --strict
     python tools/import_music.py --source "D:\Music\Aegis Reach"
 
-Production deploy calls stage_music(strict=False), so once the three masters exist in
-Downloads/Desktop/Music or already in the repo, `max_playtest.py deploy --production`
-will stage and deploy them automatically.
+Production deploy searches Downloads/Desktop/Music automatically and can also receive
+one or more --music-source paths through tools/max_playtest.py.
 """
 from __future__ import annotations
 
@@ -100,15 +99,35 @@ def default_sources() -> list[Path]:
     return result
 
 
+def _recursive_alias_search(source: Path, aliases: list[str], max_depth: int = 3) -> Path | None:
+    """Find a specifically named score file without recursively walking an entire drive."""
+    if not source.is_dir():
+        return None
+    wanted = {name.lower() for name in aliases}
+    base_depth = len(source.parts)
+    try:
+        for root, dirs, files in os.walk(source):
+            root_path = Path(root)
+            depth = len(root_path.parts) - base_depth
+            if depth >= max_depth:
+                dirs[:] = []
+            for name in files:
+                if name.lower() in wanted:
+                    return root_path / name
+    except OSError:
+        return None
+    return None
+
+
 def find_track(track: dict, sources: list[Path]) -> Path | None:
-    # Prefer an already staged canonical master.
     existing = DEST / track["canonical"]
     if existing.exists():
         return existing
 
+    aliases_lower = {name.lower() for name in track["aliases"]}
     for source in sources:
         if source.is_file():
-            if source.name.lower() in {name.lower() for name in track["aliases"]}:
+            if source.name.lower() in aliases_lower:
                 return source
             continue
         if not source.is_dir():
@@ -117,6 +136,9 @@ def find_track(track: dict, sources: list[Path]) -> Path | None:
             candidate = source / alias
             if candidate.exists():
                 return candidate
+        nested = _recursive_alias_search(source, track["aliases"])
+        if nested is not None:
+            return nested
     return None
 
 
@@ -151,8 +173,9 @@ def stage_music(extra_sources: list[Path] | None = None, *, strict: bool = False
         })
 
     report = {
-        "format": "PCM WAV masters; GameGuru MAX non-3D sound slots",
+        "format": "PCM WAV masters; GameGuru MAX global music controller",
         "destination": str(DEST.relative_to(ROOT)),
+        "searched_sources": [str(path) for path in sources],
         "tracks": entries,
         "missing": missing,
         "ready": not missing,
@@ -176,11 +199,15 @@ def main() -> None:
         if track["status"] == "staged":
             match = "master verified" if track["master_hash_match"] else "different revision"
             print(f"[OK] {track['id']}: {track['seconds']:.3f}s / {track['sample_rate']} Hz / {match}")
+            print("     ", track["source"])
         else:
             print(f"[--] {track['id']}: not found")
     print("Manifest:", MANIFEST)
     if report["missing"]:
         print("Missing files can be supplied with --source <folder-or-file>.")
+        print("Searched:")
+        for source in report["searched_sources"]:
+            print(" -", source)
     else:
         print("All score masters staged for MAX deployment.")
 

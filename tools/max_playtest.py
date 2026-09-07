@@ -2,6 +2,7 @@
 
 Examples:
     python tools/max_playtest.py deploy --production
+    python tools/max_playtest.py deploy --production --music-source "%USERPROFILE%\\Downloads"
     python tools/max_playtest.py deploy --polish
     python tools/max_playtest.py deploy
     python tools/max_playtest.py collect
@@ -44,13 +45,14 @@ def copy_tree(source: Path, target: Path) -> int:
     return count
 
 
-def prepare_production_content() -> None:
+def prepare_production_content(music_sources: list[Path] | None = None) -> dict:
     from environment_pass import rewrite_archive as environment_archive, MAP
     from world_story_pass import rewrite_archive as world_archive
     from terrain_story_pass import rewrite_archive as terrain_story_archive
     from shelf_encounter_pass import rewrite_archive as shelf_encounter_archive
     from native_terrain_pass import rewrite_archive as native_terrain_archive
     from terrain_interface_pass import rewrite_archive as terrain_interface_archive
+    from stability_cleanup_pass import rewrite_archive as stability_cleanup_archive
     from world_story_logic_pass import rewrite_archive as story_logic_archive
     from native_integration_pass import rewrite_archive as native_integration_archive
     from story_art import build as build_story_art
@@ -62,18 +64,18 @@ def prepare_production_content() -> None:
     usable_categories = [name for name, paths in ecosystem["categories"].items() if paths]
     print("GameGuru ecosystem scanned:", len(ecosystem["existing_roots"]), "roots /", len(usable_categories), "useful content categories")
 
-    score = stage_music(strict=False)
+    score = stage_music(extra_sources=music_sources or [], strict=False)
     if score["ready"]:
         print("Adaptive score staged: 3/3 supplied Suno masters")
     else:
+        print("*** MUSIC WARNING ***")
         print("Adaptive score staged:", 3 - len(score["missing"]), "/ 3 masters; missing", ", ".join(score["missing"]))
-        print("Run: python tools\\import_music.py --source <folder> --strict")
+        print("The runtime will use reach-underscore.wav instead of going silent.")
+        print("To stage the full score: python tools\\import_music.py --source <folder> --strict")
 
     environment = environment_archive(MAP, dry_run=False, backup=False)
     print("Environment skyline pass:", len(environment["generated_assets"]), "assets /", len(environment["placements"]), "placements")
 
-    # Legacy world passes now contribute architecture/story props. Their broad mesh
-    # substitutes are deliberately removed after the real MAX sculpt field is built.
     world = world_archive(MAP, dry_run=False, backup=False)
     print("Vesper story-prop pass:", len(world["placements"]), "placements /", world["south_gate_segments_removed"], "south-gate segments removed")
 
@@ -83,8 +85,6 @@ def prepare_production_content() -> None:
     shelf = shelf_encounter_archive(MAP, dry_run=False, backup=False)
     print("Optional Vesper shelf encounter:", shelf["enemy_count"], "enemies /", shelf["reward_count"], "field rewards")
 
-    # Actual landscape: same 4096x4096 sculpt representation MAX's Terrain Editing
-    # tools use. This replaces our earlier slab/ridge approximation.
     native_terrain = native_terrain_archive(MAP, dry_run=False, backup=False)
     print(
         "GameGuru MAX native terrain authored:",
@@ -93,10 +93,13 @@ def prepare_production_content() -> None:
         len(native_terrain["entities"]["snapped_entities"]), "entities terrain-snapped",
     )
 
-    # Environment-art grading stage: Level/Ramp-like transition where the natural
-    # shelf meets the modeled fortress threshold.
     interface = terrain_interface_archive(MAP, dry_run=False, backup=False)
     print("Relayfall terrain interface graded:", interface["terrain"]["cells_authored"], "cells /", interface["terrain"]["height_meters"], "m")
+
+    # Remove the large generated objective crowns/gantries and wall overlays that
+    # looked fine in blockout but visibly clip/z-fight in the first-person game.
+    cleanup = stability_cleanup_archive(MAP, dry_run=False, backup=False)
+    print("Stability cleanup:", cleanup["removed_count"], "known overlap/duplicate hazards removed")
 
     story_logic = story_logic_archive(MAP, dry_run=False, backup=False)
     print("Environmental story triggers bound:", len(story_logic["story_entities"]))
@@ -112,6 +115,12 @@ def prepare_production_content() -> None:
     SHOTLIST.write_text(json.dumps(shotlist(), indent=2), encoding="utf-8")
     print("Cinematic presentation assets generated:", len(cards), "image cards")
 
+    return {
+        "music_ready": score["ready"],
+        "music_missing": list(score["missing"]),
+        "cleanup_removed": cleanup["removed_count"],
+    }
+
 
 def apply_visual_polish() -> None:
     from polish_relayfall import rewrite_archive, MAP
@@ -119,9 +128,10 @@ def apply_visual_polish() -> None:
     print("Visual pass applied:", len(report["visual_settings"]), "settings /", len(report["lights"]), "lights")
 
 
-def deploy(target: Path, polish: bool, production: bool) -> None:
+def deploy(target: Path, polish: bool, production: bool, music_sources: list[Path] | None = None) -> None:
+    production_report = None
     if production:
-        prepare_production_content()
+        production_report = prepare_production_content(music_sources=music_sources)
     if polish or production:
         apply_visual_polish()
 
@@ -146,9 +156,15 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
     print("Target:", target)
     print("Files copied:", total)
     if production:
-        print("Mode: PRODUCTION SLICE (native MAX terrain + graded interfaces + Vesper story + recon combat + adaptive score + presentation)")
+        print("Mode: STABILIZED PRODUCTION SLICE")
+        print("  native MAX terrain + graded interfaces")
+        print("  overlap cleanup + dormant-character animation fix")
+        print("  Vesper story + recon combat + robust adaptive score + presentation")
+        if production_report and not production_report["music_ready"]:
+            print("  MUSIC FALLBACK ACTIVE // missing:", ", ".join(production_report["music_missing"]))
         print("Terrain report: Aegis Reach\\Design\\native-terrain-pass.json")
         print("Terrain interface: Aegis Reach\\Design\\terrain-interface-pass.json")
+        print("Cleanup report: Aegis Reach\\Design\\stability-cleanup-pass.json")
         print("DLC report: Aegis Reach\\Design\\gameguru-ecosystem.json")
         print("Music manifest: Aegis Reach\\Design\\music-manifest.json")
         print("Native report: Aegis Reach\\Design\\native-integration-pass.json")
@@ -157,7 +173,7 @@ def deploy(target: Path, polish: bool, production: bool) -> None:
         print("Mode: VISUAL POLISH")
     else:
         print("Mode: FAST SCRIPT/MAP SYNC")
-    print("Restart GameGuru MAX before testing so scripts, terrain and map data reload cleanly.")
+    print("Restart GameGuru MAX before testing so scripts, terrain, audio and map data reload cleanly.")
 
 
 def collect(target: Path) -> None:
@@ -186,11 +202,12 @@ def main() -> None:
     parser.add_argument("--target", type=Path, help="override GameGuru MAX user Files directory")
     parser.add_argument("--polish", action="store_true", help="apply tools/polish_relayfall.py before deploying")
     parser.add_argument("--production", action="store_true", help="stage score + build native terrain/world/story/recon/cinematic systems + visual polish before deploying")
+    parser.add_argument("--music-source", type=Path, action="append", default=[], help="extra folder/file containing supplied Suno WAV masters; may be repeated")
     args = parser.parse_args()
 
     target = args.target or default_max_files()
     if args.command == "deploy":
-        deploy(target, args.polish, args.production)
+        deploy(target, args.polish, args.production, music_sources=args.music_source)
     else:
         collect(target)
 

@@ -1,4 +1,11 @@
 -- DESCRIPTION: Iron Warden infantry with encounter gating and distinct tactical roles.
+--
+-- IMPORTANT MAX DETAIL:
+-- Character models in GameGuru MAX are not guaranteed to animate merely because a
+-- character behavior has been initialized. Our old encounter gate returned before the
+-- stock character behavior ever ran, leaving visible dormant soldiers in their bind/T
+-- pose. Dormant guards now explicitly loop their named idle animation, while enemies
+-- from future phases stay hidden until their encounter becomes relevant.
 require "scriptbank\\people\\character_attack"
 
 local enemy={}
@@ -19,9 +26,6 @@ end
 
 local function role_for(index,reserve)
  if reserve then
-  -- Reserve pairs deliberately split jobs: one closes distance while the other
-  -- takes the wide route. Combined with their stagger this should read as a
-  -- reinforcement pincer rather than two soldiers popping in simultaneously.
   return reserve%2==0 and "shockflank" or "assault"
  end
  local slot=((index-1)%4)+1
@@ -57,27 +61,73 @@ local function announce_shelf()
  aegis_message("KESTREL: Patrol on the old sea floor. Use the basalt for angles -- don't cross the shelf flat.",6)
 end
 
+local function set_visible(e,w,visible)
+ if visible then
+  if w.hidden then
+   Show(e)
+   CollisionOn(e)
+   w.hidden=false
+   w.idle_started=false
+  end
+ else
+  if not w.hidden then
+   Hide(e)
+   CollisionOff(e)
+   w.hidden=true
+  end
+ end
+end
+
+local function start_guard_idle(e,w)
+ if w.hidden or w.active or w.idle_started then return end
+ -- MAX characters supplied with Soldier Animations expose the named "idle" clip.
+ -- pcall keeps a third-party/DLC character with a different animation set from taking
+ -- the mission down; it will simply remain hidden or hand off to character_attack.
+ pcall(function()
+  SetAnimationName(e,"idle")
+  SetAnimationSpeed(e,100)
+  LoopAnimation(e)
+ end)
+ w.idle_started=true
+end
+
 function aegis_enemy_init_name(e,name)
  local reserve=tonumber(string.match(name,"RESERVE%s+(%d+)"))
  local shelf=string.find(name,"SHELF WARDEN",1,true)~=nil
  local index=tonumber(string.match(name,"WARDEN%s+(%d+)")) or reserve or 1
  local gate=phase_gate(index,reserve,shelf)
  local role=role_for(index,reserve)
- enemy[e]={reserve=reserve,shelf=shelf,index=index,gate=gate,role=role,registered=false,active=false,
-   wake_range=shelf and 2700 or 1850,queued_at=0,activation_delay=reserve and (((reserve-1)%2)*1100) or 0}
+ enemy[e]={
+  reserve=reserve,shelf=shelf,index=index,gate=gate,role=role,
+  registered=false,active=false,wake_range=shelf and 2700 or 1850,
+  queued_at=0,activation_delay=reserve and (((reserve-1)%2)*1100) or 0,
+  hidden=false,idle_started=false
+ }
+
  character_attack_init_file(e,"people\\character_attack")
  configure(e,role)
- if reserve then Hide(e);CollisionOff(e) end
+
+ local w=enemy[e]
+ -- Only the opening encounter should be visible at mission start. Future-phase and
+ -- optional shelf contacts appearing as statues telegraphs content and caused the
+ -- glaring T-pose screenshot. They become visible when their encounter is relevant.
+ if reserve or shelf or gate>1 then
+  set_visible(e,w,false)
+ else
+  set_visible(e,w,true)
+  start_guard_idle(e,w)
+ end
 end
 
 function aegis_enemy_main(e)
  local w=enemy[e]
  if not w or not aegis or not aegis.started then return end
 
- -- Shelf patrols are an optional exterior encounter. Do not add them to the
- -- mission's hostile count or wake their AI until the player intentionally leaves
- -- the fortress through the south breach. This preserves a quiet visual reveal.
  local on_shelf=(g_PlayerPosZ or 0)<-3300
+
+ -- The original fortress troops always count toward mission progress, even while a
+ -- future phase is hidden. Shelf patrols remain optional and register only after the
+ -- player intentionally crosses the south breach.
  if not w.registered then
   if w.shelf and not on_shelf then return end
   w.registered=true
@@ -85,24 +135,34 @@ function aegis_enemy_main(e)
  end
 
  if not w.active then
-  if aegis.phase<w.gate then return end
-  if w.shelf and not on_shelf then return end
+  if aegis.phase<w.gate then
+   if not w.reserve then set_visible(e,w,false) end
+   return
+  end
+  if w.shelf and not on_shelf then
+   set_visible(e,w,false)
+   return
+  end
+
   if w.reserve then
    if w.queued_at==0 then w.queued_at=g_Time end
    if g_Time-w.queued_at<w.activation_delay then return end
+   set_visible(e,w,true)
    w.active=true
-   Show(e);CollisionOn(e)
    aegis.reserves[e]=nil
    aegis.enemies[e]=true
    aegis.active_enemies[e]=true
    configure(e,w.role)
    announce_reserve(w.gate)
   else
-   -- Normal troops remain visible as guards, but do not enter full combat logic
-   -- until the player reaches their local encounter space. This prevents the
-   -- whole fortress from becoming one long undifferentiated firefight.
+   -- Phase is live, so the soldier can now exist in the scene. Keep a real idle
+   -- animation until the player enters the authored wake radius, then restart the
+   -- stock character behavior so animation/weapon/navigation ownership is clean.
+   set_visible(e,w,true)
+   start_guard_idle(e,w)
    if GetPlayerDistance(e)>w.wake_range then return end
    w.active=true
+   w.idle_started=false
    aegis.active_enemies[e]=true
    configure(e,w.role)
    if w.shelf then announce_shelf() end
