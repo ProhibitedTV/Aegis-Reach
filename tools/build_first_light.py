@@ -130,11 +130,9 @@ def _build_energy_texture(filename,resonant=False):
     b=48+180*center+52*cross+205*white
    px[x,y]=(max(0,min(255,int(r))),max(0,min(255,int(g))),max(0,min(255,int(b))))
 
- # Soft internal filaments mimic energy trapped inside a translucent mineral body.
  glow=Image.new('RGBA',(size,size),(0,0,0,0));draw=ImageDraw.Draw(glow)
  for i in range(11):
-  base=int(size*(.08+i*.082))
-  points=[]
+  base=int(size*(.08+i*.082));points=[]
   for y in range(0,size+24,24):
    x=base+int(math.sin(y*.018+i*.91)*24+math.sin(y*.051+i)*9)
    points.append((x,y))
@@ -143,12 +141,9 @@ def _build_energy_texture(filename,resonant=False):
  glow=glow.filter(ImageFilter.GaussianBlur(7))
  image=Image.alpha_composite(image.convert('RGBA'),glow)
 
- # A handful of crisp white-violet fractures survive bloom and make the surface feel
- # active rather than like a uniformly glowing fantasy gemstone.
  sharp=ImageDraw.Draw(image)
  for i in range(6):
-  base=int(size*(.16+i*.135))
-  points=[]
+  base=int(size*(.16+i*.135));points=[]
   for y in range(-20,size+20,34):
    x=base+int(math.sin(y*.026+i*1.7)*14)
    points.append((x,y))
@@ -178,8 +173,6 @@ ROCK=r'Max Collection\Rocks\Rock Boulder.fpe'
 for x,z,sz in [(-700,-8640,110),(940,-7690,120),(-850,-5700,140),(650,-4970,120),(-490,-4390,100),(1040,-3840,120)]:
  add(ROCK,'Basalt remnant / tide channel cover',x,z,scale=sz,ry=x%180)
 
-# Two related energy materials make the geology evolve toward the anomaly: cold
-# blue-white brineglass outside, violet-white resonant brineglass at the fracture.
 BRINE_TEX=_build_energy_texture('vesper_brineglass_energy.png',False)
 RESONANT_TEX=_build_energy_texture('vesper_brineglass_resonant.png',True)
 BRINEGLASS=_build_brineglass('Vesper Brineglass Bloom',BRINE_TEX)
@@ -193,7 +186,7 @@ crystal_sites=[
 ]
 for idx,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  asset=RESONANT if resonant else BRINEGLASS
- prefix='Resonant brineglass bloom' if resonant else 'Brineglass bloom'
+ prefix='Resonant Brineglass bloom' if resonant else 'Brineglass bloom'
  add(asset,prefix+' %02d'%idx,x,z,y=ground(x,z)-4,ry=ry,scale=scale,kind='geology')
 
 # Warden occupation is a thin retrofit layer, not a second architecture system.
@@ -204,14 +197,11 @@ for x,z in [(1630,-2500),(1910,-2500)]:
 for x,z,ry in [(-720,-2140,0),(570,-1710,15),(-960,-560,90),(-750,2520,0),(650,2670,90)]:
  prop(P+'Hesco Barrier 01.fpe',x,z,ry=ry,scale=88)
 
-# Return route: three staging bays are enough to explain the Warden reserve route.
 for x,z in [(-3200,-1100),(-3250,220),(-3260,1530)]:
  prop(P+'Container 02a.fpe',x,z,ry=0,scale=90)
 for x,z in [(-2810,1110),(-2690,1250)]:
  prop(P+'Gas Barrel 01a.fpe',x,z,scale=90)
 
-# The player deploys armed. Stock weapon.lua pickups remain prohibited after a
-# native MAX load crash; ammunition uses the known-safe ammo.lua path.
 weapon='Max Collection\\Weapons\\'
 for x,z in [(-1570,-6800),(-2050,-2200),(-1150,100),(1550,1250),(-850,3100),(300,-2200)]:
  path=weapon+'Compact Assault Rifle Ammo.fpe'
@@ -242,7 +232,6 @@ for role,x,z in [('INTEL1',-1690,-6980),('INTEL2',-2050,-5100),('INTEL3',1750,11
  add(ct,'FL '+role,x,z,y=ground(x,z),scale=55,kind='intel' if role.startswith('INTEL') else 'medical',
      script=SCRIPT+'interact.lua')
 
-# Encounter logic is deliberately preserved during this environment pass.
 groups={
  1:[(-950,-5500),(650,-5080),(-300,-4600)],
  2:[(-800,-2700),(500,-2250),(1450,-2050)],
@@ -252,19 +241,17 @@ groups={
  6:[(-2760,2150),(-3090,1570),(-3030,820),(-2950,260)],
  7:[(2050,-2550),(2050,-2380),(-3270,-1100),(-3270,-920),(2060,-2110),(-3190,-1300)]
 }
-ep=r'Characters\\Tony - Armed Response.fpe'
+ep=r'Characters\Tony - Armed Response.fpe'
 for group,spots in groups.items():
  for j,(x,z) in enumerate(spots,1):
   add(ep,f'FL ENEMY {group} {j}',x,z,y=ground(x,z)+5,ry=180,kind='enemy',template=T[ep],
       script=SCRIPT+'enemy.lua',
       **{'eleprof.strength':110 if group<5 else 140,
-         'eleprof.hasweapon_s':r'enhanced\\MK18' if j%3 else r'enhanced\\AR',
+         'eleprof.hasweapon_s':r'enhanced\MK18' if j%3 else r'enhanced\AR',
          'eleprof.quantity':30,'eleprof.damage':8,'eleprof.accuracy':130,
          'eleprof.weapondamagemultiplier':0.32,'eleprof.conerange':1300,'eleprof.isimmobile':0})
 
-# Invisible native lights reinforce visible fixtures and let brineglass cast a real
-# pool of color onto the terrain instead of reading as a painted emissive prop.
-lightp=r'_markers\\White Light.fpe';lighttemplate=T[lightp]
+lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
  (-2050,-7060,0xE6B77A,680),(-1460,-7180,0xE6B77A,620),(-1690,-6800,0x73D8E8,480),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
@@ -276,22 +263,21 @@ light_locations=[
 ]
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+155,kind='light',template=lighttemplate,
-     script=r'markers\\ConstantLight.lua',
+     script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 crystal_light_base=len(light_locations)
 for offset,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  idx=crystal_light_base+offset
  add(lightp,'FL BRINEGLASS LIGHT '+str(offset),x,z,y=ground(x,z)+82,kind='light',template=lighttemplate,
-     script=r'markers\\ConstantLight.lua',
+     script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 
-add(ct,'FIRST LIGHT // SCORE',50,-9500,y=100,kind='controller',script=r'aegis_reach\\firstlight_score.lua',
-    **{'eleprof.soundset_s':r'aegis_reach\\music\\salt_moon_drift.wav',
-       'eleprof.soundset1_s':r'aegis_reach\\music\\moon_outpost_drift.wav',
-       'eleprof.soundset2_s':r'aegis_reach\\music\\orbital_catacomb.wav'})
+add(ct,'FIRST LIGHT // SCORE',50,-9500,y=100,kind='controller',script=r'aegis_reach\firstlight_score.lua',
+    **{'eleprof.soundset_s':r'aegis_reach\music\salt_moon_drift.wav',
+       'eleprof.soundset1_s':r'aegis_reach\music\moon_outpost_drift.wav',
+       'eleprof.soundset2_s':r'aegis_reach\music\orbital_catacomb.wav'})
 
-# Human-scale signage carries story; it is not used as a substitute for path design.
-font=r'C:\\Windows\\Fonts\\consolab.ttf'
+font=r'C:\Windows\Fonts\consolab.ttf'
 def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  im=Image.new('RGB',(1024,256),(15,27,36));d=ImageDraw.Draw(im)
  d.rectangle((4,4,1019,251),outline=color,width=8)
@@ -336,9 +322,6 @@ for gz in range(world_to_grid(-14000,ed),world_to_grid(10000,ed)+1):
   struct.pack_into('<f',sculpt,TYPE_BYTES+idx*4,normalized_height(ground(x,z),settings))
 payload[SCULPT_NAME]=bytes(sculpt)
 
-# Darker Vesper grade. The previous exposure/sun pair washed the old sea shelf toward
-# beige and clipped the horizon. Lower global exposure lets local practicals and the
-# brineglass pools carry the night scene; modest bloom supports emissive mystery.
 visual,_=patch_visuals(payload['visuals.ini']);visual=visual.decode('latin1')
 atmosphere={'FogNearest#':8200,'FogDistance#':28000,'Exposure':0.93,'SunIntensity':0.95,'BloomStrength':0.15}
 for key,val in {'AmbientMusicTrack':'','AmbientMusicTrackVolume':0,**atmosphere}.items():
