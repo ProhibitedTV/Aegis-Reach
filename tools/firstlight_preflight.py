@@ -62,6 +62,7 @@ def main():
         'test_firstlight_lua_compat.py',
         'test_firstlight.py',
         'test_firstlight_composition.py',
+        'test_meridian_fieldkit.py',
     ]
     for name in tests:
         run_test(name)

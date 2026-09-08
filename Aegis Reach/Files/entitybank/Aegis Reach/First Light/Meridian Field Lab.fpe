@@ -1,5 +1,5 @@
-desc = Camp 12 Survey Mast
-model = Camp 12 Survey Mast.x
+desc = Meridian Field Lab
+model = Meridian Field Lab.x
 scale = 100
 textured = meridian_fieldkit.png
 baseColorMap = meridian_fieldkit.png

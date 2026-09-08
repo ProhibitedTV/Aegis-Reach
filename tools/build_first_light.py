@@ -33,7 +33,7 @@ def stage(path):
  staged.add(path)
  return fpe(src)
 
-from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN
+from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN,service_material
 
 def add(path,name,x,z,y=None,ry=0,scale=100,script=None,kind='environment',template=None,**params):
  if y is None:y=ground(x,z)
@@ -166,7 +166,7 @@ def _build_brineglass(name,texture):
  return path
 
 # One authoring layer owns all human-built spaces.
-architecture(Mesh,own,add,prop,P,I)
+architecture(Mesh,own,add,prop,P,I,AS)
 
 # Sparse geology: terrain carries the landscape; rocks only break long silhouettes.
 ROCK=r'Max Collection\Rocks\Rock Boulder.fpe'
@@ -178,7 +178,7 @@ RESONANT_TEX=_build_energy_texture('vesper_brineglass_resonant.png',True)
 BRINEGLASS=_build_brineglass('Vesper Brineglass Bloom',BRINE_TEX)
 RESONANT=_build_brineglass('Vesper Resonant Brineglass Bloom',RESONANT_TEX)
 crystal_sites=[
- (150,-9180,15,16,0x75B7C0,65,False),(-1230,-8160,-20,22,0x6DB9C4,90,False),
+ (-620,-8820,15,16,0x365F69,65,False),(-1230,-8160,-20,22,0x6DB9C4,90,False),
  (-1490,-6120,30,34,0x65C8D8,210,False),(-1020,-5620,-15,44,0x59BDCC,240,False),
  (710,-4100,40,52,0x52C1D2,270,False),(-2650,-250,0,88,0x59D4E2,380,False),
  (2450,1850,65,96,0x62D8E5,420,False),(-1650,3750,-25,110,0x748CE8,460,True),
@@ -255,7 +255,7 @@ for group,spots in groups.items():
 
 lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
- (-2240,-7250,0xE6B77A,230),(-1930,-7120,0xDDBB8D,310),(-2100,-7330,0x73D8E8,190),
+ (-2350,-7260,0xE6C49A,330),(-2490,-6960,0xDDBB8D,540),(-2195,-7200,0xE8C49A,290),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
  (-520,-3100,0x67D8EA,760),(520,-3100,0x67D8EA,760),
  (-1700,-1120,0xF0A35E,820),(-1700,-180,0xF0A35E,820),
@@ -264,12 +264,13 @@ light_locations=[
  (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
 ]
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
- add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+(105 if idx<=3 else 155),kind='light',template=lighttemplate,
+ add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+({1:127,2:210,3:109}.get(idx,155)),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 crystal_light_base=len(light_locations)
 for offset,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  idx=crystal_light_base+offset
+ if offset<=5:color=sum(int(((color>>shift)&255)*.35)<<shift for shift in (0,8,16))
  add(lightp,'FL BRINEGLASS LIGHT '+str(offset),x,z,y=ground(x,z)+max(18,scale*.65),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
@@ -295,9 +296,9 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  m=Mesh();m.box(0,0,0,440,110,8,0)
  m.uv=[(u*8,v) for u,v in m.uv]
  path=own(name,m,tex)
- add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=25 if name=='Evacuation Board' else 100,kind='sign')
+ add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=20 if name=='Evacuation Board' else 100,kind='sign')
 
-sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2148,-7170,607,ry=270)
+sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2213,-7104,558,ry=270)
 sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
 sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-1250,-1675,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)
@@ -317,12 +318,17 @@ terrain_json=json.loads(raw_terrain[start:end]);terrain_json.update(TERRAIN_MATE
 terrain_text=json.dumps(terrain_json,indent=2).encode()
 payload['ggterrain.dat']=struct.pack('<I',len(terrain_text))+terrain_text
 settings=terrain_settings(payload);sculpt=bytearray(payload[SCULPT_NAME]);ed=settings['editable_size']
+paint=bytearray(payload['16777216.ptd']);painted_cells=0
 for gz in range(world_to_grid(-14000,ed),world_to_grid(10000,ed)+1):
  z=grid_to_world(gz,ed)
  for gx in range(world_to_grid(-10000,ed),world_to_grid(10000,ed)+1):
   x=grid_to_world(gx,ed);idx=sculpt_index(gx,gz);sculpt[idx]=1
   struct.pack_into('<f',sculpt,TYPE_BYTES+idx*4,normalized_height(ground(x,z),settings))
+  material=service_material(x,z)
+  if material:
+   paint[gz*4096+gx]=material;painted_cells+=1
 payload[SCULPT_NAME]=bytes(sculpt)
+payload['16777216.ptd']=bytes(paint)
 
 visual,_=patch_visuals(payload['visuals.ini']);visual='\r\n'.join(line for line in visual.decode('latin1').splitlines() if line.startswith('visuals.'))+'\r\n'
 # Native sun RGB uses 0..255 (MAX divides by 255); full color is DeSaturate=1.
@@ -361,7 +367,7 @@ scene_recipe={
 (DESIGN/'build-report.json').write_text(json.dumps({
  'map':MAP.name,'entities':len(entities),'enemy_count':sum(len(x) for x in groups.values()),
  'lights':len(light_locations)+len(crystal_sites),'assets':bank,'staged_dependencies':sorted(staged),
- 'objectives':objectives,'native_terrain':True,'route':ROUTE,'return_route':RETURN,
+ 'objectives':objectives,'native_terrain':True,'service_road_painted_cells':painted_cells,'route':ROUTE,'return_route':RETURN,
  'terrain_materials':TERRAIN_MATERIALS,'scene_recipe':scene_recipe,'atmosphere':atmosphere,
  'crystal_clusters':len(crystal_sites),'brineglass_materials':[BRINE_TEX,RESONANT_TEX],
  'environment_pass':'single-owner-production-recomposition','environment_polish':'sheltered-shelf-and-grounded-brineglass'

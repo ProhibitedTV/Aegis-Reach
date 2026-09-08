@@ -19,6 +19,7 @@ SOURCES=(
  ROOT/'tools/firstlight_world.py',
  ROOT/'tools/build_first_light.py',
  ROOT/'tools/environment_pass.py',
+ ROOT/'tools/meridian_fieldkit.py',
 )
 
 

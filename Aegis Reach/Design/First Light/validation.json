@@ -28,7 +28,7 @@
     "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references",
     "Storyboard points to First Light without a machine-specific path"
   ],
-  "mesh_count": 28,
-  "entity_count": 194,
+  "mesh_count": 29,
+  "entity_count": 189,
   "native_combat_playtest": false
 }

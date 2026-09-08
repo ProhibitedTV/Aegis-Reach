@@ -20,7 +20,7 @@ RETURN=[
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
 PADS=[
- (-1850,-7210,560,350,500),
+ (-1905,-7250,615,410,500),
  (0,-3100,900,620,640),
  (-1450,-650,1080,1120,900),
  (1250,700,1120,1020,1080),
@@ -92,7 +92,23 @@ TERRAIN_MATERIALS={
  'reflectance':.02,'bumpiness':.55,
 }
 
-def architecture(Mesh,own,add,prop,P,I):
+
+def service_material(x,z):
+ """Native paint IDs are one-based; zero leaves MAX height/slope materials.
+
+ MAX GGTerrain_GetMaterialIndex uses ordinary Z rows for paint, unlike sculpt.
+ Only the insertion-to-Gate service route and Camp 12 court are painted.
+ """
+ if not(-9800<=z<=-3050 and -3500<=x<=1500):return 0
+ distance,_=road_sample(x,z,ROUTE[:7])
+ edge=132+14*math.sin(z/83)+8*math.sin(z/31)
+ court=rect_mask(x,z,-1910,-7250,595,400,70)
+ if court>.5:return 23  # installed mineral fines; no white/snow material
+ if distance<edge:
+  return 16 if abs(distance-62)<14 else 23  # two darker compressed wheel bands
+ return 0
+
+def architecture(Mesh,own,add,prop,P,I,asset_dir):
  """Compose First Light with one clear visual owner per space."""
  def beam(m,x,y,z,w,h,d,c=1):m.box(x,y,z,w,h,d,c)
 
@@ -101,36 +117,18 @@ def architecture(Mesh,own,add,prop,P,I):
  CYM='Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\'
  CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
 
- # CAMP 12: one connected lab at the sheltered western edge of an open court.
- # Installed wall/window meshes measure 200 x 200 units; 70% = 140.
- # The Entry_01 mesh is a solid closed facade, so leave its bay physically open.
- # Roof 2x2 is centred in X/Z but its underside is at local Y=80, not zero.
+ # One original transportable field lab; installed equipment remains restrained.
+ from meridian_fieldkit import build as build_fieldkit
+ lab,mast=build_fieldkit(Mesh,own,asset_dir)
  camp_y=500
- for asset,x,z,yaw in [
-  ('CS_Wall_01_Window.fpe',-2160,-7170,270),
-  ('CS_Wall_01.fpe',-2320,-7310,90),
-  ('CS_Wall_01.fpe',-2320,-7170,90),
-  ('CS_Wall_01.fpe',-2240,-7390,0),
-  ('CS_Wall_01.fpe',-2240,-7090,180),
- ]:
-  prop(CYB+asset,x,z,y=camp_y,ry=yaw,scale=70,
-       **({'scalex':-27} if yaw in (0,180) else {}))
- prop(CYB+'CS_Roof_Tile_2x2.fpe',-2240,-7240,y=camp_y+100.5,scale=100,
-      **{'scalex':-10,'scaley':-50,'scalez':65})
- # One work station belongs inside the lab, clear of the entrance/court.
- prop(P+'Desk 01a.fpe',-2290,-7130,y=camp_y+0.4,ry=0,scale=100)
- prop(P+'Desk Chair 01a.fpe',-2215,-7160,y=camp_y,ry=90,scale=100)
- # Five-metre mast is subordinate to the lab mass, outside the approach sightline.
- m=Mesh();beam(m,0,0,0,10,210,10,2)
- beam(m,0,186,0,100,10,10,5)
- beam(m,-38,150,0,8,48,8,2);beam(m,38,166,0,8,32,8,2)
- mast=own('Camp 12 Survey Mast',m)
- add(mast,'Camp 12 / Meridian survey mast',-2390,-7470,y=camp_y)
- # One small power cluster, one cargo unit, two instruments, one perimeter cue.
- prop(C+'Light Generator.fpe',-1490,-7390,y=camp_y,ry=175,scale=86)
- prop(C+'CableReel.fpe',-1420,-7270,y=camp_y,ry=35,scale=84)
- prop(C+'Freight Container.fpe',-1400,-7080,y=camp_y,ry=90,scale=68)
- prop(P+'Wooden Crate 01a.fpe',-1470,-6980,y=camp_y,ry=8,scale=68)
+ add(lab,'Camp 12 / Meridian field lab',-2350,-7270,y=camp_y,ry=270)
+ prop(P+'Desk 01a.fpe',-2390,-7130,y=camp_y+0.4,ry=0,scale=100)
+ prop(P+'Desk Chair 01a.fpe',-2315,-7160,y=camp_y,ry=90,scale=100)
+ add(mast,'Camp 12 / Meridian survey mast',-2490,-6960,y=camp_y,ry=270)
+ prop(C+'Light Generator.fpe',-1850,-7420,y=camp_y,ry=175,scale=86)
+ prop(C+'CableReel.fpe',-1740,-7400,y=camp_y,ry=35,scale=84)
+ prop(C+'Freight Container.fpe',-1620,-7060,y=camp_y,ry=90,scale=68)
+ prop(P+'Wooden Crate 01a.fpe',-1690,-7230,y=camp_y,ry=8,scale=68)
  prop(C+'SurveyorStand1.fpe',-1770,-6860,y=ground(-1770,-6860),ry=18,scale=102)
  prop(C+'SurveyorStand2.fpe',-1590,-6880,y=ground(-1590,-6880),ry=-20,scale=102)
  prop(C+'Roadblock2.fpe',-1350,-6910,y=camp_y,ry=-35,scale=86)

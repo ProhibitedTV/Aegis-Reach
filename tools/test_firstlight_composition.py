@@ -47,12 +47,11 @@ for p in camp:
 # The deliberate indoor desk/chair are owned by the lab composition, not a second dressing pass.
 workstation=[p for p in camp if any(k in p.get('asset','') for k in ('Desk 01','Desk Chair'))]
 assert len(workstation)<=2, 'indoor work station grew into secondary dressing'
-assert all(-2330<p['x']<-2160 and -7390<p['z']<-7090 for p in workstation), 'lab furniture escaped into court'
+assert all(-2480<p['x']<-2220 and -7480<p['z']<-7060 for p in workstation), 'lab furniture escaped into court'
 
 assets='\n'.join(str(p.get('asset','')) for p in camp)
 for required in (
- 'CS_Wall_01_Window.fpe',
- 'CS_Roof_Tile_2x2.fpe',
+ 'Meridian Field Lab.fpe',
  'SurveyorStand1.fpe',
  'Light Generator.fpe',
  'Freight Container.fpe',
@@ -100,6 +99,7 @@ for p in placements:
   custom_environment.append(asset.split('\\')[-1])
 allowed={
  'Camp 12 Survey Mast.fpe',
+ 'Meridian Field Lab.fpe',
  'Northstar Stack Pair.fpe',
  'AEGIS Arrival Frame.fpe',
  'Meridian Route Beacon.fpe',
