@@ -161,8 +161,8 @@ def _build_brineglass(name,texture):
  for x,z,r,h,angle,lx,lz in specs:_crystal_prism(m,x,z,r,h,angle,lx,lz)
  path=own(name,m,texture=texture,collision=0)
  f=AS/(name+'.fpe')
- text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.12').replace('metalnessStrength = 0.22','metalnessStrength = 0.05')
- f.write_text(text+'reflectance = 0.25\nbasecolor = 4294967295\nemissivecolor = 4294967295\nemissiveMap = '+texture+'\nemissiveStrength = 0.18\n')
+ text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.38').replace('metalnessStrength = 0.22','metalnessStrength = 0.05')
+ f.write_text(text+'reflectance = 0.18\nbasecolor = 4294967295\nemissivecolor = 4294967295\nemissiveMap = '+texture+'\nemissiveStrength = 0.10\n')
  return path
 
 # One authoring layer owns all human-built spaces.
@@ -178,7 +178,7 @@ RESONANT_TEX=_build_energy_texture('vesper_brineglass_resonant.png',True)
 BRINEGLASS=_build_brineglass('Vesper Brineglass Bloom',BRINE_TEX)
 RESONANT=_build_brineglass('Vesper Resonant Brineglass Bloom',RESONANT_TEX)
 crystal_sites=[
- (150,-9180,15,20,0x8CCCD7,150,False),(-1230,-8160,-20,27,0x70CDDA,180,False),
+ (150,-9180,15,16,0x75B7C0,65,False),(-1230,-8160,-20,22,0x6DB9C4,90,False),
  (-1490,-6120,30,34,0x65C8D8,210,False),(-1020,-5620,-15,44,0x59BDCC,240,False),
  (710,-4100,40,52,0x52C1D2,270,False),(-2650,-250,0,88,0x59D4E2,380,False),
  (2450,1850,65,96,0x62D8E5,420,False),(-1650,3750,-25,110,0x748CE8,460,True),
@@ -188,7 +188,8 @@ for idx,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  asset=RESONANT if resonant else BRINEGLASS
  prefix='Resonant Brineglass bloom' if resonant else 'Brineglass bloom'
  add(asset,prefix+' %02d'%idx,x,z,y=ground(x,z)-(8+scale*.16),ry=ry,scale=scale,kind='geology',
-     **{'rx':-5 if idx%2 else 4,'rz':3 if idx%2 else -4})
+     **{'rx':-5 if idx%2 else 4,'rz':3 if idx%2 else -4,
+        'scaley':scale*(.70 if idx<=2 else 1)-100})
 
 # Warden occupation is a thin retrofit layer, not a second architecture system.
 for x,z,angle in [(-720,-2660,0),(700,-2200,30),(1560,-1990,90)]:
@@ -212,7 +213,7 @@ for x,z in [(-1570,-6800),(-2050,-2200),(-1150,100),(1550,1250),(-850,3100),(300
 SCRIPT=r'aegis_reach\firstlight_'
 START=(0,-9500)
 p=r'_markers\Player Start.fpe'
-add(p,'SEVEN // Meridian insertion',*START,y=ground(*START)+60,kind='player',template=T[p],
+add(p,'SEVEN // Meridian insertion',*START,y=ground(*START)+60,ry=330,kind='player',template=T[p],
     **{'eleprof.strength':200,'eleprof.lives':1,'eleprof.hasweapon_s':r'enhanced\MK18','eleprof.quantity':240,'eleprof.speed':110})
 ct=r'Aegis Reach\Supply Crate.fpe'
 add(ct,'FIRST LIGHT // DIRECTOR',0,-9500,y=100,kind='controller',script=SCRIPT+'director.lua',
@@ -254,7 +255,7 @@ for group,spots in groups.items():
 
 lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
- (-2240,-7250,0xE6B77A,230),(-1930,-7120,0xE6B77A,390),(-2100,-7330,0x73D8E8,190),
+ (-2240,-7250,0xE6B77A,230),(-1930,-7120,0xDDBB8D,310),(-2100,-7330,0x73D8E8,190),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
  (-520,-3100,0x67D8EA,760),(520,-3100,0x67D8EA,760),
  (-1700,-1120,0xF0A35E,820),(-1700,-180,0xF0A35E,820),
@@ -327,7 +328,7 @@ visual,_=patch_visuals(payload['visuals.ini']);visual='\r\n'.join(line for line 
 # Native sun RGB uses 0..255 (MAX divides by 255); full color is DeSaturate=1.
 # Keep the horizon subordinate to the shelf and practical lights.
 atmosphere={'FogNearest#':6200,'FogDistance#':19500,'FogR#':48,'FogG#':62,'FogB#':80,'FogA#':0.45,
- 'Exposure':0.84,'SunIntensity':1.8,'SunRed':218,'SunGreen':232,'SunBlue':255,
+ 'Exposure':0.84,'SunIntensity':1.45,'SunRed':218,'SunGreen':232,'SunBlue':255,
  'SunAngleX':18,'SunAngleY':315,'SunAngleZ':0,'Simulate24Hours':0,
  'AmbienceRed#':70,'AmbienceGeen#':84,'AmbienceBlue#':108,'EnvProbeBrightness':0.75,
  'sky$':'overcast','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,

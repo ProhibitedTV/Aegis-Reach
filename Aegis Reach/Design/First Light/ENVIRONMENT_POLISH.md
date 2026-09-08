@@ -11,7 +11,7 @@ native views below have been captured, personally inspected and iterated.
   Camp 12. The approach road has a narrower graded shoulder; the smaller court
   lets terrain shelter the lab. Relief fades out before the first encounter.
 - Terrain layers use installed dark mineral gravel, rust-stained low ground,
-  coarse stone and dark strata. No terrain textures or DLC models are copied.
+  dark strata. The opening screenshot prompted removal of the pale coarse-stone layer and the broad orange lowland layer. No terrain textures or DLC models are copied.
 - Camp 12 uses the existing Cyberpunk Streets wall/entrance/window family to
   enclose one small lab. Placement uses measured mesh extents and the roof's
   elevated local origin. Seven shell modules replace five disconnected pieces.
@@ -35,9 +35,10 @@ native views below have been captured, personally inspected and iterated.
 ## Deliberately stable
 
 Mission and score Lua, the three Suno masters, route control points, enemy and
-objective placements, and the Gate 07 / Northstar / Operations / AEGIS architecture
+objective positions, and the Gate 07 / Northstar / Operations / AEGIS architecture
 sources are unchanged. The Camp 12 ammo pickup keeps its X/Z and 28-inch ground
-offset; it moves down 12.90 inches with the court edge. Downstream terrain is
+offset and follows the court edge vertically. The player keeps the same position
+and loadout, with the starting yaw turned 30 degrees toward the Camp 12 descent. Downstream terrain is
 unchanged from a fresh build of the baseline source.
 
 The baseline source rebuild contains 198 entities, 68 asset types and 26 lights;
@@ -52,12 +53,12 @@ this candidate contains 195 entities, 67 asset types and 26 lights. Camp 12 has
 - A local comparison against a freshly rebuilt main checked unchanged route
   control points, unchanged downstream terrain samples, unchanged non-camp
   architecture transforms and unchanged mission placements, with only the
-  explicitly ground-relative Camp 12 pickup adjustment described above.
+  ground-relative Camp 12 pickup adjustment and insertion yaw described above.
 - MAX launched this candidate and its log reached the native title page.
   That is startup evidence only: no in-level visual or collision result is claimed.
 
 Candidate map SHA256:
-`14d234c9a740651c36d85a86e5acd14ea05c5cf85ebd0bc012150e807e0b9cc3`
+`b5fd766a7f3df276888d38e7b99925190cdb761c601d901543be65c6cc2d8daf`
 
 Committed map/layout reports on the baseline lag behind its authoring source.
 The generated artifact refresh therefore also includes original project meshes
@@ -80,9 +81,40 @@ state and local comparison files are excluded from the commit.
 | Brineglass in terrain context | Does it emerge from geology with subtle light, rather than resemble decoration? | Pending |
 | Dusk skyline | Is the sky subordinate, with readable ground and no washed-out lighting? | Pending |
 
-No native screenshots were captured for this candidate. Desktop control and
-capture were unavailable in the authoring session. Do not substitute generated
+The user supplied a native opening screenshot of the initial candidate. It was
+inspected and rejected as final visual approval for the reasons below. No revised
+opening screenshot or other required views have been captured yet. Desktop
+control and capture remain unavailable in the authoring session. Do not substitute generated
 previews, asset thumbnails, map diagrams or passing tests for these missing views.
 The next step is native screenshot -> adjustment -> screenshot, deleting weak
 placements before adding anything. Native collision, visual fit, fog and lighting
 must be resolved before this branch is eligible for main.
+
+
+## Opening screenshot iteration (7 September 2026)
+
+The supplied native image shows pale gravel dominating the foreground and ridge
+slopes, broad orange ground, Camp 12 mostly outside the left edge, and a saturated
+blue foreground crystal with a conspicuous white pool. The skyline is calmer
+than earlier versions but the lab is not the opening's primary visual anchor.
+This image does not qualify the environment for main.
+
+The next revision makes five targeted corrections:
+
+1. Turn the starting yaw from 0 to 330 degrees, keeping spawn position and loadout.
+2. Lower a broad inner descent shoulder that obstructed the lab. Source-height
+   ray samples from insertion eye height to the front facade and roof are now
+   clear (minimum sampled margins 13.6 and 39.1 inches). These checks explain the
+   edit; rendered terrain and actual player movement remain authoritative.
+3. Replace pale upper-slope gravel with installed dark strata and the orange
+   lowland layer with the existing mineral base. Reduce sun intensity 1.8 to 1.45;
+   retain the current sky, fog and exposure for a controlled comparison.
+4. Reduce the first two brineglass footprints and vertical proportions, contract
+   their light radii from 150/180 to 65/90 inches, and soften the light color.
+   Raise shared surface roughness and reduce reflectance and weak emission.
+   The procedural blue/cyan and violet texture artwork is unchanged.
+5. Contract the amber work-court pool from 390 to 310 inches and soften its orange
+   tint. No extra lights or props are added.
+
+All other viewpoints remain pending. The next required image is the revised
+opening, followed by descent and an eye-height Camp 12 court view.

@@ -59,6 +59,9 @@ def ground(x,z):
             +95*gauss(x,z,-2200,-7860,530,270)
             +150*gauss(x,z,-930,-9100,420,580)
             +120*gauss(x,z,520,-8650,310,740))
+  # The opening MAX frame hid the lab behind the inner descent shoulder.
+  # A broad shallow cut opens the facade sightline; road grade is restored below.
+  h-=focus*240*gauss(x,z,-1160,-8370,410,630)
   distance,_=road_sample(x,z,ROUTE)
   shoulder=smoothstep(190,420,distance)
   h+=focus*shoulder*(13*math.sin((x+z*.32)/105)+7*math.sin((z-x*.22)/53))
@@ -79,13 +82,13 @@ def ground(x,z):
 
 TERRAIN_MATERIALS={
  'baseLayerMaterial':256|22,
- 'layerStartHeight0':-40,'layerEndHeight0':180,'layerMatIndex0':256|14,
- 'layerStartHeight1':780,'layerEndHeight1':1120,'layerMatIndex1':256|17,
+ 'layerStartHeight0':-40,'layerEndHeight0':180,'layerMatIndex0':256|22,
+ 'layerStartHeight1':660,'layerEndHeight1':960,'layerMatIndex1':256|18,
  'layerStartHeight2':1650,'layerEndHeight2':2300,'layerMatIndex2':256|18,
  'layerStartHeight3':12000,'layerEndHeight3':13000,'layerMatIndex3':256|22,
  'layerStartHeight4':15000,'layerEndHeight4':16000,'layerMatIndex4':256|22,
  'slopeStart0':.24,'slopeEnd0':.58,'slopeMatIndex0':256|18,
- 'slopeStart1':.80,'slopeEnd1':.98,'slopeMatIndex1':256|17,
+ 'slopeStart1':.80,'slopeEnd1':.98,'slopeMatIndex1':256|18,
  'reflectance':.02,'bumpiness':.55,
 }
 
