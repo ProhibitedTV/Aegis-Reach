@@ -32,8 +32,6 @@ for banned in (
 ):
  assert banned not in joined, 'legacy environment primitive returned: '+banned
 
-# Camp 12 has one authoring owner. Ordinary camp dressing must come from the curated
-# field-lab recipe in firstlight_world.py, not a second tent/cot/desk pass.
 def in_camp(p):
  try:return -2520<=float(p['x'])<=-780 and -7800<=float(p['z'])<=-6350
  except Exception:return False
@@ -57,20 +55,22 @@ for required in (
 route_markers=[p for p in placements if str(p.get('name','')).startswith('Meridian route marker ')]
 assert 3<=len(route_markers)<=6, 'route beacon count is no longer sparse: '+str(len(route_markers))
 
-# Brineglass is geology, not another prop family. Keep it sparse, keep the Camp 12
-# core human-readable, and make sure the anomaly strengthens toward the fracture.
+# Brineglass is geology, not another prop family. Keep it sparse and make the anomaly
+# strengthen materially as well as spatially toward the fracture.
 crystals=[p for p in placements if p.get('kind')=='geology' and 'Brineglass bloom' in str(p.get('name',''))]
 assert 8<=len(crystals)<=12, 'brineglass count escaped sparse range: '+str(len(crystals))
 assert not [p for p in crystals if in_camp(p)], 'brineglass intruded into Camp 12 core composition'
 zs=[float(p['z']) for p in crystals]
 assert min(zs)<-8000 and max(zs)>4800, 'brineglass no longer spans discovery-to-fracture progression'
 assert report.get('crystal_clusters')==len(crystals), 'build report crystal count mismatch'
+resonant=[p for p in crystals if str(p.get('name','')).startswith('Resonant Brineglass')]
+assert 2<=len(resonant)<=4, 'resonant brineglass progression escaped target range: '+str(len(resonant))
+materials=report.get('brineglass_materials',[])
+assert materials==['vesper_brineglass_energy.png','vesper_brineglass_resonant.png'], 'brineglass energy material suite changed: '+repr(materials)
 atmosphere=report.get('atmosphere',{})
 assert float(atmosphere.get('Exposure',9))<1.0, 'Vesper atmosphere regressed to washed-out exposure'
 assert float(atmosphere.get('BloomStrength',0))>=0.12, 'brineglass bloom grade was lost'
 
-# Bespoke meshes must earn their keep. Human-readable field-board supports are
-# allowed because they support authored story signs rather than forming architecture.
 custom_environment=[]
 for p in placements:
  if p.get('kind','environment')!='environment':continue
@@ -93,6 +93,7 @@ assert not unexpected, 'unexpected bespoke environment meshes: '+', '.join(unexp
 print('FIRST LIGHT // COMPOSITION TEST PASS')
 print('Camp 12 environment entities:',len(camp))
 print('Route markers:',len(route_markers))
-print('Brineglass blooms:',len(crystals))
+print('Brineglass blooms:',len(crystals),'resonant:',len(resonant))
+print('Brineglass materials:',', '.join(materials))
 print('Bespoke environment vocabulary:',', '.join(sorted(set(custom_environment))))
 print('Environment mode:',report['environment_pass'])
