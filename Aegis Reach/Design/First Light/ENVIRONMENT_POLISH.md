@@ -14,7 +14,7 @@ native views below have been captured, personally inspected and iterated.
   dark strata. The opening screenshot prompted removal of the pale coarse-stone layer and the broad orange lowland layer. No terrain textures or DLC models are copied.
 - Camp 12 uses the existing Cyberpunk Streets wall/entrance/window family to
   enclose one small lab. Placement uses measured mesh extents and the roof's
-  elevated local origin. Seven shell modules replace five disconnected pieces.
+  elevated local origin. Six shell modules form a covered service bay. The solid decorative entrance panel has been removed for physical access.
   These measurements establish a candidate fit, not native collision approval.
 - The mast is smaller; one cargo unit, one case and one power cluster remain.
   A desk and chair sit inside the lab. An exit pole/lamp, second cargo unit,
@@ -42,8 +42,8 @@ and loadout, with the starting yaw turned 30 degrees toward the Camp 12 descent.
 unchanged from a fresh build of the baseline source.
 
 The baseline source rebuild contains 198 entities, 68 asset types and 26 lights;
-this candidate contains 195 entities, 67 asset types and 26 lights. Camp 12 has
-18 environment entities including seven lab modules and its existing route beacon.
+this candidate contains 194 entities, 67 asset types and 26 lights. Camp 12 has
+17 environment entities including six lab modules and its existing route beacon.
 
 ## Verification and build provenance
 
@@ -58,7 +58,7 @@ this candidate contains 195 entities, 67 asset types and 26 lights. Camp 12 has
   That is startup evidence only: no in-level visual or collision result is claimed.
 
 Candidate map SHA256:
-`b5fd766a7f3df276888d38e7b99925190cdb761c601d901543be65c6cc2d8daf`
+`70c788c8b487a94b14d42c10f52ab627c395df51c94b0b81457678f296ab0847`
 
 Committed map/layout reports on the baseline lag behind its authoring source.
 The generated artifact refresh therefore also includes original project meshes
@@ -118,3 +118,30 @@ The next revision makes five targeted corrections:
 
 All other viewpoints remain pending. The next required image is the revised
 opening, followed by descent and an eye-height Camp 12 court view.
+
+
+## Camp access and grounding correction (8 September 2026)
+
+A source geometry audit found a functional flaw in the enclosed lab: the installed
+`Cyberpunk Streets Booster Pack\Buildings\CS_Wall_01_Entry_01.fpe` is a closed
+facade. Across-door triangle intersections blocked every sampled X position from
+-90 to +90 at local heights 5, 40, 80, 103, 115, 145 and 180. Naming the asset an
+entrance had concealed the lack of physical passage. A compatible static variant
+was also closed; no replacement DLC or scripted door system was introduced.
+
+The closed facade panel is removed, leaving one open service bay beneath the
+existing roof. Walls, roof, workstation and lighting retain their positions.
+This exposes the indoor work area to the court and eliminates the known blockage;
+native player collision and the final shelter silhouette still need review.
+
+The single camp Roadblock2 previously straddled the outbound slope: measured
+lowest mesh vertices were up to 13.39 inches below and 6.96 inches above terrain.
+It moves from (-1220,-6600) to (-1350,-6910), on the flat court edge. A conservative
+76-inch footprint is checked against native terrain height. It remains one small
+perimeter cue beside the route, with no new terrain pad or barrier ring.
+
+The existing wall roster now says MERIDIAN / CAMP 12, retaining the 42-of-43
+missing-person clue. Its geometry, placement and size are unchanged. No gameplay,
+score, encounter, new asset family or new lighting changes accompany this fix.
+The updated candidate must be checked from inside the court and while walking
+through the service bay before merge.

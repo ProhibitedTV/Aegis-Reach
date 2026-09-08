@@ -297,7 +297,7 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  path=own(name,m,tex)
  add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=25 if name=='Evacuation Board' else 100,kind='sign')
 
-sign('Evacuation Board',['MERIDIAN SURVEY','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2148,-7170,607,ry=270)
+sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2148,-7170,607,ry=270)
 sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
 sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-1250,-1675,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)

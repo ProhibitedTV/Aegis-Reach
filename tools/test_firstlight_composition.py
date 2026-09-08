@@ -7,6 +7,7 @@ shells, repeated custom floodlights/revetments, and unbounded prop growth.
 import json
 
 from native_format import ROOT
+from firstlight_world import ground
 
 DESIGN=ROOT/'Aegis Reach/Design/First Light'
 LAYOUT=DESIGN/'layout.json'
@@ -50,12 +51,25 @@ assert all(-2330<p['x']<-2160 and -7390<p['z']<-7090 for p in workstation), 'lab
 
 assets='\n'.join(str(p.get('asset','')) for p in camp)
 for required in (
- 'CS_Wall_01_Entry_01.fpe',
+ 'CS_Wall_01_Window.fpe',
+ 'CS_Roof_Tile_2x2.fpe',
  'SurveyorStand1.fpe',
  'Light Generator.fpe',
  'Freight Container.fpe',
 ):
  assert required in assets, 'Camp 12 missing composition anchor: '+required
+
+# The installed Entry_01 has solid geometry across the doorway; it must not
+# seal the service bay again. A visible door texture does not imply an opening.
+assert 'CS_Wall_01_Entry_01.fpe' not in assets, 'closed facade blocks Camp 12 service bay'
+camp_barriers=[p for p in camp if p['asset'].endswith('Roadblock2.fpe')]
+assert len(camp_barriers)==1, 'camp perimeter is no longer one restrained marker'
+for p in camp_barriers:
+ # Installed local footprint is 54.2 x 61.0 inches, scaled to 86% and rotated.
+ # This conservative 76-inch square encloses all feet without importing DLC.
+ for dx in (-38,0,38):
+  for dz in (-38,0,38):
+   assert abs(ground(p['x']+dx,p['z']+dz)-p['y'])<0.5, 'camp barrier straddles uneven ground'
 
 route_markers=[p for p in placements if str(p.get('name','')).startswith('Meridian route marker ')]
 assert 3<=len(route_markers)<=6, 'route beacon count is no longer sparse: '+str(len(route_markers))

@@ -102,11 +102,11 @@ def architecture(Mesh,own,add,prop,P,I):
  CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
 
  # CAMP 12: one connected lab at the sheltered western edge of an open court.
- # Installed wall/entry/window meshes measure 200 x 200 units; 70% = 140.
+ # Installed wall/window meshes measure 200 x 200 units; 70% = 140.
+ # The Entry_01 mesh is a solid closed facade, so leave its bay physically open.
  # Roof 2x2 is centred in X/Z but its underside is at local Y=80, not zero.
  camp_y=500
  for asset,x,z,yaw in [
-  ('CS_Wall_01_Entry_01.fpe',-2160,-7310,270),
   ('CS_Wall_01_Window.fpe',-2160,-7170,270),
   ('CS_Wall_01.fpe',-2320,-7310,90),
   ('CS_Wall_01.fpe',-2320,-7170,90),
@@ -133,7 +133,7 @@ def architecture(Mesh,own,add,prop,P,I):
  prop(P+'Wooden Crate 01a.fpe',-1470,-6980,y=camp_y,ry=8,scale=68)
  prop(C+'SurveyorStand1.fpe',-1770,-6860,y=ground(-1770,-6860),ry=18,scale=102)
  prop(C+'SurveyorStand2.fpe',-1590,-6880,y=ground(-1590,-6880),ry=-20,scale=102)
- prop(C+'Roadblock2.fpe',-1220,-6600,y=ground(-1220,-6600),ry=-35,scale=86)
+ prop(C+'Roadblock2.fpe',-1350,-6910,y=camp_y,ry=-35,scale=86)
 
  gate_y=640
  prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3160,y=gate_y,ry=0,scale=72)
