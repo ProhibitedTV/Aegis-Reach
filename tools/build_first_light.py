@@ -162,7 +162,7 @@ def _build_brineglass(name,texture):
  path=own(name,m,texture=texture,collision=0)
  f=AS/(name+'.fpe')
  text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.12').replace('metalnessStrength = 0.22','metalnessStrength = 0.05')
- f.write_text(text+'reflectance = 0.66\n')
+ f.write_text(text+'reflectance = 0.25\nbasecolor = 4294967295\nemissivecolor = 4294967295\nemissiveMap = '+texture+'\nemissiveStrength = 0.18\n')
  return path
 
 # One authoring layer owns all human-built spaces.
@@ -178,16 +178,17 @@ RESONANT_TEX=_build_energy_texture('vesper_brineglass_resonant.png',True)
 BRINEGLASS=_build_brineglass('Vesper Brineglass Bloom',BRINE_TEX)
 RESONANT=_build_brineglass('Vesper Resonant Brineglass Bloom',RESONANT_TEX)
 crystal_sites=[
- (-950,-8650,15,62,0x45C9D7,260,False),(1120,-7900,-20,55,0x45C9D7,240,False),
- (1300,-6050,30,68,0x4BC9D8,300,False),(-980,-5350,-15,72,0x4BC9D8,320,False),
- (1100,-4250,40,78,0x52D1DF,340,False),(-2650,-250,0,88,0x59D4E2,380,False),
+ (150,-9180,15,20,0x8CCCD7,150,False),(-1230,-8160,-20,27,0x70CDDA,180,False),
+ (-1490,-6120,30,34,0x65C8D8,210,False),(-1020,-5620,-15,44,0x59BDCC,240,False),
+ (710,-4100,40,52,0x52C1D2,270,False),(-2650,-250,0,88,0x59D4E2,380,False),
  (2450,1850,65,96,0x62D8E5,420,False),(-1650,3750,-25,110,0x748CE8,460,True),
  (1250,4450,20,125,0x8B75E8,520,True),(350,5150,-35,138,0x9670EC,560,True)
 ]
 for idx,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  asset=RESONANT if resonant else BRINEGLASS
  prefix='Resonant Brineglass bloom' if resonant else 'Brineglass bloom'
- add(asset,prefix+' %02d'%idx,x,z,y=ground(x,z)-4,ry=ry,scale=scale,kind='geology')
+ add(asset,prefix+' %02d'%idx,x,z,y=ground(x,z)-(8+scale*.16),ry=ry,scale=scale,kind='geology',
+     **{'rx':-5 if idx%2 else 4,'rz':3 if idx%2 else -4})
 
 # Warden occupation is a thin retrofit layer, not a second architecture system.
 for x,z,angle in [(-720,-2660,0),(700,-2200,30),(1560,-1990,90)]:
@@ -253,7 +254,7 @@ for group,spots in groups.items():
 
 lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
- (-2050,-7060,0xE6B77A,680),(-1460,-7180,0xE6B77A,620),(-1690,-6800,0x73D8E8,480),
+ (-2240,-7250,0xE6B77A,230),(-1930,-7120,0xE6B77A,390),(-2100,-7330,0x73D8E8,190),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
  (-520,-3100,0x67D8EA,760),(520,-3100,0x67D8EA,760),
  (-1700,-1120,0xF0A35E,820),(-1700,-180,0xF0A35E,820),
@@ -262,13 +263,13 @@ light_locations=[
  (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
 ]
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
- add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+155,kind='light',template=lighttemplate,
+ add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+(105 if idx<=3 else 155),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 crystal_light_base=len(light_locations)
 for offset,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  idx=crystal_light_base+offset
- add(lightp,'FL BRINEGLASS LIGHT '+str(offset),x,z,y=ground(x,z)+82,kind='light',template=lighttemplate,
+ add(lightp,'FL BRINEGLASS LIGHT '+str(offset),x,z,y=ground(x,z)+max(18,scale*.65),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 
@@ -284,7 +285,7 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  for i,line in enumerate(lines):
   d.text((38,28+i*64),line,font=ImageFont.truetype(font,46 if i==0 else 31),fill=color if i==0 else (210,220,217))
  tex=name+'.png';im.save(AS/tex)
- if name in ('Evacuation Board','Extraction Sign'):
+ if name=='Extraction Sign':
   height=y-(500 if z<-5000 else 600)
   support=Mesh()
   for px in (-195,195):support.box(px,0,0,16,height+50,16,2)
@@ -293,9 +294,9 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  m=Mesh();m.box(0,0,0,440,110,8,0)
  m.uv=[(u*8,v) for u,v in m.uv]
  path=own(name,m,tex)
- add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,kind='sign')
+ add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=25 if name=='Evacuation Board' else 100,kind='sign')
 
-sign('Evacuation Board',['MERIDIAN SURVEY','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-1800,-6780,560)
+sign('Evacuation Board',['MERIDIAN SURVEY','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2148,-7170,607,ry=270)
 sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
 sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-1250,-1675,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)
@@ -322,8 +323,15 @@ for gz in range(world_to_grid(-14000,ed),world_to_grid(10000,ed)+1):
   struct.pack_into('<f',sculpt,TYPE_BYTES+idx*4,normalized_height(ground(x,z),settings))
 payload[SCULPT_NAME]=bytes(sculpt)
 
-visual,_=patch_visuals(payload['visuals.ini']);visual=visual.decode('latin1')
-atmosphere={'FogNearest#':8200,'FogDistance#':28000,'Exposure':0.93,'SunIntensity':0.95,'BloomStrength':0.15}
+visual,_=patch_visuals(payload['visuals.ini']);visual='\r\n'.join(line for line in visual.decode('latin1').splitlines() if line.startswith('visuals.'))+'\r\n'
+# Native sun RGB uses 0..255 (MAX divides by 255); full color is DeSaturate=1.
+# Keep the horizon subordinate to the shelf and practical lights.
+atmosphere={'FogNearest#':6200,'FogDistance#':19500,'FogR#':48,'FogG#':62,'FogB#':80,'FogA#':0.45,
+ 'Exposure':0.84,'SunIntensity':1.8,'SunRed':218,'SunGreen':232,'SunBlue':255,
+ 'SunAngleX':18,'SunAngleY':315,'SunAngleZ':0,'Simulate24Hours':0,
+ 'AmbienceRed#':70,'AmbienceGeen#':84,'AmbienceBlue#':108,'EnvProbeBrightness':0.75,
+ 'sky$':'overcast','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
+ 'LensFlare':0,'SkyCloudCoverage':0.5,'SkyCloudiness':0.45}
 for key,val in {'AmbientMusicTrack':'','AmbientMusicTrackVolume':0,**atmosphere}.items():
  visual=patch_setting(visual,key,val)
 payload['visuals.ini']=visual.encode('latin1')
@@ -355,7 +363,7 @@ scene_recipe={
  'objectives':objectives,'native_terrain':True,'route':ROUTE,'return_route':RETURN,
  'terrain_materials':TERRAIN_MATERIALS,'scene_recipe':scene_recipe,'atmosphere':atmosphere,
  'crystal_clusters':len(crystal_sites),'brineglass_materials':[BRINE_TEX,RESONANT_TEX],
- 'environment_pass':'single-owner-production-recomposition'
+ 'environment_pass':'single-owner-production-recomposition','environment_polish':'sheltered-shelf-and-grounded-brineglass'
 },indent=2))
 print('FIRST LIGHT:',len(entities),'entities,',len(bank),'asset types,',len(light_locations)+len(crystal_sites),'lights')
 print('Vesper atmosphere: darker grade /',len(crystal_sites),'brineglass blooms / 2 energy materials')

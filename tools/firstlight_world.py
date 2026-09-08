@@ -20,7 +20,7 @@ RETURN=[
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
 PADS=[
- (-1700,-7160,760,600,500),
+ (-1850,-7210,560,350,500),
  (0,-3100,900,620,640),
  (-1450,-650,1080,1120,900),
  (1250,700,1120,1020,1080),
@@ -50,9 +50,25 @@ def ground(x,z):
  h+=230*gauss(x,z,-2700,-7350,1050,1500)
  h+=170*gauss(x,z,-1650,-8250,1650,720)
  h+=120*gauss(x,z,-650,-7600,700,1150)
+ # Authored shelf shoulders: protect the route centre and all combat pads.
+ # Relief stops before the first encounter; these are low banks, never cave walls.
+ focus=(1-smoothstep(-6500,-5950,z))*rect_mask(x,z,-750,-8050,2500,1850,600)
+ if focus>0:
+  h+=focus*(190*gauss(x,z,-2750,-7330,390,820)
+            +135*gauss(x,z,-2270,-6660,600,260)
+            +95*gauss(x,z,-2200,-7860,530,270)
+            +150*gauss(x,z,-930,-9100,420,580)
+            +120*gauss(x,z,520,-8650,310,740))
+  distance,_=road_sample(x,z,ROUTE)
+  shoulder=smoothstep(190,420,distance)
+  h+=focus*shoulder*(13*math.sin((x+z*.32)/105)+7*math.sin((z-x*.22)/53))
  for route,width in ((ROUTE,390),(RETURN,300)):
+  feather=470
+  if route is ROUTE and z<-6000:
+   transition=smoothstep(-6500,-6000,z)
+   width=170+220*transition;feather=260+210*transition
   distance,y=road_sample(x,z,route)
-  blend=1-smoothstep(width,width+470,distance)
+  blend=1-smoothstep(width,width+feather,distance)
   h=h*(1-blend)+y*blend
  for cx,cz,hx,hz,y in PADS:
   blend=rect_mask(x,z,cx,cz,hx,hz,280)
@@ -62,13 +78,13 @@ def ground(x,z):
  return h
 
 TERRAIN_MATERIALS={
- 'baseLayerMaterial':256|13,
- 'layerStartHeight0':190,'layerEndHeight0':380,'layerMatIndex0':256|3,
- 'layerStartHeight1':650,'layerEndHeight1':960,'layerMatIndex1':256|14,
- 'layerStartHeight2':1650,'layerEndHeight2':2300,'layerMatIndex2':256|22,
+ 'baseLayerMaterial':256|22,
+ 'layerStartHeight0':-40,'layerEndHeight0':180,'layerMatIndex0':256|14,
+ 'layerStartHeight1':780,'layerEndHeight1':1120,'layerMatIndex1':256|17,
+ 'layerStartHeight2':1650,'layerEndHeight2':2300,'layerMatIndex2':256|18,
  'layerStartHeight3':12000,'layerEndHeight3':13000,'layerMatIndex3':256|22,
  'layerStartHeight4':15000,'layerEndHeight4':16000,'layerMatIndex4':256|22,
- 'slopeStart0':.30,'slopeEnd0':.62,'slopeMatIndex0':256|18,
+ 'slopeStart0':.24,'slopeEnd0':.58,'slopeMatIndex0':256|18,
  'slopeStart1':.80,'slopeEnd1':.98,'slopeMatIndex1':256|17,
  'reflectance':.02,'bumpiness':.55,
 }
@@ -82,30 +98,39 @@ def architecture(Mesh,own,add,prop,P,I):
  CYM='Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\'
  CYS='Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\'
 
+ # CAMP 12: one connected lab at the sheltered western edge of an open court.
+ # Installed wall/entry/window meshes measure 200 x 200 units; 70% = 140.
+ # Roof 2x2 is centred in X/Z but its underside is at local Y=80, not zero.
  camp_y=500
- m=Mesh()
- beam(m,0,0,0,22,360,22,2)
- beam(m,0,320,0,230,16,16,5)
- beam(m,-92,245,0,16,105,16,2)
- beam(m,92,270,0,16,80,16,2)
+ for asset,x,z,yaw in [
+  ('CS_Wall_01_Entry_01.fpe',-2160,-7310,270),
+  ('CS_Wall_01_Window.fpe',-2160,-7170,270),
+  ('CS_Wall_01.fpe',-2320,-7310,90),
+  ('CS_Wall_01.fpe',-2320,-7170,90),
+  ('CS_Wall_01.fpe',-2240,-7390,0),
+  ('CS_Wall_01.fpe',-2240,-7090,180),
+ ]:
+  prop(CYB+asset,x,z,y=camp_y,ry=yaw,scale=70,
+       **({'scalex':-27} if yaw in (0,180) else {}))
+ prop(CYB+'CS_Roof_Tile_2x2.fpe',-2240,-7240,y=camp_y+100.5,scale=100,
+      **{'scalex':-10,'scaley':-50,'scalez':65})
+ # One work station belongs inside the lab, clear of the entrance/court.
+ prop(P+'Desk 01a.fpe',-2290,-7130,y=camp_y+0.4,ry=0,scale=100)
+ prop(P+'Desk Chair 01a.fpe',-2215,-7160,y=camp_y,ry=90,scale=100)
+ # Five-metre mast is subordinate to the lab mass, outside the approach sightline.
+ m=Mesh();beam(m,0,0,0,10,210,10,2)
+ beam(m,0,186,0,100,10,10,5)
+ beam(m,-38,150,0,8,48,8,2);beam(m,38,166,0,8,32,8,2)
  mast=own('Camp 12 Survey Mast',m)
- add(mast,'Camp 12 / Meridian survey mast',-2180,-7380,y=camp_y)
- prop(CYB+'CS_Wall_01_Entry_01.fpe',-2140,-7040,y=camp_y,ry=90,scale=58)
- prop(CYB+'CS_Wall_01.fpe',-2140,-7350,y=camp_y,ry=90,scale=58)
- prop(CYB+'CS_Wall_01_Window.fpe',-2140,-6730,y=camp_y,ry=90,scale=58)
- prop(CYB+'CS_Wall_01_Overhang.fpe',-1990,-7040,y=camp_y+8,ry=90,scale=58)
- prop(CYB+'CS_Roof_Tile_2x2.fpe',-1980,-7040,y=camp_y+260,ry=0,scale=58)
- prop(C+'Light Generator.fpe',-1460,-7380,y=camp_y,ry=175,scale=86)
- prop(C+'CableReel.fpe',-1370,-7260,y=camp_y,ry=35,scale=84)
- prop(C+'SurveyorStand1.fpe',-1770,-6810,y=camp_y,ry=18,scale=102)
- prop(C+'SurveyorStand2.fpe',-1590,-6760,y=camp_y,ry=-20,scale=102)
- prop(C+'Freight Container.fpe',-1110,-7350,y=camp_y,ry=180,scale=68)
- prop(P+'Container 01a.fpe',-1130,-7080,y=camp_y,ry=180,scale=78)
- for x,z,ry in [(-1290,-6940,8),(-1170,-6860,-6)]:
-  prop(P+'Wooden Crate 01a.fpe',x,z,y=camp_y,ry=ry,scale=88)
- prop(I+'Cylinder - Oxygen.fpe',-1470,-6900,y=camp_y,ry=0,scale=92)
- prop(C+'Roadblock2.fpe',-1140,-6580,y=ground(-1140,-6580),ry=12,scale=86)
- prop(C+'Roadblock3.fpe',-900,-6480,y=ground(-900,-6480),ry=-8,scale=86)
+ add(mast,'Camp 12 / Meridian survey mast',-2390,-7470,y=camp_y)
+ # One small power cluster, one cargo unit, two instruments, one perimeter cue.
+ prop(C+'Light Generator.fpe',-1490,-7390,y=camp_y,ry=175,scale=86)
+ prop(C+'CableReel.fpe',-1420,-7270,y=camp_y,ry=35,scale=84)
+ prop(C+'Freight Container.fpe',-1400,-7080,y=camp_y,ry=90,scale=68)
+ prop(P+'Wooden Crate 01a.fpe',-1470,-6980,y=camp_y,ry=8,scale=68)
+ prop(C+'SurveyorStand1.fpe',-1770,-6860,y=ground(-1770,-6860),ry=18,scale=102)
+ prop(C+'SurveyorStand2.fpe',-1590,-6880,y=ground(-1590,-6880),ry=-20,scale=102)
+ prop(C+'Roadblock2.fpe',-1220,-6600,y=ground(-1220,-6600),ry=-35,scale=86)
 
  gate_y=640
  prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3160,y=gate_y,ry=0,scale=72)
@@ -187,10 +212,10 @@ def architecture(Mesh,own,add,prop,P,I):
   add(marker,'Meridian route marker '+str(i),x,z,y=ground(x,z),ry=ry)
 
  for i,(x,z,ry) in enumerate([
-  (-1120,-6610,0),(-320,-5660,0),(470,-4630,0),(-500,-3030,0)
+  (-320,-5660,0),(470,-4630,0),(-500,-3030,0)
  ],1):
   prop(CYM+'CS_Street_Electrical_Pole_01.fpe',x,z,y=ground(x,z),ry=ry,scale=68)
-  if i in (1,3,4):
+  if i in (2,3):
    prop(CYM+'CS_Street_Lamp.fpe',x+95,z+35,y=ground(x+95,z+35),ry=ry,scale=68)
 
  m=Mesh()

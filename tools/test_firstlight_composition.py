@@ -40,8 +40,13 @@ camp=[p for p in placements if in_camp(p) and p.get('kind','environment')=='envi
 assert 10<=len(camp)<=22, 'Camp 12 prop budget escaped: '+str(len(camp))
 for p in camp:
  asset=str(p.get('asset',''))
- for banned in ('Tent 01','Portable Cot','Desk 01','Desk Chair','Camping Pack'):
+ for banned in ('Tent 01','Portable Cot','Camping Pack'):
   assert banned not in asset, 'Camp 12 secondary dressing returned: '+asset
+
+# The deliberate indoor desk/chair are owned by the lab composition, not a second dressing pass.
+workstation=[p for p in camp if any(k in p.get('asset','') for k in ('Desk 01','Desk Chair'))]
+assert len(workstation)<=2, 'indoor work station grew into secondary dressing'
+assert all(-2330<p['x']<-2160 and -7390<p['z']<-7090 for p in workstation), 'lab furniture escaped into court'
 
 assets='\n'.join(str(p.get('asset','')) for p in camp)
 for required in (
@@ -69,7 +74,9 @@ materials=report.get('brineglass_materials',[])
 assert materials==['vesper_brineglass_energy.png','vesper_brineglass_resonant.png'], 'brineglass energy material suite changed: '+repr(materials)
 atmosphere=report.get('atmosphere',{})
 assert float(atmosphere.get('Exposure',9))<1.0, 'Vesper atmosphere regressed to washed-out exposure'
-assert float(atmosphere.get('BloomStrength',0))>=0.12, 'brineglass bloom grade was lost'
+assert 0.02<=float(atmosphere.get('BloomStrength',0))<=0.12, 'bloom escaped the restrained mineral-light grade'
+assert atmosphere.get('DeSaturate')==1, 'world color was removed'
+assert all(128<=atmosphere.get(k,0)<=255 for k in ('SunRed','SunGreen','SunBlue')), 'sun color is not in native 0..255 units'
 
 custom_environment=[]
 for p in placements:

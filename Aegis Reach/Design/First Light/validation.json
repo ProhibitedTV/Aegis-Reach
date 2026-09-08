@@ -1,6 +1,8 @@
 {
   "checks": [
     "Mission starts with shield and armour, exploration score",
+    "Nearby living hostile drives combat score state",
+    "Cleared contact returns score to spatial exploration",
     "Records cannot bypass power objective",
     "Interrupted hold resets progress",
     "Nearby active defender blocks terminal",
@@ -20,10 +22,13 @@
     "Reserve remains hidden before evacuation",
     "Reinforcements respect their arrival delay",
     "Reinforcement activates through native combat wrapper",
+    "Native death lifecycle continues after zero health",
     "All new architectural and sign meshes import in installed Assimp",
-    "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references"
+    "All native terrain layers use installed landscape materials, no placeholder",
+    "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references",
+    "Storyboard points to First Light without a machine-specific path"
   ],
-  "mesh_count": 14,
-  "entity_count": 307,
+  "mesh_count": 28,
+  "entity_count": 195,
   "native_combat_playtest": false
 }
