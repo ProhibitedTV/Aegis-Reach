@@ -11,7 +11,7 @@ from environment_pass import Mesh,clean_template,set_suffix,write_bank
 from max_archive import PASSWORD,convert
 from native_terrain_pass import terrain_settings,normalized_height,world_to_grid,grid_to_world,sculpt_index,TYPE_BYTES,SCULPT_NAME
 from polish_relayfall import patch_visuals,patch_setting
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image,ImageDraw,ImageFont,ImageFilter
 
 GAME=ROOT/'Aegis Reach';FILES=GAME/'Files';AS=FILES/'entitybank/Aegis Reach/First Light';AS.mkdir(parents=True,exist_ok=True)
 SOURCE=FILES/'mapbank/Aegis Reach - Relayfall.fpm';MAP=FILES/'mapbank/Aegis Reach - First Light.fpm'
@@ -78,19 +78,19 @@ def own(name,mesh,texture='aegis_atlas.png',collision=1):
 P='Booster Pack\\Military Pack\\';I='Industrial Collection\\Industrial\\'
 def prop(path,x,z,**kw):return add(path,path.split('\\')[-1].removesuffix('.fpe'),x,z,**kw)
 
-# Original crystalline geology. These are deliberately low-poly mineral prisms rather
-# than fantasy crystals: they read as old hypersaline brineglass exposed by erosion.
-def _mesh_tri(mesh,a,b,c,color=5):
+# Original crystalline geology. The crystals deliberately use their own full UV space
+# and procedural energy material instead of borrowing the general Aegis atlas.
+def _mesh_tri(mesh,a,b,c):
  ux,uy,uz=b[0]-a[0],b[1]-a[1],b[2]-a[2]
  vx,vy,vz=c[0]-a[0],c[1]-a[1],c[2]-a[2]
  nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx
  length=max(0.0001,math.sqrt(nx*nx+ny*ny+nz*nz));n=(nx/length,ny/length,nz/length)
  start=len(mesh.verts)
- for p,(u,v) in zip((a,b,c),((.12,.90),(.88,.90),(.50,.08))):
-  mesh.verts.append(p);mesh.norm.append(n);mesh.uv.append(((color+u)/8,v))
+ for p,uv in zip((a,b,c),((.08,.96),(.92,.96),(.50,.04))):
+  mesh.verts.append(p);mesh.norm.append(n);mesh.uv.append(uv)
  mesh.faces.append((start,start+1,start+2))
 
-def _crystal_prism(mesh,x,z,r,h,angle=0,leanx=0,leanz=0,color=5):
+def _crystal_prism(mesh,x,z,r,h,angle=0,leanx=0,leanz=0):
  sides=5;lower=[];upper=[]
  for i in range(sides):
   a=math.radians(angle+i*360/sides)
@@ -99,21 +99,75 @@ def _crystal_prism(mesh,x,z,r,h,angle=0,leanx=0,leanz=0,color=5):
  tip=(x+leanx*1.45,h,z+leanz*1.45)
  for i in range(sides):
   j=(i+1)%sides
-  _mesh_tri(mesh,lower[i],lower[j],upper[j],color)
-  _mesh_tri(mesh,lower[i],upper[j],upper[i],color)
-  _mesh_tri(mesh,upper[i],upper[j],tip,color)
+  _mesh_tri(mesh,lower[i],lower[j],upper[j])
+  _mesh_tri(mesh,lower[i],upper[j],upper[i])
+  _mesh_tri(mesh,upper[i],upper[j],tip)
 
-def _build_brineglass():
+def _build_energy_texture(filename,resonant=False):
+ size=1024
+ image=Image.new('RGB',(size,size));px=image.load()
+ for y in range(size):
+  v=y/(size-1)
+  for x in range(size):
+   u=x/(size-1)
+   center=math.exp(-((u-.50)/.24)**2)
+   edge=math.exp(-((min(u,1-u))/.055)**2)
+   weave=.5+.5*math.sin(u*31+v*17+1.3*math.sin(v*11))
+   cross=.5+.5*math.sin(u*13-v*29+1.1*math.sin(u*9))
+   vein=math.exp(-(math.sin(u*20+v*13+1.4*math.sin(v*7))/.14)**2)
+   pulse=.5+.5*math.sin(v*52+u*8+2*math.sin(v*8))
+   if resonant:
+    violet=.70+.30*cross;cyan=.20+.25*weave
+    white=min(1,vein*.92+edge*.42+pulse*.10)
+    r=12+125*center*violet+215*white
+    g=8+48*center+105*cyan+220*white
+    b=42+185*center+65*weave+210*white
+   else:
+    cyan=.60+.40*weave;violet=.20+.36*cross
+    white=min(1,vein*.82+edge*.34+pulse*.08)
+    r=7+62*center*violet+220*white
+    g=14+128*center*cyan+210*white
+    b=48+180*center+52*cross+205*white
+   px[x,y]=(max(0,min(255,int(r))),max(0,min(255,int(g))),max(0,min(255,int(b))))
+
+ # Soft internal filaments mimic energy trapped inside a translucent mineral body.
+ glow=Image.new('RGBA',(size,size),(0,0,0,0));draw=ImageDraw.Draw(glow)
+ for i in range(11):
+  base=int(size*(.08+i*.082))
+  points=[]
+  for y in range(0,size+24,24):
+   x=base+int(math.sin(y*.018+i*.91)*24+math.sin(y*.051+i)*9)
+   points.append((x,y))
+  color=(205,185,255,75) if resonant else (165,225,255,68)
+  draw.line(points,fill=color,width=4+(i%3)*2)
+ glow=glow.filter(ImageFilter.GaussianBlur(7))
+ image=Image.alpha_composite(image.convert('RGBA'),glow)
+
+ # A handful of crisp white-violet fractures survive bloom and make the surface feel
+ # active rather than like a uniformly glowing fantasy gemstone.
+ sharp=ImageDraw.Draw(image)
+ for i in range(6):
+  base=int(size*(.16+i*.135))
+  points=[]
+  for y in range(-20,size+20,34):
+   x=base+int(math.sin(y*.026+i*1.7)*14)
+   points.append((x,y))
+  sharp.line(points,fill=(240,244,255,115),width=2)
+ path=AS/filename
+ image.convert('RGB').save(path,optimize=True)
+ return filename
+
+def _build_brineglass(name,texture):
  m=Mesh()
  specs=[
   (-40,-15,34,245,-8,-14,8),(18,20,27,190,12,8,-5),(58,-20,20,145,-18,10,4),
   (-72,42,19,130,25,-5,9),(12,-58,15,105,4,3,5),(78,48,12,82,-30,-2,4)
  ]
- for x,z,r,h,angle,lx,lz in specs:_crystal_prism(m,x,z,r,h,angle,lx,lz,5)
- path=own('Vesper Brineglass Bloom',m,collision=0)
- f=AS/'Vesper Brineglass Bloom.fpe'
- text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.18').replace('metalnessStrength = 0.22','metalnessStrength = 0.08')
- f.write_text(text+'reflectance = 0.58\n')
+ for x,z,r,h,angle,lx,lz in specs:_crystal_prism(m,x,z,r,h,angle,lx,lz)
+ path=own(name,m,texture=texture,collision=0)
+ f=AS/(name+'.fpe')
+ text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.12').replace('metalnessStrength = 0.22','metalnessStrength = 0.05')
+ f.write_text(text+'reflectance = 0.66\n')
  return path
 
 # One authoring layer owns all human-built spaces.
@@ -124,18 +178,23 @@ ROCK=r'Max Collection\Rocks\Rock Boulder.fpe'
 for x,z,sz in [(-700,-8640,110),(940,-7690,120),(-850,-5700,140),(650,-4970,120),(-490,-4390,100),(1040,-3840,120)]:
  add(ROCK,'Basalt remnant / tide channel cover',x,z,scale=sz,ry=x%180)
 
-# Brineglass is a visual breadcrumb toward the anomaly. Early blooms are small/cyan;
-# growth becomes larger and more violet near AEGIS and the Choir fracture.
-BRINEGLASS=_build_brineglass()
+# Two related energy materials make the geology evolve toward the anomaly: cold
+# blue-white brineglass outside, violet-white resonant brineglass at the fracture.
+BRINE_TEX=_build_energy_texture('vesper_brineglass_energy.png',False)
+RESONANT_TEX=_build_energy_texture('vesper_brineglass_resonant.png',True)
+BRINEGLASS=_build_brineglass('Vesper Brineglass Bloom',BRINE_TEX)
+RESONANT=_build_brineglass('Vesper Resonant Brineglass Bloom',RESONANT_TEX)
 crystal_sites=[
- (-950,-8650,15,62,0x45C9D7,260),(1120,-7900,-20,55,0x45C9D7,240),
- (1300,-6050,30,68,0x4BC9D8,300),(-980,-5350,-15,72,0x4BC9D8,320),
- (1100,-4250,40,78,0x52D1DF,340),(-2650,-250,0,88,0x59D4E2,380),
- (2450,1850,65,96,0x62D8E5,420),(-1650,3750,-25,110,0x748CE8,460),
- (1250,4450,20,125,0x8B75E8,520),(350,5150,-35,138,0x9670EC,560)
+ (-950,-8650,15,62,0x45C9D7,260,False),(1120,-7900,-20,55,0x45C9D7,240,False),
+ (1300,-6050,30,68,0x4BC9D8,300,False),(-980,-5350,-15,72,0x4BC9D8,320,False),
+ (1100,-4250,40,78,0x52D1DF,340,False),(-2650,-250,0,88,0x59D4E2,380,False),
+ (2450,1850,65,96,0x62D8E5,420,False),(-1650,3750,-25,110,0x748CE8,460,True),
+ (1250,4450,20,125,0x8B75E8,520,True),(350,5150,-35,138,0x9670EC,560,True)
 ]
-for idx,(x,z,ry,scale,color,radius) in enumerate(crystal_sites,1):
- add(BRINEGLASS,'Brineglass bloom %02d'%idx,x,z,y=ground(x,z)-4,ry=ry,scale=scale,kind='geology')
+for idx,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
+ asset=RESONANT if resonant else BRINEGLASS
+ prefix='Resonant brineglass bloom' if resonant else 'Brineglass bloom'
+ add(asset,prefix+' %02d'%idx,x,z,y=ground(x,z)-4,ry=ry,scale=scale,kind='geology')
 
 # Warden occupation is a thin retrofit layer, not a second architecture system.
 for x,z,angle in [(-720,-2660,0),(700,-2200,30),(1560,-1990,90)]:
@@ -193,19 +252,19 @@ groups={
  6:[(-2760,2150),(-3090,1570),(-3030,820),(-2950,260)],
  7:[(2050,-2550),(2050,-2380),(-3270,-1100),(-3270,-920),(2060,-2110),(-3190,-1300)]
 }
-ep=r'Characters\Tony - Armed Response.fpe'
+ep=r'Characters\\Tony - Armed Response.fpe'
 for group,spots in groups.items():
  for j,(x,z) in enumerate(spots,1):
   add(ep,f'FL ENEMY {group} {j}',x,z,y=ground(x,z)+5,ry=180,kind='enemy',template=T[ep],
       script=SCRIPT+'enemy.lua',
       **{'eleprof.strength':110 if group<5 else 140,
-         'eleprof.hasweapon_s':r'enhanced\MK18' if j%3 else r'enhanced\AR',
+         'eleprof.hasweapon_s':r'enhanced\\MK18' if j%3 else r'enhanced\\AR',
          'eleprof.quantity':30,'eleprof.damage':8,'eleprof.accuracy':130,
          'eleprof.weapondamagemultiplier':0.32,'eleprof.conerange':1300,'eleprof.isimmobile':0})
 
 # Invisible native lights reinforce visible fixtures and let brineglass cast a real
 # pool of color onto the terrain instead of reading as a painted emissive prop.
-lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
+lightp=r'_markers\\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
  (-2050,-7060,0xE6B77A,680),(-1460,-7180,0xE6B77A,620),(-1690,-6800,0x73D8E8,480),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
@@ -217,22 +276,22 @@ light_locations=[
 ]
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+155,kind='light',template=lighttemplate,
-     script=r'markers\ConstantLight.lua',
+     script=r'markers\\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 crystal_light_base=len(light_locations)
-for offset,(x,z,ry,scale,color,radius) in enumerate(crystal_sites,1):
+for offset,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  idx=crystal_light_base+offset
  add(lightp,'FL BRINEGLASS LIGHT '+str(offset),x,z,y=ground(x,z)+82,kind='light',template=lighttemplate,
-     script=r'markers\ConstantLight.lua',
+     script=r'markers\\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
 
-add(ct,'FIRST LIGHT // SCORE',50,-9500,y=100,kind='controller',script=r'aegis_reach\firstlight_score.lua',
-    **{'eleprof.soundset_s':r'aegis_reach\music\salt_moon_drift.wav',
-       'eleprof.soundset1_s':r'aegis_reach\music\moon_outpost_drift.wav',
-       'eleprof.soundset2_s':r'aegis_reach\music\orbital_catacomb.wav'})
+add(ct,'FIRST LIGHT // SCORE',50,-9500,y=100,kind='controller',script=r'aegis_reach\\firstlight_score.lua',
+    **{'eleprof.soundset_s':r'aegis_reach\\music\\salt_moon_drift.wav',
+       'eleprof.soundset1_s':r'aegis_reach\\music\\moon_outpost_drift.wav',
+       'eleprof.soundset2_s':r'aegis_reach\\music\\orbital_catacomb.wav'})
 
 # Human-scale signage carries story; it is not used as a substitute for path design.
-font=r'C:\Windows\Fonts\consolab.ttf'
+font=r'C:\\Windows\\Fonts\\consolab.ttf'
 def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  im=Image.new('RGB',(1024,256),(15,27,36));d=ImageDraw.Draw(im)
  d.rectangle((4,4,1019,251),outline=color,width=8)
@@ -304,7 +363,7 @@ scene_recipe={
  'Northstar':'twin-stack industrial yard',
  'Operations':'low modular civilian workplace',
  'AEGIS':'arrival frame + modular excavation threshold',
- 'Choir':'bespoke buried nonhuman structure + increasingly active brineglass',
+ 'Choir':'bespoke buried nonhuman structure + increasingly active resonant brineglass',
 }
 (DESIGN/'layout.json').write_text(json.dumps(placements,indent=2))
 (DESIGN/'build-report.json').write_text(json.dumps({
@@ -312,8 +371,9 @@ scene_recipe={
  'lights':len(light_locations)+len(crystal_sites),'assets':bank,'staged_dependencies':sorted(staged),
  'objectives':objectives,'native_terrain':True,'route':ROUTE,'return_route':RETURN,
  'terrain_materials':TERRAIN_MATERIALS,'scene_recipe':scene_recipe,'atmosphere':atmosphere,
- 'crystal_clusters':len(crystal_sites),'environment_pass':'single-owner-production-recomposition'
+ 'crystal_clusters':len(crystal_sites),'brineglass_materials':[BRINE_TEX,RESONANT_TEX],
+ 'environment_pass':'single-owner-production-recomposition'
 },indent=2))
 print('FIRST LIGHT:',len(entities),'entities,',len(bank),'asset types,',len(light_locations)+len(crystal_sites),'lights')
-print('Vesper atmosphere: darker grade /',len(crystal_sites),'brineglass blooms')
+print('Vesper atmosphere: darker grade /',len(crystal_sites),'brineglass blooms / 2 energy materials')
 print('Environment: single-owner production recomposition / no secondary Camp 12 dressing')
