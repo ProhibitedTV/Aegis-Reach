@@ -17,12 +17,16 @@ the main architecture or the missing service-road surface.
 - One original Meridian field lab replaces the six street-wall/roof pieces. Its
   shell measures 420 x 260 MAX inches (10.67 x 6.60 metres), with a chamfered crown,
   structural ribs, transport rails, roof service equipment and recessed entrance.
-  The shell contains 864 triangles; its opening is approximately 100 x 101 inches.
+  The shell contains 884 triangles; its opening is approximately 100 x 101 inches.
   There is no generated floor or entrance step over the native terrain.
 - The lab uses an original ivory/graphite/teal material atlas with seam wear,
   fasteners, Meridian identifiers, restrained cyan trim and amber practical strips.
   The atlas and emission map are deterministic outputs of `meridian_fieldkit.py`.
   No third-party model or DLC texture is embedded in this kit.
+- The lab upper end panels now have separate inward and outward faces. The prior
+  outward-only fans could disappear from an interior view under backface culling.
+  New sightline checks reproduced that defect and pass after the repair. The
+  ceiling strip now has a housing that meets the ceiling, without adding a light.
 - The original mast is now a narrow braced truss with two lamp housings and an
   antenna. It sits at the back corner of the court. Its light marker coincides
   with the fixture height; the other two camp lights serve the lab and doorway.

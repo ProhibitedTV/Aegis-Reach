@@ -47,7 +47,7 @@ def main():
   return
  print('FIRST LIGHT // REBUILD REQUIRED')
  print('Source signature:',signature[:16])
- subprocess.run([sys.executable,str(ROOT/'tools/build_first_light.py')],cwd=ROOT,check=True)
+ subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_first_light.py')],cwd=ROOT,check=True)
  STAMP.parent.mkdir(parents=True,exist_ok=True)
  STAMP.write_text(json.dumps({'source_sha256':signature,'map':str(MAP)},indent=2))
  print('FIRST LIGHT // REBUILD COMPLETE')

@@ -83,17 +83,22 @@ def shell(Mesh):
  for x,w in [(-99,222),(166,88)]:m.box(x,0,-126,w,113,8,0)
  m.box(72,101,-126,100,12,8,0)
  m.box(0,0,126,404,113,8,0)
- # Fill the chamfered upper face with triangle-fan panels on both ends.
+ # End panels have distinct outer and inner faces. A single outward-facing
+ # triangle fan disappears from inside the lab under ordinary backface culling.
  cap=[(-210,113),(-198,136),(-176,148),(176,148),(198,136),(210,113)]
- for z in (-126,126):
-  for i in range(1,len(cap)-1):
-   # Thin triangular prism, with native consistent triangle normals.
-   a=(cap[0][0],cap[0][1],z);b=(cap[i][0],cap[i][1],z);c=(cap[i+1][0],cap[i+1][1],z)
-   vs=[a,b,c];u=[b[k]-a[k] for k in range(3)];v=[c[k]-a[k] for k in range(3)]
-   n=(0,0,-1 if z<0 else 1);start=len(m.verts)
-   if z>0:vs.reverse()
-   for p in vs:m.verts.append(p);m.norm.append(n);m.uv.append((.04,.5))
-   m.faces.append((start,start+1,start+2))
+ # Clip the inner roof profile at the existing end wall's 113-inch top so the
+ # panels meet edge-to-edge instead of overlapping on a coplanar strip.
+ inner_edge=202-(113-111)*(202-192)/(130-111)
+ inside_cap=[(-inner_edge,113),(-192,130),(-174,140),(174,140),(192,130),(inner_edge,113)]
+ for side in (-1,1):
+  for polygon,z,nz in ((cap,side*130,side),(inside_cap,side*122,-side)):
+   for i in range(1,len(polygon)-1):
+    vs=[(polygon[j][0],polygon[j][1],z) for j in (0,i,i+1)]
+    if nz>0:vs.reverse()
+    start=len(m.verts)
+    for point in vs:
+     m.verts.append(point);m.norm.append((0,0,nz));m.uv.append((.04,.5))
+    m.faces.append((start,start+1,start+2))
  # Structural ribs, spaced seams and low wear rails break up the broad ivory mass.
  for z in (-132,-66,0,66,132):
   for a,b in zip(profile,profile[1:]):strut(m,(a[0],a[1]+1,z),(b[0],b[1]+1,z),5,2)
@@ -118,6 +123,7 @@ def shell(Mesh):
  m.box(-99,12,-133,104,45,3,6)
  # Interior equipment backing and ceiling practical strip.
  m.box(-140,26,119,85,55,4,7)
+ m.box(10,137,0,148,3,12,1) # housing meets the 140-inch interior ceiling
  m.box(10,135,0,140,2,7,4)
  return m
 

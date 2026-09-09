@@ -20,6 +20,28 @@ for x in (40,70,104):
    if min(u,v,1-u-v)<-1e-6:continue
    z=u*a[2]+v*b[2]+(1-u-v)*c[2]
    assert not -175<z<-110, ('blocked field-lab doorway',x,y,z)
+# A closed exterior is insufficient: inside views need inward-facing end panels.
+# Trace toward each end at head-above-door heights, checking the first surface's
+# normal from both directions. This catches a single-sided roof gable.
+def end_hit(x,y,start_z,direction):
+ hits=[]
+ for ids in m.faces:
+  a,b,c=[m.verts[i] for i in ids]
+  den=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1])
+  if abs(den)<1e-6:continue
+  u=((b[1]-c[1])*(x-c[0])+(c[0]-b[0])*(y-c[1]))/den
+  v=((c[1]-a[1])*(x-c[0])+(a[0]-c[0])*(y-c[1]))/den
+  if min(u,v,1-u-v)<-1e-6:continue
+  z=u*a[2]+v*b[2]+(1-u-v)*c[2]
+  distance=(z-start_z)*direction
+  if distance>1e-6:hits.append((distance,m.norm[ids[0]][2]))
+ assert hits, ('missing end panel',x,y,start_z,direction)
+ distance,normal=min(hits)
+ assert normal*direction<-.99, ('end panel faces away from viewer',x,y,start_z,direction)
+for x,y in ((0,120),(0,136),(-175,120),(175,120)):
+ for direction in (-1,1):
+  end_hit(x,y,direction*30,direction) # start clear of the central lamp housing
+  end_hit(x,y,direction*180,-direction)
 for ids in m.faces:
  a,b,c=[m.verts[i] for i in ids]
  u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
@@ -40,5 +62,5 @@ with zipfile.ZipFile(ROOT/'Aegis Reach/Files/mapbank/Aegis Reach - Relayfall.fpm
 for x,z in ((-1910,7250),(6000,-7250),(0,4500)):
  i=world_to_grid(z,ed)*4096+world_to_grid(x,ed)
  assert paint[i]==original[i], ('paint escaped the owned service-route area',x,z)
-print('FIELD KIT PASS: physical doorway, shell winding, native road paint, unowned terrain preservation.')
+print('FIELD KIT PASS: physical doorway, inside/outside end panels, shell winding, native road paint, unowned terrain preservation.')
 print('Native material appearance and player collision still require MAX review.')
