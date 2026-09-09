@@ -19,7 +19,7 @@ TRACKS=('salt_moon_drift.wav','moon_outpost_drift.wav','orbital_catacomb.wav')
 
 
 def run_tool(name):
- cmd=[sys.executable,str(ROOT/'tools'/name)]
+ cmd=[sys.executable,'-B',str(ROOT/'tools'/name)]
  subprocess.run(cmd,cwd=ROOT,check=True)
 
 
@@ -65,6 +65,7 @@ def launch_manifest(qa,pid):
   'map_bytes':MAP.stat().st_size if MAP.is_file() else 0,
   'map_sha256':file_sha256(MAP) if MAP.is_file() else None,
   'tracks':tracks,
+  'original_art':json.loads((ROOT/'.local-review/firstlight-asset-cache.json').read_text()),
   'collect_after_run':'python tools\\firstlight_collect.py',
  }
 
@@ -77,6 +78,7 @@ def deploy():
  # build. Strip only the known-bad stock weapon.lua entities, then prove the exact
  # runtime map is structurally safe before MAX sees it.
  apply_load_safety()
+ run_tool('firstlight_asset_cache.py')
  run_preflight()
 
  REG.mkdir(parents=True,exist_ok=True)

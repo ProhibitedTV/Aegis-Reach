@@ -64,6 +64,21 @@ excluded from Git.
 
 Current map SHA256: `13ab59b02ab5e6489cb2b70e7cbeb2e3c09b57b2d1cd9ec8d6bc9e81db411ad3`
 
+## Original-art load freshness
+
+The launcher now hashes the original First Light X/FPE/PNG source bundle before
+native launch. On a changed or previously unverified bundle it removes only the
+compiled DBO siblings of those original meshes. Unchanged bundles keep their
+compiled copies. Installed DLC and unrelated caches are not touched. The local
+stamp is ignored by Git; the launch manifest records its content signature.
+
+This supplements MAX's timestamp freshness checks. Older compiled files were
+present beside newer source meshes, but this is not proof that MAX displayed
+stale meshes in the supplied images. Six temporary-file tests cover first launch,
+reuse, content changes with preserved timestamps, texture/material changes,
+unowned files and invalid/missing model references. Native appearance and
+collision still require the views below.
+
 ## Native paint provenance
 
 The format is taken from MAX's own `GGTerrain_GetMaterialIndex`,

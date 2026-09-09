@@ -45,7 +45,7 @@ def sha256(path):
 
 def run_test(name):
     path = ROOT / 'tools' / name
-    result = subprocess.run([sys.executable, str(path)], cwd=ROOT)
+    result = subprocess.run([sys.executable, '-B', str(path)], cwd=ROOT)
     if result.returncode:
         raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: {name} returned {result.returncode}')
 
@@ -63,6 +63,7 @@ def main():
         'test_firstlight.py',
         'test_firstlight_composition.py',
         'test_meridian_fieldkit.py',
+        'test_firstlight_asset_cache.py',
     ]
     for name in tests:
         run_test(name)
