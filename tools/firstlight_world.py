@@ -7,6 +7,12 @@ Bespoke meshes are reserved for a handful of silhouettes and the Choir.
 import math
 from native_terrain_pass import gauss, rect_mask, smoothstep
 
+# The opening is a playable approach, with the lab just left of the court.
+INSERTION=(-900,-8200)
+INSERTION_LOOK_AT=(-2060,-7250)
+INSERTION_YAW=math.degrees(math.atan2(INSERTION_LOOK_AT[0]-INSERTION[0],INSERTION_LOOK_AT[1]-INSERTION[1]))%360
+CAMP_MAST=(-2145,-6960)
+
 ROUTE=[
  (0,-9600,1080),(-700,-8350,810),(-1700,-7350,500),(-1450,-6400,310),
  (0,-5150,120),(300,-4150,290),(0,-3100,640),(0,-2350,650),
@@ -76,6 +82,12 @@ def ground(x,z):
  for cx,cz,hx,hz,y in PADS:
   blend=rect_mask(x,z,cx,cz,hx,hz,280)
   h=h*(1-blend)+y*blend
+ # The September 10 native frame exposed a ~20m bank immediately behind the
+ # lab. Cut it back into a shallow sheltered bench; the flat court stays intact.
+ shelter=rect_mask(x,z,-2780,-7270,360,460,450)*(1-smoothstep(-2520,-2380,x))
+ if shelter>0:
+  bench=500+.42*max(0,-x-2490)+.10*max(0,abs(z+7270)-360)
+  h-=max(0,h-bench)*shelter
  pit=1-smoothstep(650,1450,math.hypot(x*.92,(z-5500)*1.10))
  h=h*(1-pit)+180*pit
  return h
@@ -124,7 +136,7 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  add(lab,'Camp 12 / Meridian field lab',-2350,-7270,y=camp_y,ry=270)
  prop(P+'Desk 01a.fpe',-2390,-7130,y=camp_y+0.4,ry=0,scale=100)
  prop(P+'Desk Chair 01a.fpe',-2315,-7160,y=camp_y,ry=90,scale=100)
- add(mast,'Camp 12 / Meridian survey mast',-2490,-6960,y=camp_y,ry=270)
+ add(mast,'Camp 12 / Meridian survey mast',*CAMP_MAST,y=camp_y,ry=270)
  prop(C+'Light Generator.fpe',-1850,-7420,y=camp_y,ry=175,scale=86)
  prop(C+'CableReel.fpe',-1740,-7400,y=camp_y,ry=35,scale=84)
  prop(C+'Freight Container.fpe',-1620,-7060,y=camp_y,ry=90,scale=68)

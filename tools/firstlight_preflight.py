@@ -62,6 +62,7 @@ def main():
         'test_firstlight_lua_compat.py',
         'test_firstlight.py',
         'test_firstlight_composition.py',
+        'test_firstlight_approach.py',
         'test_meridian_fieldkit.py',
         'test_meridian_materials.py',
         'test_firstlight_asset_cache.py',

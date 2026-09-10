@@ -12,6 +12,35 @@ rocky basin, exposed equipment, unrelated pools of light, and conspicuous blue
 crystals in the foreground. Moving one barrier or tuning exposure did not address
 the main architecture or the missing service-road surface.
 
+## September 10 opening-view correction
+
+The supplied native opening screenshot shows the lab at the far left, a brightly
+lit bank behind it, and distant structures dominating the centre. Surface detail
+alone did not establish the camp as the first destination. The full desktop image
+includes unrelated private applications and is not copied into this public repo.
+
+- Normal insertion moves from (0, -9500) to (-900, -8200), on the existing descent.
+  Its marker faces the camp court at 309.32 degrees. The lab is approximately 44 m
+  away instead of 82 m. This changes the initial view and shortens the arrival walk;
+  it does not move enemies, objectives or the established service-road spine.
+- Native terrain directly behind the lab becomes a shallow backed-in bench.
+  At X=-2800/Z=-7270 its height drops from 1275.8 to 630.2 inches; the court remains
+  at 500. The enclosing ridge returns farther west. No cave or geology props are
+  introduced, and existing lab/furniture footing stays level.
+- The existing mast moves to (-2145, -6960), on the court's north side. Its practical
+  light follows it, with range reduced from 540 to 330 inches and a subdued amber.
+  Interior and entrance ranges become 250 and 240. The stock 45-inch marker offset
+  is removed for these three lamps so the authored source heights match fixtures.
+- The first two small brineglass clusters move alongside the shortened descent,
+  outside the camp core. Their small lights also lose the unintended height offset.
+  No new formations, props, light sources or asset families are added.
+
+Checks sample the serialized terrain for an unobstructed entrance sightline,
+moderate bank grade, grounded mast feet and light offsets. Source comparisons
+confirm unchanged road grades and downstream geography/placements. Angular framing
+checks measure a larger lab silhouette near the opening centre. These are structural
+safeguards; the corrected view still needs native screenshot review.
+
 ## Current production candidate
 
 - One original Meridian field lab replaces the six street-wall/roof pieces. Its
@@ -33,7 +62,7 @@ the main architecture or the missing service-road surface.
   New sightline checks reproduced that defect and pass after the repair. The
   ceiling strip now has a housing that meets the ceiling, without adding a light.
 - The original mast is now a narrow braced truss with two lamp housings and an
-  antenna. It sits at the back corner of the court. Its light marker coincides
+  antenna. It sits at the north edge of the court. Its light marker coincides
   with the fixture height; the other two camp lights serve the lab and doorway.
 - Existing installed desk/chair, generator, cable reel, cargo container, supply
   crate, two survey instruments and one barrier remain. They form work, power and
@@ -56,8 +85,8 @@ the main architecture or the missing service-road surface.
 
 Current build: 189 entities, 67 asset types, 26 lights. Mission/score Lua, all three
 music masters, combat/objective positions, route control points and downstream
-architecture sources are unchanged. Insertion yaw retains the earlier 30-degree
-turn toward camp. The Camp 12 ammo pickup remains ground-relative at its existing
+architecture sources are unchanged. Insertion now starts farther down the existing approach and faces the camp court,
+as described above. The Camp 12 ammo pickup remains ground-relative at its existing
 X/Z. Downstream terrain heights remain unchanged; the road's material is authored
 through the scoped native paint mask.
 
@@ -71,7 +100,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `13ab59b02ab5e6489cb2b70e7cbeb2e3c09b57b2d1cd9ec8d6bc9e81db411ad3`
+Current map SHA256: `a93f9f89d8c12d3ab19174f18eacaed65f830060af8a44c7d6e8de9d7cba1a8f`
 
 ## Original-art load freshness
 
@@ -116,10 +145,10 @@ outside the authored route. Installed terrain texture payloads remain local.
 
 ## Outstanding native gate
 
-The supplied images document the rejected earlier version. No native screenshot
-of this new field-lab/road build has been captured yet. Desktop control/capture
-is unavailable in this session. No generated render or test is offered as a
-substitute for native evidence.
+The September 10 native opening image informed this correction. The revised
+insertion, bench, mast and light pools have not yet been reviewed in MAX images.
+Desktop control/capture is unavailable in this session. No generated render or
+test is offered as a substitute for native evidence.
 
 Required next views:
 
