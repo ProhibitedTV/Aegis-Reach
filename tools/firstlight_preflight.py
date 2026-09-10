@@ -63,6 +63,7 @@ def main():
         'test_firstlight.py',
         'test_firstlight_composition.py',
         'test_meridian_fieldkit.py',
+        'test_meridian_materials.py',
         'test_firstlight_asset_cache.py',
     ]
     for name in tests:

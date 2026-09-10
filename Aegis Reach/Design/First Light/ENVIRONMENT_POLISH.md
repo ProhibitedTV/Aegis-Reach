@@ -21,7 +21,12 @@ the main architecture or the missing service-road surface.
   There is no generated floor or entrance step over the native terrain.
 - The lab uses an original ivory/graphite/teal material atlas with seam wear,
   fasteners, Meridian identifiers, restrained cyan trim and amber practical strips.
-  The atlas and emission map are deterministic outputs of `meridian_fieldkit.py`.
+  The coordinated 4096 x 512 albedo, normal, surface and emission atlases are
+  deterministic outputs of `meridian_fieldkit.py`. Paint remains matte and
+  dielectric; alloy ribs and exposed fasteners use a restrained metallic response.
+  Surface seams and fasteners now sit inside the UV islands instead of outside
+  the sampled crop. Printed Meridian labels stay flat. Lamps retain smooth normals.
+  Upper end-panel UVs have nonzero area for stable normal-map tangent frames.
   No third-party model or DLC texture is embedded in this kit.
 - The lab upper end panels now have separate inward and outward faces. The prior
   outward-only fans could disappear from an interior view under backface culling.
@@ -82,6 +87,22 @@ stale meshes in the supplied images. Six temporary-file tests cover first launch
 reuse, content changes with preserved timestamps, texture/material changes,
 unowned files and invalid/missing model references. Native appearance and
 collision still require the views below.
+
+## Meridian material provenance and limits
+
+MAX's [surface shader](https://github.com/Dark-Basic-Software-Limited/GameGuruMAX/blob/3e21f674d84b6e631f6e026cf23fbc7e1854ca61/GameGuru%20Core/Guru-WickedMAX/GGTerrain/CustomShaders/brdf.hlsli#L269)
+multiplies roughness by G, metalness by B and reflectance by A; R supplies primary
+occlusion when enabled. Original field-kit surface maps keep R/A at 255 and encode
+roughness/metalness locally. The FPE multipliers are 1, reflectance remains 0.04,
+and normal strength is 0.65. No painted shadows or baked occlusion are fabricated.
+
+Channel checks cover every normal's length/direction, emission restricted to light
+tiles, paint/alloy distinction, visible detail within UV margins, noncollapsed UV
+triangles, reproducible generation and deployed FPE references. An authoring-only
+channel preview was inspected. It is not a native render or visual approval.
+Native material response, tangent orientation at runtime, glare and distant mip
+behavior remain review requirements. This material pass changes the existing
+lab/mast treatment; it adds no props, lights, terrain or gameplay systems.
 
 ## Native paint provenance
 

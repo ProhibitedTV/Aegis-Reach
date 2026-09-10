@@ -4,48 +4,89 @@ MAX inches, front faces local -Z. No ground slab: native terrain remains the flo
 """
 from pathlib import Path
 import math,random
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image,ImageDraw,ImageFont,ImageFilter
 
 NAME='Meridian Field Lab'
 ATLAS='meridian_fieldkit.png'
 EMISSION='meridian_fieldkit_emission.png'
 
+NORMAL='meridian_fieldkit_normal.png'
+SURFACE='meridian_fieldkit_surface.png'
+TILE=512
+
+
 def textures(folder):
+ """Original coordinated albedo/normal/ORM atlases; no licensed image inputs.
+
+ MAX surface packing: R occlusion, G roughness, B metalness, A reflectance.
+ R and A remain neutral; cavity shading is not substituted for baked lighting.
+ UV islands sample .07.. .93 of each tile: authored details must live inside it.
+ """
  rng=random.Random(1207)
- # Ivory panels, graphite chassis, grey alloy, teal service panels, lamps, trim,
- # Meridian identification, equipment labels. Every UV island stays within a tile.
  colors=[(172,174,166),(33,42,47),(79,91,95),(47,77,81),(245,202,133),(83,158,172),(166,171,165),(51,66,71)]
- im=Image.new('RGB',(2048,256));d=ImageDraw.Draw(im)
+ roughness=(189,201,132,170,105,112,184,174)
+ metalness=(0,0,210,0,0,0,0,0)
+ atlas=Image.new('RGB',(8*TILE,TILE))
+ normals=Image.new('RGB',atlas.size,(128,128,255))
+ surfaces=Image.new('RGBA',atlas.size,(255,255,0,255))
+ emission=Image.new('RGB',atlas.size)
+ scale=TILE/256
+ def coords(values):return tuple(round(v*scale) for v in values)
+ def font(size):return ImageFont.truetype('C:/Windows/Fonts/bahnschrift.ttf',round(size*scale))
  for tile,color in enumerate(colors):
-  ox=tile*256;d.rectangle((ox,0,ox+255,255),fill=color)
-  if tile in (4,5):continue
-  for _ in range(6500):
-   x=rng.randrange(256);y=rng.randrange(256);n=rng.randrange(-9,10)
-   d.point((ox+x,y),fill=tuple(max(0,min(255,c+n)) for c in color))
-  # Paint wear collects near seams, not giant random grunge across every panel.
-  for _ in range(200):
-   x=rng.randrange(256);y=rng.choice((rng.randrange(5,20),rng.randrange(235,251)))
-   d.line((ox+x,y,ox+min(255,x+rng.randrange(1,7)),y),fill=tuple(int(c*.63) for c in color))
-  d.rectangle((ox+5,5,ox+250,250),outline=tuple(int(c*.65) for c in color),width=2)
-  if tile in (0,3):
-   for x in (14,241):
-    for y in (14,241):d.ellipse((ox+x-2,y-2,ox+x+2,y+2),fill=(49,57,59))
- font=ImageFont.truetype('C:/Windows/Fonts/bahnschrift.ttf',29)
- small=ImageFont.truetype('C:/Windows/Fonts/bahnschrift.ttf',17)
- ox=6*256
- d.polygon([(ox+126,24),(ox+176,101),(ox+157,101),(ox+126,51),(ox+95,101),(ox+76,101)],fill=(31,60,65))
- d.text((ox+39,113),'MERIDIAN',font=font,fill=(26,49,54))
- d.text((ox+30,153),'SURVEY CAMP 12',font=small,fill=(30,52,58))
- d.text((ox+41,186),'GEOLOGY / FIELD LAB',font=ImageFont.truetype('C:/Windows/Fonts/bahnschrift.ttf',13),fill=(44,62,67))
- ox=7*256
- d.text((ox+24,30),'M-12',font=font,fill=(190,199,191))
- d.text((ox+24,90),'POWER / DATA',font=small,fill=(149,172,172))
- for y in range(145,225,14):d.line((ox+25,y,ox+225,y),fill=(20,29,34),width=5)
- im.save(folder/ATLAS)
- em=Image.new('RGB',im.size,(0,0,0));ed=ImageDraw.Draw(em)
- ed.rectangle((4*256,0,5*256-1,255),fill=(255,193,104))
- ed.rectangle((5*256,0,6*256-1,255),fill=(25,96,113))
- em.save(folder/EMISSION)
+  albedo=Image.new('RGB',(TILE,TILE),color);d=ImageDraw.Draw(albedo)
+  height=Image.new('L',albedo.size,128);hd=ImageDraw.Draw(height)
+  surface=Image.new('RGBA',albedo.size,(255,roughness[tile],metalness[tile],255));sd=ImageDraw.Draw(surface)
+  if tile not in (4,5):
+   for _ in range(26000):
+    x=rng.randrange(TILE);y=rng.randrange(TILE);n=rng.randrange(-6,7)
+    d.point((x,y),fill=tuple(max(0,min(255,c+n)) for c in color))
+    sd.point((x,y),fill=(255,roughness[tile]+n,metalness[tile],255))
+   # The old seams at 5/250 and rivets at 14/241 were clipped by the UVs.
+   seam=coords((23,23,232,232))
+   d.rectangle(seam,outline=tuple(int(c*.68) for c in color),width=3)
+   hd.rectangle(seam,outline=116,width=3)
+   sd.rectangle(seam,outline=(255,220,metalness[tile],255),width=3)
+   for _ in range(180):
+    x=rng.randrange(27,229);y=rng.choice((rng.randrange(24,29),rng.randrange(227,232)))
+    line=coords((x,y,min(230,x+rng.randrange(1,4)),y))
+    d.line(line,fill=tuple(int(c*.76) for c in color),width=1)
+    sd.line(line,fill=(255,156,max(80,metalness[tile]),255),width=1)
+   if tile in (0,3,6):
+    for x in (32,223):
+     for y in (32,223):
+      circle=coords((x-2,y-2,x+2,y+2))
+      d.ellipse(circle,fill=(69,78,80));hd.ellipse(circle,fill=146)
+      sd.ellipse(circle,fill=(255,140,200,255))
+      d.line(coords((x-1,y,x+1,y)),fill=(29,37,40),width=1)
+  if tile==6:
+   d.polygon(coords((126,40,166,102,151,102,126,63,101,102,86,102)),fill=(31,60,65))
+   d.text(coords((39,113)),'MERIDIAN',font=font(29),fill=(26,49,54))
+   d.text(coords((30,153)),'SURVEY CAMP 12',font=font(17),fill=(30,52,58))
+   d.text(coords((41,186)),'GEOLOGY / FIELD LAB',font=font(13),fill=(44,62,67))
+  if tile==7:
+   d.text(coords((35,37)),'M-12',font=font(29),fill=(190,199,191))
+   d.text(coords((35,90)),'POWER / DATA',font=font(17),fill=(149,172,172))
+   for y in range(145,216,14):
+    line=coords((35,y,221,y))
+    d.line(line,fill=(20,29,34),width=6)
+    hd.line(line,fill=116,width=6)
+    sd.line(line,fill=(255,213,0,255),width=6)
+  # Height comes from physical seams and fasteners. Printed words stay flat.
+  normal=Image.new('RGB',albedo.size,(128,128,255))
+  if tile not in (4,5):
+   hp=height.filter(ImageFilter.GaussianBlur(1.2)).load();np=normal.load()
+   for y in range(1,TILE-1):
+    for x in range(1,TILE-1):
+     nx=-(hp[x+1,y]-hp[x-1,y])*.04
+     ny=-(hp[x,y+1]-hp[x,y-1])*.04
+     length=math.sqrt(nx*nx+ny*ny+1)
+     np[x,y]=(round(127.5+127.5*nx/length),round(127.5+127.5*ny/length),round(127.5+127.5/length))
+  atlas.paste(albedo,(tile*TILE,0));normals.paste(normal,(tile*TILE,0));surfaces.paste(surface,(tile*TILE,0))
+  if tile in (4,5):
+   emission.paste((255,193,104) if tile==4 else (25,96,113),(tile*TILE,0,(tile+1)*TILE,TILE))
+ for name,im in ((ATLAS,atlas),(EMISSION,emission),(NORMAL,normals),(SURFACE,surfaces)):
+  im.save(folder/name,optimize=True)
 
 def quad(m,vs,tile):
  a,b,c=vs[:3];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
@@ -97,7 +138,9 @@ def shell(Mesh):
     if nz>0:vs.reverse()
     start=len(m.verts)
     for point in vs:
-     m.verts.append(point);m.norm.append((0,0,nz));m.uv.append((.04,.5))
+     m.verts.append(point);m.norm.append((0,0,nz))
+     # Nonzero UV area is required for a stable normal-map tangent frame.
+     m.uv.append(((.07+.86*(point[0]+210)/420)/8,.93-.86*(point[1]-113)/35))
     m.faces.append((start,start+1,start+2))
  # Structural ribs, spaced seams and low wear rails break up the broad ivory mass.
  for z in (-132,-66,0,66,132):
@@ -148,6 +191,7 @@ def build(Mesh,own,folder):
  tower=own('Camp 12 Survey Mast',mast(Mesh),ATLAS)
  for name in (NAME,'Camp 12 Survey Mast'):
   f=folder/(name+'.fpe');text=f.read_text()
-  text=text.replace('roughnessStrength = 0.82','roughnessStrength = 0.67').replace('metalnessStrength = 0.22','metalnessStrength = 0.12')
+  text=text.replace('roughnessStrength = 0.82','roughnessStrength = 1.0').replace('metalnessStrength = 0.22','metalnessStrength = 1.0')
+  text+='normalMap = '+NORMAL+'\nnormalStrength = 0.65\nsurfaceMap = '+SURFACE+'\n'
   f.write_text(text+'basecolor = 4294967295\nreflectance = 0.04\nemissivecolor = 4294967295\nemissiveMap = '+EMISSION+'\nemissiveStrength = 0.6\n')
  return lab,tower
