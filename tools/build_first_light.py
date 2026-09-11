@@ -302,34 +302,55 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
   for rivet_x in (24,743):
    for yy in (24,295):d.ellipse((rivet_x-3,yy-3,rivet_x+3,yy+3),fill=(64,75,76))
  else:
-  im=Image.new('RGB',(1024,256),(15,27,36));d=ImageDraw.Draw(im)
-  d.rectangle((4,4,1019,251),outline=color,width=8)
+  # Readable painted field signage, not a dark emissive billboard.
+  im=Image.new('RGB',(1008,384),(174,181,175));d=ImageDraw.Draw(im)
+  d.rectangle((10,10,997,373),outline=(38,66,70),width=9)
+  d.rectangle((32,31,975,43),fill=(42,105,115))
   for i,line in enumerate(lines):
-   d.text((38,28+i*64),line,font=ImageFont.truetype(font,46 if i==0 else 31),fill=color if i==0 else (210,220,217))
+   size=52 if i==0 else 37
+   f=ImageFont.truetype(font,size)
+   while d.textbbox((0,0),line,font=f)[2]>910:
+    size-=1;f=ImageFont.truetype(font,size)
+   assert size>=30, 'Field sign text exceeds readable width'
+   d.text((47,68+i*98),line,font=f,fill=(24,54,59) if i==0 else (32,45,48))
+  for rivet_x in (25,982):
+   for yy in (25,358):d.ellipse((rivet_x-4,yy-4,rivet_x+4,yy+4),fill=(60,73,75))
  tex=name+'.png';im.save(AS/tex)
- if name=='Extraction Sign':
-  height=y-(500 if z<-5000 else 600)
-  support=Mesh()
-  for px in (-195,195):support.box(px,0,0,16,height+50,16,2)
-  post=own(name+' Supports',support)
-  add(post,'Meridian field board frame',x,z,ry=ry)
- m=Mesh();m.box(0,0,0,60 if camp_panel else 440,25 if camp_panel else 110,2 if camp_panel else 8,0)
- if camp_panel:
-  face_uv=[((u*8-.07)/.86,(v-.07)/.86) for u,v in m.uv]
-  # Text on the outward front only. Sides/back sample blank paint, not repeated words.
-  m.uv=[uv if i<4 else (.47+uv[0]*.01,.91+uv[1]*.01) for i,uv in enumerate(face_uv)]
- else:
-  m.uv=[(u*8,v) for u,v in m.uv]
+ panel_y=ground(x,z)+(y-(500 if z<-5000 else 600)) if camp_panel else ground(x,z)+84
+ width,height,depth=(60,25,2) if camp_panel else (168,64,4)
+ m=Mesh();m.box(0,0,0,width,height,depth,0)
+ face_uv=[((u*8-.07)/.86,(v-.07)/.86) for u,v in m.uv]
+ # Front uses the whole image; unprinted edges/back cannot repeat cropped text.
+ m.uv=[uv if i<4 else ((.47+uv[0]*.01,.91+uv[1]*.01) if camp_panel else (.50,.96)) for i,uv in enumerate(face_uv)]
+ if not camp_panel:
+  support=Mesh();angle=math.radians(ry)
+  for px in (-66,66):
+   pz=6
+   wx=x+px*math.cos(angle)+pz*math.sin(angle)
+   wz=z+pz*math.cos(angle)-px*math.sin(angle)
+   footing=ground(wx,wz)-panel_y
+   support.box(px,footing,pz,8,height-6-footing,8,2)
+   support.box(px,footing,pz,14,3,14,2)
+  if name=='Extraction Sign':
+   # Keep the existing frame entity; its posts sit entirely behind the board.
+   for i,(vx,vy,vz) in enumerate(support.verts):support.verts[i]=(vx,vy+84,vz)
+   post=own(name+' Supports',support)
+   add(post,'Meridian field board frame',x,z,ry=ry)
+  else:
+   offset=len(m.verts)
+   m.verts.extend(support.verts);m.norm.extend(support.norm)
+   # Sample the printed dark border for the graphite support finish.
+   m.uv.extend([(.015,.50)]*len(support.uv))
+   m.faces.extend(tuple(v+offset for v in f) for f in support.faces)
  path=own(name,m,tex)
- if camp_panel:
-  f=AS/(name+'.fpe');t=f.read_text()
-  t=t.replace('metalnessStrength = 0.22','metalnessStrength = 0.0')
-  f.write_text(t+'basecolor = 4294967295\nreflectance = 0.04\n')
- add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=100,kind='sign')
+ f=AS/(name+'.fpe');t=f.read_text()
+ t=t.replace('metalnessStrength = 0.22','metalnessStrength = 0.0')
+ f.write_text(t+'basecolor = 4294967295\nreflectance = 0.04\n')
+ add(path,'Environmental sign: '+lines[0],x,z,y=panel_y,ry=ry,scale=100,kind='sign')
 
 sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2219,-7104,548,ry=270)
 sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
-sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-1250,-1675,915)
+sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-980,-1450,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)
 sign('Core Sign',['AEGIS ARRAY','TARGET: MERIDIAN SHELTER 12','FIRING AUTHORITY: IRON WARDEN'],-740,2188,850)
 sign('Extraction Sign',['KESTREL // LZ 07','KEEP THE LANDING ZONE CLEAR','PILOT WILL SIGNAL APPROACH'],420,-2715,750)

@@ -88,6 +88,38 @@ Only entity records, asset-bank ordering and 90 court wheel-band paint cells cha
 The changed court still needs native views from the approach, door and outbound road. In
 particular, judge barrier bulk and the new practical's spill before accepting it.
 
+## September 11 downstream signage correction
+
+The next native user screenshot exposes cropped initial letters, near-black
+billboards, floating panels and the extraction sign's posts crossing its face.
+The image below is native evidence of those defects **before** this correction.
+
+![Native route signs before correction](Review/2026-09-11-route-signs-before.png)
+
+Five destination boards (Gate 07, Northstar, Operations, AEGIS and extraction)
+now use original 1008 x 384 ivory/teal artwork, dark lettering and full front-face
+UV coverage. Unprinted edges and backs sample blank paint instead of repeating
+text. Paint is nonmetallic with restrained reflectance; no glow or extra light
+sources compensate for unreadable artwork.
+
+Panels shrink from 440 x 110 to 168 x 64 MAX inches (4.27 x 1.63 m), with their
+bottoms 84 inches above the native ground at the sign origin. Rear posts are
+8 inches thick and sit behind the panel, leaving approximately 3.15 m between
+them. Footings follow native terrain height individually. The extraction board
+retains its existing separate support entity; the other boards include their
+supports in the same original mesh. No new entities or installed assets are added.
+
+The Northstar board moves from (-1250, -1675) to (-980, -1450) onto the adjacent
+level shelf: the original point put its feet across a slope with roughly 10-inch
+height variation. Other sign X/Z positions and story text are preserved. Camp 12's
+panel, buildings, terrain, lighting, combat, mission scripting and music retain
+the preceding candidate. The large unfinished skyline structures visible in the
+screenshot are still future art work; this signage correction does not qualify them.
+
+Full-front UV coverage, post clearance and footing are checked geometrically.
+The texture artwork was inspected directly, but that is not a MAX material or
+collision review. A new native view remains necessary before accepting this pass.
+
 ## September 10 opening-view correction
 
 The supplied native opening screenshot shows the lab at the far left, a brightly
@@ -176,7 +208,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `49fa962f28fac7e295373251e5f7e7ea271349f40538a51e5db653477711f788`
+Current map SHA256: `4c61d50eec722d279f884766296e0191fff35fafc121ba7b2a6987360733b20a`
 
 ## Original-art load freshness
 
