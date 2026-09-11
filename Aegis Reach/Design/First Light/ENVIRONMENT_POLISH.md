@@ -12,6 +12,26 @@ rocky basin, exposed equipment, unrelated pools of light, and conspicuous blue
 crystals in the foreground. Moving one barrier or tuning exposure did not address
 the main architecture or the missing service-road surface.
 
+## September 11 native milestone
+
+The user supplied a native MAX close-up and an opening gameplay view, and approved
+preserving the current progress while requesting further refinement. The existing
+source/map milestone is `157319c` (map SHA256 below). The September 11 runtime log
+records the revised insertion at X=-900/Z=-8200 and subsequent normal play through
+Camp 12 toward Gate 07.
+
+![Native field-lab close-up before sign correction](Review/2026-09-11-field-lab-native.png)
+
+The lab silhouette, ivory panels, open entrance, interior ceiling and warm
+practicals are visible in the native image. This is evidence of improved rendering,
+not a complete collision, audio or level-quality qualification. The image also
+exposes a defect: the evacuation panel overlaps the right doorway jamb and its
+atlas-style UV margins crop the leading characters. Fix that panel before merge.
+The second supplied image includes unrelated desktop content and is not stored here.
+
+The remaining review includes the court, doorway traversal, outbound road and
+atmosphere. Do not treat the positive milestone as proof of all outstanding gates.
+
 ## September 10 opening-view correction
 
 The supplied native opening screenshot shows the lab at the far left, a brightly
