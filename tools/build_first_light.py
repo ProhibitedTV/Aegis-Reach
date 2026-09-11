@@ -33,7 +33,7 @@ def stage(path):
  staged.add(path)
  return fpe(src)
 
-from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN,service_material,INSERTION,INSERTION_YAW,CAMP_MAST
+from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN,service_material,INSERTION,INSERTION_YAW,CAMP_MAST,CAMP_POWER_LIGHT,CAMP_POWER_LIGHT_HEIGHT
 
 def add(path,name,x,z,y=None,ry=0,scale=100,script=None,kind='environment',template=None,**params):
  if y is None:y=ground(x,z)
@@ -263,10 +263,13 @@ light_locations=[
  (-760,2800,0x70C7DC,900),(760,3380,0x70C7DC,900),
  (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
 ]
+# One warm pool from the existing generator lamp array joins the court to the lab.
+light_locations.append((*CAMP_POWER_LIGHT,0xC3AA86,420))
+camp_work_light_index=len(light_locations)
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  # Fixture geometry owns camp lamp height; the stock marker adds 45 inches.
- fixture={'eleprof.light.offsetup':0} if idx<=3 else {}
- add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+({1:127,2:210,3:109}.get(idx,155)),kind='light',template=lighttemplate,
+ fixture={'eleprof.light.offsetup':0} if idx<=3 or idx==camp_work_light_index else {}
+ add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+({1:127,2:210,3:109,camp_work_light_index:CAMP_POWER_LIGHT_HEIGHT}.get(idx,155)),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0,**fixture})
 crystal_light_base=len(light_locations)

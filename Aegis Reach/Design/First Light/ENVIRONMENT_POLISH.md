@@ -51,6 +51,43 @@ art and placement for a later scoped review.
 This follow-up needs a native close-up before visual approval. The supplied image
 above is the earlier version and must not be represented as the corrected result.
 
+## September 11 work-court refinement
+
+The user supplied a native overview and a new concept reference. The native image
+below is the **before** view for this follow-up, not a render of the new layout.
+It shows the generator and oversized reel competing with the lab entrance, an
+isolated crate/container, and a court without a clear working edge.
+
+![Native Camp 12 overview before work-court refinement](Review/2026-09-11-court-before.png)
+
+The concept informs the functional grouping and lighting, without importing its
+larger excavation complex or changing Meridian's identity. This follow-up:
+
+- Moves the existing generator to the south edge, clears the door approach, and
+  reduces the reel from 84% to 64% (approximately 1.65 m tall). A single warm pool
+  originates at the measured lamp array on the generator's existing fixture.
+- Groups the existing container and supply crate on the north side. The two
+  existing survey instruments sit near the mast, with all feet on the flat bench.
+- Replaces the isolated roadblock with two low concrete edge markers from the
+  installed military family already used in First Light. Each is about 3 m long
+  and 1.04 m high. Their end-origin pivots are accounted for explicitly; the gap
+  between their ends stays approximately 6.1 m wide.
+- Continues the existing wheel-band material through the native court so the
+  arrival and outbound service road share a visible surface cue.
+
+The core contains 13 environment objects. Only one additional environment object
+and one light are introduced; there are no new asset families, mesh payloads,
+mission systems or showroom maps. Installed DBO vertex bounds were read locally
+to check scale, footing and spacing; geometry was not copied into the repository.
+These bounds checks do not prove native collision or material quality.
+
+The lab, mast, sign, interior furniture, native terrain heights, route control
+points, brineglass, sky/exposure settings, combat positions, objectives, mission
+scripts and music are preserved from the panel-correction candidate. The archive comparison preserves terrain sculpt, settings and atmosphere byte-for-byte.
+Only entity records, asset-bank ordering and 90 court wheel-band paint cells change.
+The changed court still needs native views from the approach, door and outbound road. In
+particular, judge barrier bulk and the new practical's spill before accepting it.
+
 ## September 10 opening-view correction
 
 The supplied native opening screenshot shows the lab at the far left, a brightly
@@ -104,9 +141,9 @@ safeguards; the corrected view still needs native screenshot review.
   antenna. It sits at the north edge of the court. Its light marker coincides
   with the fixture height; the other two camp lights serve the lab and doorway.
 - Existing installed desk/chair, generator, cable reel, cargo container, supply
-  crate, two survey instruments and one barrier remain. They form work, power and
-  logistics groups around the larger lab. Camp 12 now contains 12 environment
-  objects including its existing route beacon, down from 17 in the prior draft.
+  crate and two survey instruments remain, with two low court-edge barriers.
+  They form work, power and logistics groups around the larger lab. Camp 12
+  contains 13 environment objects including its existing route beacon.
 - The court pad extends west to support the complete shell. Terrain height at
   the lab corners and mast base is 500 inches. Existing low terrain shoulders
   protect the site, and the insertion shoulder cut retains its facade sightline.
@@ -122,7 +159,7 @@ safeguards; the corrected view still needs native screenshot review.
 
 ## Gameplay and build verification
 
-Current build: 189 entities, 67 asset types, 26 lights. Mission/score Lua, all three
+Current build: 191 entities, 67 asset types, 27 lights. Mission/score Lua, all three
 music masters, combat/objective positions, route control points and downstream
 architecture sources are unchanged. Insertion now starts farther down the existing approach and faces the camp court,
 as described above. The Camp 12 ammo pickup remains ground-relative at its existing
@@ -139,7 +176,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `89d016edd0edead9840ca98d7f270196af996590095d208f28bf4a7346feb2a2`
+Current map SHA256: `49fa962f28fac7e295373251e5f7e7ea271349f40538a51e5db653477711f788`
 
 ## Original-art load freshness
 

@@ -38,7 +38,7 @@ def in_camp(p):
  except Exception:return False
 
 camp=[p for p in placements if in_camp(p) and p.get('kind','environment')=='environment']
-assert 10<=len(camp)<=22, 'Camp 12 prop budget escaped: '+str(len(camp))
+assert 10<=len(camp)<=15, 'Camp 12 prop budget escaped: '+str(len(camp))
 for p in camp:
  asset=str(p.get('asset',''))
  for banned in ('Tent 01','Portable Cot','Camping Pack'):
@@ -61,14 +61,16 @@ for required in (
 # The installed Entry_01 has solid geometry across the doorway; it must not
 # seal the service bay again. A visible door texture does not imply an opening.
 assert 'CS_Wall_01_Entry_01.fpe' not in assets, 'closed facade blocks Camp 12 service bay'
-camp_barriers=[p for p in camp if p['asset'].endswith('Roadblock2.fpe')]
-assert len(camp_barriers)==1, 'camp perimeter is no longer one restrained marker'
+camp_barriers=[p for p in camp if p['asset'].endswith('Concrete Barrier 01.fpe')]
+assert len(camp_barriers)==2, 'camp court must have two restrained low edge markers'
+assert not any(p['asset'].endswith('Roadblock2.fpe') for p in camp), 'old freestanding roadblock returned'
 for p in camp_barriers:
- # Installed local footprint is 54.2 x 61.0 inches, scaled to 86% and rotated.
- # This conservative 76-inch square encloses all feet without importing DLC.
- for dx in (-38,0,38):
-  for dz in (-38,0,38):
-   assert abs(ground(p['x']+dx,p['z']+dz)-p['y'])<0.5, 'camp barrier straddles uneven ground'
+ # Measured installed DBO bounds: end-origin X=-127.63..0.77, Z=+/-14.25.
+ # Both are at yaw 90 / 92%; enclose their actual off-centre ground footprint.
+ assert p['rotation']==90 and p['scale']==92
+ for dx in (-13.2,0,13.2):
+  for dz in (-.72,58,117.5):
+   assert abs(ground(p['x']+dx,p['z']+dz)-p['y'])<0.5, 'court barrier straddles uneven ground'
 
 route_markers=[p for p in placements if str(p.get('name','')).startswith('Meridian route marker ')]
 assert 3<=len(route_markers)<=6, 'route beacon count is no longer sparse: '+str(len(route_markers))

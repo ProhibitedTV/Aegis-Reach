@@ -12,6 +12,14 @@ INSERTION=(-900,-8200)
 INSERTION_LOOK_AT=(-2060,-7250)
 INSERTION_YAW=math.degrees(math.atan2(INSERTION_LOOK_AT[0]-INSERTION[0],INSERTION_LOOK_AT[1]-INSERTION[1]))%360
 CAMP_MAST=(-2145,-6960)
+CAMP_POWER=(-2150,-7550)
+CAMP_POWER_YAW=175
+CAMP_POWER_SCALE=86
+# Installed generator lamp array, measured in its DBO local coordinates.
+_power_angle=math.radians(CAMP_POWER_YAW)
+CAMP_POWER_LIGHT=(CAMP_POWER[0]-31.5*math.cos(_power_angle)*CAMP_POWER_SCALE/100,
+                  CAMP_POWER[1]+31.5*math.sin(_power_angle)*CAMP_POWER_SCALE/100)
+CAMP_POWER_LIGHT_HEIGHT=148*CAMP_POWER_SCALE/100
 
 ROUTE=[
  (0,-9600,1080),(-700,-8350,810),(-1700,-7350,500),(-1450,-6400,310),
@@ -115,9 +123,9 @@ def service_material(x,z):
  distance,_=road_sample(x,z,ROUTE[:7])
  edge=132+14*math.sin(z/83)+8*math.sin(z/31)
  court=rect_mask(x,z,-1910,-7250,595,400,70)
- if court>.5:return 23  # installed mineral fines; no white/snow material
  if distance<edge:
-  return 16 if abs(distance-62)<14 else 23  # two darker compressed wheel bands
+  return 16 if abs(distance-62)<14 else 23  # wheel bands continue through the open court
+ if court>.5:return 23  # installed mineral fines; no white/snow material
  return 0
 
 def architecture(Mesh,own,add,prop,P,I,asset_dir):
@@ -137,13 +145,16 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  prop(P+'Desk 01a.fpe',-2390,-7130,y=camp_y+0.4,ry=0,scale=100)
  prop(P+'Desk Chair 01a.fpe',-2315,-7160,y=camp_y,ry=90,scale=100)
  add(mast,'Camp 12 / Meridian survey mast',*CAMP_MAST,y=camp_y,ry=270)
- prop(C+'Light Generator.fpe',-1850,-7420,y=camp_y,ry=175,scale=86)
- prop(C+'CableReel.fpe',-1740,-7400,y=camp_y,ry=35,scale=84)
- prop(C+'Freight Container.fpe',-1620,-7060,y=camp_y,ry=90,scale=68)
- prop(P+'Wooden Crate 01a.fpe',-1690,-7230,y=camp_y,ry=8,scale=68)
- prop(C+'SurveyorStand1.fpe',-1770,-6860,y=ground(-1770,-6860),ry=18,scale=102)
- prop(C+'SurveyorStand2.fpe',-1590,-6880,y=ground(-1590,-6880),ry=-20,scale=102)
- prop(C+'Roadblock2.fpe',-1350,-6910,y=camp_y,ry=-35,scale=86)
+ prop(C+'Light Generator.fpe',*CAMP_POWER,y=camp_y,ry=CAMP_POWER_YAW,scale=CAMP_POWER_SCALE)
+ prop(C+'CableReel.fpe',-2010,-7570,y=camp_y,ry=90,scale=64)
+ prop(C+'Freight Container.fpe',-1825,-7000,y=camp_y,ry=90,scale=68)
+ prop(P+'Wooden Crate 01a.fpe',-1735,-7120,y=camp_y,ry=0,scale=68)
+ prop(C+'SurveyorStand1.fpe',-1950,-6875,y=camp_y,ry=18,scale=102)
+ prop(C+'SurveyorStand2.fpe',-2040,-6875,y=camp_y,ry=-20,scale=102)
+ # Two waist-high edge markers, never a perimeter wall. The installed barrier
+ # origin is at one end (local X=-127.63..0.77), not at its visual centre.
+ for x,z in ((-1430,-7357),(-1500,-6999)):
+  prop(P+'Concrete Barrier 01.fpe',x,z,y=camp_y,ry=90,scale=92)
 
  gate_y=640
  prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3160,y=gate_y,ry=0,scale=72)
