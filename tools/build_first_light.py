@@ -285,10 +285,24 @@ add(ct,'FIRST LIGHT // SCORE',50,-9500,y=100,kind='controller',script=r'aegis_re
 
 font=r'C:\Windows\Fonts\consolab.ttf'
 def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
- im=Image.new('RGB',(1024,256),(15,27,36));d=ImageDraw.Draw(im)
- d.rectangle((4,4,1019,251),outline=color,width=8)
- for i,line in enumerate(lines):
-  d.text((38,28+i*64),line,font=ImageFont.truetype(font,46 if i==0 else 31),fill=color if i==0 else (210,220,217))
+ camp_panel=name=='Evacuation Board'
+ if camp_panel:
+  # A painted wall panel, with the same 2.4:1 aspect in texture and geometry.
+  # Full-face UVs below preserve leading text; the generic atlas margins cropped it.
+  im=Image.new('RGB',(768,320),(168,174,167));d=ImageDraw.Draw(im)
+  d.rectangle((15,15,752,304),outline=(69,88,89),width=3)
+  d.rectangle((34,32,733,43),fill=(48,101,107))
+  for i,line in enumerate(lines):
+   f=ImageFont.truetype(font,38 if i==0 else 31)
+   assert d.textbbox((0,0),line,font=f)[2]<690, 'Camp panel text exceeds safe width'
+   d.text((38,58+i*76),line,font=f,fill=(25,54,60) if i==0 else (33,44,46))
+  for rivet_x in (24,743):
+   for yy in (24,295):d.ellipse((rivet_x-3,yy-3,rivet_x+3,yy+3),fill=(64,75,76))
+ else:
+  im=Image.new('RGB',(1024,256),(15,27,36));d=ImageDraw.Draw(im)
+  d.rectangle((4,4,1019,251),outline=color,width=8)
+  for i,line in enumerate(lines):
+   d.text((38,28+i*64),line,font=ImageFont.truetype(font,46 if i==0 else 31),fill=color if i==0 else (210,220,217))
  tex=name+'.png';im.save(AS/tex)
  if name=='Extraction Sign':
   height=y-(500 if z<-5000 else 600)
@@ -296,12 +310,21 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
   for px in (-195,195):support.box(px,0,0,16,height+50,16,2)
   post=own(name+' Supports',support)
   add(post,'Meridian field board frame',x,z,ry=ry)
- m=Mesh();m.box(0,0,0,440,110,8,0)
- m.uv=[(u*8,v) for u,v in m.uv]
+ m=Mesh();m.box(0,0,0,60 if camp_panel else 440,25 if camp_panel else 110,2 if camp_panel else 8,0)
+ if camp_panel:
+  face_uv=[((u*8-.07)/.86,(v-.07)/.86) for u,v in m.uv]
+  # Text on the outward front only. Sides/back sample blank paint, not repeated words.
+  m.uv=[uv if i<4 else (.47+uv[0]*.01,.91+uv[1]*.01) for i,uv in enumerate(face_uv)]
+ else:
+  m.uv=[(u*8,v) for u,v in m.uv]
  path=own(name,m,tex)
- add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=20 if name=='Evacuation Board' else 100,kind='sign')
+ if camp_panel:
+  f=AS/(name+'.fpe');t=f.read_text()
+  t=t.replace('metalnessStrength = 0.22','metalnessStrength = 0.0')
+  f.write_text(t+'basecolor = 4294967295\nreflectance = 0.04\n')
+ add(path,'Environmental sign: '+lines[0],x,z,y=ground(x,z)+(y-(500 if z<-5000 else 600)),ry=ry,scale=100,kind='sign')
 
-sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2213,-7104,558,ry=270)
+sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2219,-7104,548,ry=270)
 sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
 sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-1250,-1675,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)

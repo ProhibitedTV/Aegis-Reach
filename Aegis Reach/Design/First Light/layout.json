@@ -2005,11 +2005,11 @@
     "id": 183,
     "name": "Environmental sign: MERIDIAN / CAMP 12",
     "asset": "Aegis Reach\\First Light\\Evacuation Board.fpe",
-    "x": -2213,
-    "y": 558.0,
+    "x": -2219,
+    "y": 548.0,
     "z": -7104,
     "rotation": 270,
-    "scale": 20,
+    "scale": 100,
     "kind": "sign"
   },
   {

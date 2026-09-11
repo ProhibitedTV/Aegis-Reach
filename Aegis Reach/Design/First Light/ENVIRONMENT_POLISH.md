@@ -16,7 +16,7 @@ the main architecture or the missing service-road surface.
 
 The user supplied a native MAX close-up and an opening gameplay view, and approved
 preserving the current progress while requesting further refinement. The existing
-source/map milestone is `157319c` (map SHA256 below). The September 11 runtime log
+source/map milestone is `157319c` (map SHA256 `a93f9f89d8c12d3ab19174f18eacaed65f830060af8a44c7d6e8de9d7cba1a8f`). The September 11 runtime log
 records the revised insertion at X=-900/Z=-8200 and subsequent normal play through
 Camp 12 toward Gate 07.
 
@@ -31,6 +31,25 @@ The second supplied image includes unrelated desktop content and is not stored h
 
 The remaining review includes the court, doorway traversal, outbound road and
 atmosphere. Do not treat the positive milestone as proof of all outstanding gates.
+
+## September 11 evacuation-panel correction
+
+The close-up shows the old 88-inch board crossing the right-hand jamb. Its generic
+7% UV inset also clipped the first characters and the outer printed border.
+The replacement is a 60 x 25 x 2-inch painted panel at (-2219, 548, -7104),
+rotation 270, editor scale 100. Its back sits on the existing facade plane.
+In lab-local coordinates it spans X=136..196 and Y=48..73: clear of the
+jamb (ending at X=132) and both hinge rows. No doorway or furniture is moved.
+
+The panel uses a matching 768 x 320 original ivory/teal texture, dark readable
+lettering, full front-face UVs, plain painted edges, and nonmetallic material
+response. It preserves the evacuation count and missing-person story. This
+replaces the existing panel; it adds no environment objects or lights.
+Only the Camp 12 panel is changed. Other destination signs retain their existing
+art and placement for a later scoped review.
+
+This follow-up needs a native close-up before visual approval. The supplied image
+above is the earlier version and must not be represented as the corrected result.
 
 ## September 10 opening-view correction
 
@@ -120,7 +139,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `a93f9f89d8c12d3ab19174f18eacaed65f830060af8a44c7d6e8de9d7cba1a8f`
+Current map SHA256: `89d016edd0edead9840ca98d7f270196af996590095d208f28bf4a7346feb2a2`
 
 ## Original-art load freshness
 
@@ -165,9 +184,11 @@ outside the authored route. Installed terrain texture payloads remain local.
 
 ## Outstanding native gate
 
-The September 10 native opening image informed this correction. The revised
-insertion, bench, mast and light pools have not yet been reviewed in MAX images.
-Desktop control/capture is unavailable in this session. No generated render or
+The September 11 user-supplied native views show the new lab and approach in
+normal gameplay and informed the panel correction. The corrected panel and the
+remaining viewpoints below still need native review. Desktop tools now load and
+read MAX window text, but native screenshot capture fails on this Windows 10
+host with SetIsBorderRequired / 0x80004002. No generated render or structural
 test is offered as a substitute for native evidence.
 
 Required next views:
