@@ -45,7 +45,7 @@ def sha256(path):
 
 def run_test(name):
     path = ROOT / 'tools' / name
-    result = subprocess.run([sys.executable, str(path)], cwd=ROOT)
+    result = subprocess.run([sys.executable, '-B', str(path)], cwd=ROOT)
     if result.returncode:
         raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: {name} returned {result.returncode}')
 
@@ -62,6 +62,10 @@ def main():
         'test_firstlight_lua_compat.py',
         'test_firstlight.py',
         'test_firstlight_composition.py',
+        'test_firstlight_approach.py',
+        'test_meridian_fieldkit.py',
+        'test_meridian_materials.py',
+        'test_firstlight_asset_cache.py',
     ]
     for name in tests:
         run_test(name)
@@ -97,6 +101,7 @@ def main():
     required_scripts = [
         'firstlight_audit.lua',
         'firstlight_director.lua',
+        'firstlight_hud.lua',
         'firstlight_enemy.lua',
         'firstlight_interact.lua',
         'firstlight_qa.lua',
@@ -106,6 +111,8 @@ def main():
         path = FILES / 'scriptbank/aegis_reach' / name
         if not path.is_file():
             raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: missing runtime script {name}')
+    if not (FILES/'scriptbank/aegis_reach/images/hud_pixel.png').is_file():
+        raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: missing HUD sprite texture')
 
     qa_text = (FILES / 'scriptbank/aegis_reach/firstlight_qa.lua').read_text(errors='replace')
     destructive = [token for token in QA_FORBIDDEN if token in qa_text]
