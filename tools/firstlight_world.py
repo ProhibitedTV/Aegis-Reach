@@ -206,7 +206,11 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  prop(CYM+'CS_Sidewalk_Light.fpe',540,-340,y=ground(540,-340),ry=0,scale=72)
  for x,z in [(900,300),(1280,600)]:
   prop(P+'Desk 01a.fpe',x,z,y=op_y+2,ry=90,scale=90)
-  prop(P+'Computer 01a.fpe',x,z,y=op_y+77,ry=90,scale=90)
+  # Measured installed bounds: desk top Y=35.6557, computer base Y=-13.6167.
+  # Desk origin is a corner. Rotate its local (25,-25) working point with
+  # the 90-degree desk; sharing the origin leaves the computer off the edge.
+  prop(P+'Computer 01a.fpe',x-22.5,z-22.5,
+       y=op_y+2+(35.6557+13.6167)*.9,ry=90,scale=90)
  for z in (300,560):
   prop(P+'Locker 01a.fpe',1900,z,y=op_y+2,ry=-90,scale=90)
  prop(I+'Industrial Shelves.fpe',1850,1100,y=op_y,ry=90,scale=82)

@@ -303,7 +303,25 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `06fd965d4ef08516f7f4d1fd4eb44fcd5413d87f7a8719a5e2564ce4fbb22ecb`
+Current map SHA256: `54b2fb066193c2073a2e7f5914d8827f531f448cf291f7340d45d35614c91785`
+
+## September 12 Operations workstation support correction
+
+Two existing Operations computers had a measured 30.65-inch (78cm) air gap
+above their desks. Both also shared the corner-origin position of their desks,
+leaving the computer footprint outside the working surface after rotation.
+Read-only inspection of the installed DBO files confirmed desk top Y=35.6557
+and computer base Y=-13.6167. At 90% scale the corrected computer origin is
+44.3452 inches above the desk origin, with a local (25,-25) offset transformed
+through the desk's 90-degree yaw. No installed asset payloads are copied.
+
+A physical-support regression checks all four desk computers for vertical contact
+and complete footprint containment under their actual rotations and scales.
+It rejects the old map placements and passes the rebuilt map. Full preflight passes;
+archive comparison confirms only the two computer transforms differ.
+This correction adds no assets and changes
+no terrain, lighting, mission logic or combat. Native appearance remains pending;
+the current tool session exposes browser control but disables native app control.
 
 ## Original-art load freshness
 

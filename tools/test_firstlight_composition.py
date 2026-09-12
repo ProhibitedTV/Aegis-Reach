@@ -4,7 +4,7 @@ Run after build_first_light.py. The test cannot judge art quality, but it preven
 known structural regressions: duplicate Camp 12 dressing, giant legacy bespoke
 shells, repeated custom floodlights/revetments, and unbounded prop growth.
 """
-import json
+import json, math
 
 from native_format import ROOT
 from firstlight_world import ground
@@ -18,6 +18,30 @@ if not LAYOUT.is_file() or not REPORT.is_file():
 
 placements=json.loads(LAYOUT.read_text())
 report=json.loads(REPORT.read_text())
+
+# Installed desk/computer pivots are asymmetric. Validate physical support,
+# including yaw and scale, so desks at other headings cannot regress to the
+# old 78cm air gap or a computer balanced beyond the desk's corner origin.
+desks=[p for p in placements if p.get('asset','').endswith('Desk 01a.fpe')]
+computers=[p for p in placements if p.get('asset','').endswith('Computer 01a.fpe')]
+for computer in computers:
+ supported=False
+ for desk in desks:
+  ds=desk['scale']/100;cs=computer['scale']/100
+  top=desk['y']+35.6557*ds
+  base=computer['y']-13.6167*cs
+  if abs(top-base)>.1:continue
+  angle=math.radians(desk['rotation'])
+  co,si=math.cos(angle),math.sin(angle)
+  relative=math.radians(computer['rotation']-desk['rotation'])
+  rc,rs=math.cos(relative),math.sin(relative)
+  dx,dz=computer['x']-desk['x'],computer['z']-desk['z']
+  cx,cz=(dx*co-dz*si)/ds,(dx*si+dz*co)/ds
+  corners=[(cx+(x*rc+z*rs)*cs/ds,cz+(-x*rs+z*rc)*cs/ds)
+           for x in (-9.5364,9.5364) for z in (-6.692,7.5196)]
+  if all(-.054<=x<=51.113 and -73.433<=z<=0 for x,z in corners):
+   supported=True;break
+ assert supported, 'computer is floating or extends beyond its supporting desk: '+computer['name']
 
 assert report.get('environment_pass')=='single-owner-production-recomposition', report.get('environment_pass')
 
