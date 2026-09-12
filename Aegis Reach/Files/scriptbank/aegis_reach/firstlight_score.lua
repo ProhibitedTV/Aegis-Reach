@@ -1,14 +1,10 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- DESCRIPTION: Robust adaptive Aegis Reach score controller for GameGuru MAX.
 --
--- The previous version depended on three entity Sound slots. That was fragile: the
--- large Suno masters are staged locally at deploy time, so a missing slot produced a
--- completely silent game. MAX has a simpler native path for persistent music:
--- LoadGlobalSound / LoopGlobalSound / SetGlobalSoundVolume.
---
--- This controller loads the three authored cues directly and ALWAYS loads the small
--- checked-in reach-underscore.wav as a fallback. If any Suno master is absent, the
--- game still has music instead of failing silently.
+-- Persistent native global sounds give FIRST LIGHT stable authored music even when
+-- standalone packaging cannot find an optional master. The combat director supplies
+-- intensity while radio arbitration supplies dialogue ducking; spatial identity stays
+-- stable so every short firefight does not hard-cut the score.
 local music={}
 
 local TRACK_SALT=0
@@ -45,6 +41,12 @@ local function audit(message)
  end)
 end
 
+local function clamp(v,a,b)
+ if v<a then return a end
+ if v>b then return b end
+ return v
+end
+
 local function track_name(slot)
  if slot==TRACK_SALT then return "salt_moon_drift" end
  if slot==TRACK_OUTPOST then return "moon_outpost_drift" end
@@ -57,10 +59,10 @@ local function track_for_state(state)
  if state=="discovery_human" then return TRACK_SALT,58 end
  if state=="exploration_fortress" then return TRACK_OUTPOST,48 end
  if state=="combat" then return TRACK_OUTPOST,66 end
- if state=="combat_overcharge" then return TRACK_OUTPOST,70 end
+ if state=="combat_overcharge" then return TRACK_OUTPOST,72 end
  if state=="resolution_aegis" then return TRACK_OUTPOST,62 end
  if state=="tension_aegis" then return TRACK_CATACOMB,56 end
- if state=="combat_interference" then return TRACK_CATACOMB,66 end
+ if state=="combat_interference" then return TRACK_CATACOMB,68 end
  if state=="discovery_choir" then return TRACK_CATACOMB,62 end
  return TRACK_SALT,46
 end
@@ -94,9 +96,7 @@ end
 
 local function ensure_looping(id)
  if id<0 or not exists(id) then return end
- if GetGlobalSoundPlaying and GetGlobalSoundPlaying(id)==0 then
-  LoopGlobalSound(id)
- end
+ if GetGlobalSoundPlaying and GetGlobalSoundPlaying(id)==0 then LoopGlobalSound(id) end
 end
 
 local function set_volume(id,volume)
@@ -111,25 +111,18 @@ end
 
 function firstlight_score_init(e)
  load_score()
-
  music[e]={
   target=TRACK_SALT,pending=-1,pending_since=0,
   volumes={[211]=0,[212]=0,[213]=0,[214]=0},
   last_state="",last_update=g_Time or 0,target_volume=46,
-  fallback_announced=false
+  fallback_announced=false,ducking=false
  }
-
  Hide(e)
  CollisionOff(e)
- -- Do not deactivate the controller. Always Active is supplied by the map entity and
- -- this script must keep ticking even when no Visual Logic connection is firing.
  SetActivated(e,1)
-
- -- MAX may also start visuals.ini's ambient track. The adaptive controller owns music
- -- from this point onward so there is never a doubled loop.
  if StopAmbientMusicTrack then StopAmbientMusicTrack() end
 
- local first,fallback=resolved_id(TRACK_SALT)
+ local first=resolved_id(TRACK_SALT)
  if first>=0 then
   ensure_looping(first)
   set_volume(first,34)
@@ -154,7 +147,16 @@ function firstlight_score_main(e)
 
  local state=aegis.music_state or "exploration_fortress"
  local desired,desired_volume=track_for_state(state)
- local immediate=false -- Spatial music has stable identity; brief combat does not replace it.
+ local immediate=false -- Preserve spatial score identity through very short contacts.
+ local intensity=clamp(aegis.combat_intensity or 0,0,100)
+ local combat_state=state=="combat" or state=="combat_overcharge" or state=="combat_interference"
+ if combat_state then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
+
+ -- Radio/story dialogue owns the intelligibility window. Duck the score without
+ -- pausing it so lines sit over a continuous bed instead of obvious start/stop edits.
+ local speaking=fl and g_Time<(fl.message_until or 0)
+ if speaking then desired_volume=math.max(30,desired_volume-14) end
+ aegis.music_ducking=speaking and true or false
 
  if desired~=m.target then
   if desired~=m.pending then
@@ -177,9 +179,14 @@ function firstlight_score_main(e)
   m.pending=-1
  end
  m.last_state=state
+
+ if m.ducking~=speaking then
+  m.ducking=speaking and true or false
+  audit('music_duck active='..tostring(m.ducking)..' state='..state)
+ end
  if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and g_Time-(m.audit_at or 0)>5000 then
   m.audit_at=g_Time
-  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume))
+  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(speaking))
  end
 
  local target_id,fallback=resolved_id(m.target)
@@ -188,10 +195,8 @@ function firstlight_score_main(e)
   audit("music_fallback active=true requested="..track_name(m.target))
  end
 
- -- Crossfade global music in roughly two seconds. Multiple authored cues can overlap
- -- briefly, but if several semantic tracks resolve to the same fallback sound there is
- -- only one actual global sound instance.
- local step=elapsed*0.035
+ -- Crossfade tracks in roughly two seconds; dialogue attenuation responds faster.
+ local step=elapsed*(speaking and 0.060 or 0.035)
  local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
  for _,id in ipairs(ids) do
   local goal=(id==target_id) and m.target_volume or 0
@@ -210,5 +215,4 @@ function firstlight_score_main(e)
 end
 
 firstlight_score_init=firstlight_guard('firstlight_score_init',firstlight_score_init)
-
 firstlight_score_main=firstlight_guard('firstlight_score_main',firstlight_score_main)
