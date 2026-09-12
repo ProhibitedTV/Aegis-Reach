@@ -109,6 +109,26 @@ def strut(m,a,b,width,tile=2):
  for ids in ((0,3,2,1),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)):
   quad(m,[corners[i] for i in ids],tile)
 
+def comms_dish(m):
+ """2.44m parabolic dish on the lab roof; paired skins and a physical feed arm."""
+ axis=(0,.6,-.8);centre=(80,205,15)
+ def point(r,t,back=0):
+  return (centre[0]+r*math.cos(t),centre[1]+r*math.sin(t)*.8+(.6)*(14*(r/48)**2-back),
+          centre[2]+r*math.sin(t)*.6+(-.8)*(14*(r/48)**2-back))
+ m.box(80,148,15,42,5,44,1)
+ strut(m,(80,153,15),(80,204,15),12,2)
+ m.box(80,197,15,20,14,20,1)
+ for j in range(24):
+  a=j*math.tau/24;b=(j+1)*math.tau/24
+  for r0,r1 in ((8,22),(22,36),(36,48)):
+   quad(m,[point(r0,a),point(r0,b),point(r1,b),point(r1,a)],0)
+   quad(m,[point(r0,a,2),point(r1,a,2),point(r1,b,2),point(r0,b,2)],1)
+  quad(m,[point(48,a),point(48,b),point(48,b,2),point(48,a,2)],2)
+  if j%6==0:strut(m,point(8,a,3),point(48,a,3),2,2)
+ feed=(80,230.2,-18.6)
+ for t in (math.pi*7/6,math.pi*11/6):strut(m,point(48,t),feed,2,2)
+ m.box(feed[0],feed[1]-4,feed[2],10,8,12,3)
+
 def shell(Mesh):
  m=Mesh()
  # 10.67 x 6.60m transportable shell; 3.76m tall with a chamfered crown.
@@ -168,6 +188,7 @@ def shell(Mesh):
  m.box(-140,26,119,85,55,4,7)
  m.box(10,137,0,148,3,12,1) # housing meets the 140-inch interior ceiling
  m.box(10,135,0,140,2,7,4)
+ comms_dish(m)
  return m
 
 def mast(Mesh):
@@ -183,6 +204,11 @@ def mast(Mesh):
  for x in (-32,32):
   m.box(x,205,-3,21,14,10,1);m.box(x,207,-9,17,9,2,4)
  strut(m,(0,272,0),(0,345,0),2,2)
+ # Compact radio panels attach to the existing truss, above the work lights.
+ for x in (-22,22):
+  strut(m,(0,248,0),(x,248,0),3,2)
+  m.box(x,229,-4,10,39,8,0)
+  m.box(x,233,-8.5,5,4,1,5)
  return m
 
 def build(Mesh,own,folder):

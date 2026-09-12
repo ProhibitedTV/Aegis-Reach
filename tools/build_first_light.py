@@ -33,7 +33,7 @@ def stage(path):
  staged.add(path)
  return fpe(src)
 
-from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN,service_material,INSERTION,INSERTION_YAW,CAMP_MAST,CAMP_POWER_LIGHT,CAMP_POWER_LIGHT_HEIGHT
+from firstlight_world import ground,TERRAIN_MATERIALS,architecture,ROUTE,RETURN,service_material,INSERTION,INSERTION_YAW,CAMP_MAST,CAMP_POWER_LIGHT,CAMP_POWER_LIGHT_HEIGHT,WATER_LEVEL
 
 def add(path,name,x,z,y=None,ry=0,scale=100,script=None,kind='environment',template=None,**params):
  if y is None:y=ground(x,z)
@@ -182,7 +182,8 @@ crystal_sites=[
  (-1490,-6120,30,34,0x65C8D8,210,False),(-1020,-5620,-15,44,0x59BDCC,240,False),
  (710,-4100,40,52,0x52C1D2,270,False),(-2650,-250,0,88,0x59D4E2,380,False),
  (2450,1850,65,96,0x62D8E5,420,False),(-1650,3750,-25,110,0x748CE8,460,True),
- (1250,4450,20,125,0x8B75E8,520,True),(350,5150,-35,138,0x9670EC,560,True)
+ (1250,4450,20,125,0x8B75E8,520,True),(350,5150,-35,138,0x9670EC,560,True),
+ (450,-5570,30,27,0x579AAA,150,False),(1110,-5230,-25,35,0x5899B1,170,False)
 ]
 for idx,(x,z,ry,scale,color,radius,resonant) in enumerate(crystal_sites,1):
  asset=RESONANT if resonant else BRINEGLASS
@@ -364,7 +365,7 @@ payload['map.way']=struct.pack('<ii',0,0)
 payload['locked.cfg']=struct.pack('<i',0)
 
 raw_terrain=payload['ggterrain.dat'];start=raw_terrain.index(b'{');end=raw_terrain.rindex(b'}')+1
-terrain_json=json.loads(raw_terrain[start:end]);terrain_json.update(TERRAIN_MATERIALS)
+terrain_json=json.loads(raw_terrain[start:end]);terrain_json.update(TERRAIN_MATERIALS);terrain_json['water_height']=WATER_LEVEL
 terrain_text=json.dumps(terrain_json,indent=2).encode()
 payload['ggterrain.dat']=struct.pack('<I',len(terrain_text))+terrain_text
 settings=terrain_settings(payload);sculpt=bytearray(payload[SCULPT_NAME]);ed=settings['editable_size']
@@ -389,7 +390,10 @@ atmosphere={'FogNearest#':6200,'FogDistance#':19500,'FogR#':48,'FogG#':62,'FogB#
  'AmbienceRed#':70,'AmbienceGeen#':84,'AmbienceBlue#':108,'EnvProbeBrightness':0.75,
  'sky$':'overcast','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
  'LensFlare':0,'SkyCloudCoverage':0.5,'SkyCloudiness':0.45}
-for key,val in {'AmbientMusicTrack':'','AmbientMusicTrackVolume':0,**atmosphere}.items():
+water={'WaterEnable':1,'Waterheight':WATER_LEVEL,'Waterred':13,'Watergreen':37,'Waterblue':43,
+ 'WaterWaveAmplitude':1.5,'WaterChoppyScale':0,'WaterWindDependency':0,'WaterSpeed1':.018,
+ 'WaterReflection':.3,'WaterSparkleCol':.25}
+for key,val in {'AmbientMusicTrack':'','AmbientMusicTrackVolume':0,**atmosphere,**water}.items():
  visual=patch_setting(visual,key,val)
 payload['visuals.ini']=visual.encode('latin1')
 

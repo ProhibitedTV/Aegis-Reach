@@ -33,6 +33,9 @@ RETURN=[
  (-900,3020,1540),(-1500,3020,1520),(-2250,2100,1280),(-2900,1000,1010),
  (-2900,-350,900),(-2550,-1600,700),(-1100,-2300,650)
 ]
+WATER_LEVEL=65
+BRINE_POOLS=((650,-5590,240,180),(930,-5380,240,145))
+
 PADS=[
  (-1905,-7250,615,410,500),
  (0,-3100,900,620,640),
@@ -98,6 +101,15 @@ def ground(x,z):
   h-=max(0,h-bench)*shelter
  pit=1-smoothstep(650,1450,math.hypot(x*.92,(z-5500)*1.10))
  h=h*(1-pit)+180*pit
+ # Shallow residual brine beside the lower road, never across it.
+ distance,_=road_sample(x,z,ROUTE)
+ for px,pz,rx,rz in BRINE_POOLS:
+  r=math.hypot((x-px)/rx,(z-pz)/rz)
+  blend=(1-smoothstep(.25,1.65,r))*smoothstep(350,450,distance)
+  h-=max(0,h-35)*blend
+ # Wheel ruts are shallow native relief; preserve camp/combat pad heights.
+ if -7800<z<-3650 and not any(abs(x-px)<hx+20 and abs(z-pz)<hz+20 for px,pz,hx,hz,_ in PADS):
+  h-=3*(1-smoothstep(12,27,abs(distance-62)))
  return h
 
 TERRAIN_MATERIALS={
@@ -119,12 +131,14 @@ def service_material(x,z):
  MAX GGTerrain_GetMaterialIndex uses ordinary Z rows for paint, unlike sculpt.
  Only the insertion-to-Gate service route and Camp 12 court are painted.
  """
+ for px,pz,rx,rz in BRINE_POOLS:
+  if math.hypot((x-px)/rx,(z-pz)/rz)<1.10:return 19
  if not(-9800<=z<=-3050 and -3500<=x<=1500):return 0
  distance,_=road_sample(x,z,ROUTE[:7])
  edge=132+14*math.sin(z/83)+8*math.sin(z/31)
  court=rect_mask(x,z,-1910,-7250,595,400,70)
  if distance<edge:
-  return 16 if abs(distance-62)<14 else 23  # wheel bands continue through the open court
+  return 16 if abs(distance-62)<23 else 23  # wheel bands continue through the open court
  if court>.5:return 23  # installed mineral fines; no white/snow material
  return 0
 
@@ -216,9 +230,6 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  frame=own('AEGIS Arrival Frame',m)
  add(frame,'AEGIS / arrival frame',0,3090,y=aegis_y)
  prop(CYB+'CS_Wall_01_Entry_02.fpe',0,2320,y=ground(0,2320),ry=0,scale=70)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',-760,2470,y=ground(-760,2470),ry=0,scale=58)
- prop(CYB+'CS_Wall_01_NeonDecor_Blue_Corner.fpe',760,2470,y=ground(760,2470),ry=180,scale=58)
- prop(CYS+'CS_Steps_01.fpe',0,2550,y=ground(0,2550),ry=0,scale=68)
  prop(CYB+'CS_Building_Entrance_Overpass_02.fpe',0,3260,y=aegis_y,ry=0,scale=62)
  prop(C+'Light Generator.fpe',-1060,3500,y=ground(-1060,3500),ry=45,scale=82)
  prop(C+'CableReel.fpe',-890,3560,y=ground(-890,3560),ry=20,scale=86)

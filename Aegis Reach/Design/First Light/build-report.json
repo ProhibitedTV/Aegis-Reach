@@ -1,8 +1,8 @@
 {
   "map": "Aegis Reach - First Light.fpm",
-  "entities": 191,
+  "entities": 192,
   "enemy_count": 28,
-  "lights": 27,
+  "lights": 29,
   "assets": [
     "Aegis Reach\\First Light\\Meridian Field Lab.fpe",
     "Booster Pack\\Military Pack\\Desk 01a.fpe",
@@ -42,8 +42,6 @@
     "Booster Pack\\Military Pack\\Portable Cot 01a.fpe",
     "Aegis Reach\\First Light\\AEGIS Arrival Frame.fpe",
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_02.fpe",
-    "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_NeonDecor_Blue_Corner.fpe",
-    "Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\CS_Steps_01.fpe",
     "Booster Pack\\Construction Pack\\Rebar1.fpe",
     "Industrial Collection\\Industrial\\Control Box - Tall.fpe",
     "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
@@ -104,13 +102,11 @@
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_01.fpe",
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_02.fpe",
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_03.fpe",
-    "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_NeonDecor_Blue_Corner.fpe",
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Overhang.fpe",
     "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Window.fpe",
     "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Sidewalk_Light.fpe",
     "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Electrical_Pole_01.fpe",
     "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Lamp.fpe",
-    "Cyberpunk Streets Booster Pack\\Streets and Sidewalks\\Sidewalks\\CS_Steps_01.fpe",
     "Industrial Collection\\Industrial\\Control Box - Large.fpe",
     "Industrial Collection\\Industrial\\Control Box - Tall.fpe",
     "Industrial Collection\\Industrial\\Hand Trolly.fpe",
@@ -149,7 +145,7 @@
     ]
   ],
   "native_terrain": true,
-  "service_road_painted_cells": 4949,
+  "service_road_painted_cells": 5419,
   "route": [
     [
       0,
@@ -362,7 +358,7 @@
     "SkyCloudCoverage": 0.5,
     "SkyCloudiness": 0.45
   },
-  "crystal_clusters": 10,
+  "crystal_clusters": 12,
   "brineglass_materials": [
     "vesper_brineglass_energy.png",
     "vesper_brineglass_resonant.png"

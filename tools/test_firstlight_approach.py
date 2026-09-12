@@ -56,3 +56,28 @@ for e in entities:
   assert math.hypot(e['101:x']-x,e['101:z']-z)>1800, 'spawn enters the first engagement'
 print('APPROACH PASS: lab framing, native terrain sightline/grade, mast grounding and fixture offsets.')
 print('Native MAX composition, exposure and collision still need screenshot/walkthrough review.')
+
+# Native water must occupy the authored pockets, not drown travel or objectives.
+import json
+from firstlight_world import ROUTE,RETURN,BRINE_POOLS,WATER_LEVEL
+with zipfile.ZipFile(path) as archive:
+ archive.setpassword(PASSWORD)
+ raw=archive.read('ggterrain.dat');native=json.loads(raw[raw.index(b'{'):raw.rindex(b'}')+1])
+ visual=archive.read('visuals.ini').decode('latin1')
+ bank=archive.read('map.ent').decode('latin1')
+assert native['water_height']==WATER_LEVEL
+assert 'visuals.WaterEnable=1' in visual
+assert 'CS_Wall_01_NeonDecor_Blue_Corner.fpe' not in bank, 'unsupported floating neon returned'
+assert 'CS_Steps_01.fpe' not in bank, 'disconnected AEGIS stairs returned'
+for route in (ROUTE,RETURN):
+ for a,b in zip(route,route[1:]):
+  for i in range(21):
+   t=i/20
+   assert height(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t)>WATER_LEVEL+40, 'water crossed service route'
+for x,z,_,_ in BRINE_POOLS:
+ depth=WATER_LEVEL-height(x,z)
+ assert 10<depth<40, ('brine pocket missing or too deep',x,z,depth)
+for e in entities:
+ if e['101:eleprof.name_s'].startswith(('FL ENEMY','FL POWER','FL RECORDS','FL CORE','FL EXTRACT','SEVEN')):
+  assert height(e['101:x'],e['101:z'])>WATER_LEVEL+40, 'gameplay footing flooded'
+print('WATER PASS: native pockets contain shallow water; service routes and gameplay footing remain dry.')

@@ -120,6 +120,55 @@ Full-front UV coverage, post clearance and footing are checked geometrically.
 The texture artwork was inspected directly, but that is not a MAX material or
 collision review. A new native view remains necessary before accepting this pass.
 
+## September 11 connected world detail and floating-asset removal
+
+The user requested tire tracks, water, glowing areas and communications equipment,
+then supplied a native AEGIS view showing unsupported blue architectural trim and
+stairs with no destination. The full desktop image contains unrelated applications
+and is not copied into this repository.
+
+The installed `CS_Wall_01_NeonDecor_Blue_Corner.dbo` has local Y bounds
+162.37..220.00 inches. At the authored 58% scale its visible base floated about
+94.2 inches above terrain. Both copies are removed, along with the disconnected
+`CS_Steps_01` at AEGIS. Lowering a facade ornament to the ground would not supply
+its missing architectural context. The existing AEGIS frame and mission equipment
+remain; this pass does not claim that the wider landmark composition is finished.
+
+The new detail is connected to existing places:
+
+- The Meridian lab gains a 96-inch (2.44 m) parabolic communications dish on a
+  roof-mounted pedestal. Its paired skins, rim, rear ribs and feed arms use the
+  existing original ivory/graphite/teal material suite. The lowest rim clears the
+  roof, and the roof pad meets the existing shell. No new freestanding camp prop.
+- Two compact radio panels attach to the existing survey mast above its work lights.
+  Their small cyan indicators use the existing emissive atlas, without new point
+  lights. Camp 12 still contains 13 environment objects.
+- Paired native road paint bands widen from 28 to 46 inches. Outside the camp and
+  combat pads, shallow 3-inch wheel grooves follow the existing road centreline.
+  They are authored wheel ruts, not a simulated tire imprint system.
+- Two native terrain depressions at (650, -5590) and (930, -5380) retain residual
+  brine beside the lower approach. Their beds sit at Y=35; the native water plane
+  is Y=65, about 30 inches (0.76 m) deep at the centres. Basalt material marks the
+  pocket floors. The travel corridor is explicitly protected from the cut.
+- MAX water is enabled through both `ggterrain.dat` water_height and visuals.ini,
+  using a dark blue-green color, low wave amplitude and slow motion. This is MAX's
+  level-wide water plane, exposed in the low pockets; inspect the distant horizon
+  and other low ground for unwanted ocean visibility before approval.
+- Two small blue/cyan brineglass deposits and restrained lights sit at the pocket
+  edges. Total formations increase from 10 to 12; the three violet formations
+  and their progression remain unchanged.
+
+Installed asset bounds were read locally, without copying DLC payloads. The dish
+and radio geometry are original procedural additions. Mission scripts, music,
+combat positions, sign treatment and existing camp equipment are preserved.
+
+Native-map regression checks sample shallow pool depth and verify dry service,
+return and gameplay locations. They reject the floating corner and orphan stairs
+from the rebuilt asset bank. Mesh import and winding checks cover the dish/radios.
+These checks cannot approve water appearance, reflected sky, materials, collision
+or composition. Required next MAX views: AEGIS after removals, Camp 12 roof/mast,
+and the lower approach showing ruts, pool shoreline and brineglass in context.
+
 ## September 10 opening-view correction
 
 The supplied native opening screenshot shows the lab at the far left, a brightly
@@ -154,7 +203,7 @@ safeguards; the corrected view still needs native screenshot review.
 - One original Meridian field lab replaces the six street-wall/roof pieces. Its
   shell measures 420 x 260 MAX inches (10.67 x 6.60 metres), with a chamfered crown,
   structural ribs, transport rails, roof service equipment and recessed entrance.
-  The shell contains 884 triangles; its opening is approximately 100 x 101 inches.
+  The shell with roof communications equipment contains 1,340 triangles; its opening is approximately 100 x 101 inches.
   There is no generated floor or entrance step over the native terrain.
 - The lab uses an original ivory/graphite/teal material atlas with seam wear,
   fasteners, Meridian identifiers, restrained cyan trim and amber practical strips.
@@ -191,7 +240,7 @@ safeguards; the corrected view still needs native screenshot review.
 
 ## Gameplay and build verification
 
-Current build: 191 entities, 67 asset types, 27 lights. Mission/score Lua, all three
+Current build: 192 entities, 65 asset types, 29 lights. Mission/score Lua, all three
 music masters, combat/objective positions, route control points and downstream
 architecture sources are unchanged. Insertion now starts farther down the existing approach and faces the camp court,
 as described above. The Camp 12 ammo pickup remains ground-relative at its existing
@@ -208,7 +257,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `4c61d50eec722d279f884766296e0191fff35fafc121ba7b2a6987360733b20a`
+Current map SHA256: `3c9cdaae690e1cb7cb0309e77b688e203aa9e8fe3d4b82698fdb4bf1d7c0589a`
 
 ## Original-art load freshness
 
