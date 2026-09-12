@@ -133,128 +133,150 @@
   },
   {
     "id": 13,
-    "name": "CS_Building_Entrance_Overpass",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass.fpe",
-    "x": 0,
+    "name": "Gate 07 / inspection office",
+    "asset": "Aegis Reach\\First Light\\Meridian Service Module.fpe",
+    "x": -520,
     "y": 640,
-    "z": -3160,
+    "z": -3300,
     "rotation": 0,
-    "scale": 72,
+    "scale": 100,
     "kind": "environment"
   },
   {
     "id": 14,
-    "name": "CS_Building_Entrance_Overpass_Support",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Support.fpe",
-    "x": -610,
+    "name": "Gate 07 / communications mast",
+    "asset": "Aegis Reach\\First Light\\Camp 12 Survey Mast.fpe",
+    "x": 650,
     "y": 640,
-    "z": -3160,
+    "z": -3420,
     "rotation": 0,
-    "scale": 72,
+    "scale": 100,
     "kind": "environment"
   },
   {
     "id": 15,
-    "name": "CS_Building_Entrance_Overpass_Support",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Support.fpe",
-    "x": 610,
-    "y": 640,
-    "z": -3160,
-    "rotation": 180,
-    "scale": 72,
-    "kind": "environment"
-  },
-  {
-    "id": 16,
-    "name": "CS_Building_Entrance_Overpass_Wall",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Wall.fpe",
-    "x": -800,
-    "y": 640,
-    "z": -3110,
-    "rotation": 90,
-    "scale": 65,
-    "kind": "environment"
-  },
-  {
-    "id": 17,
-    "name": "CS_Building_Entrance_Overpass_Wall",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Wall.fpe",
-    "x": 800,
-    "y": 640,
-    "z": -3110,
-    "rotation": -90,
-    "scale": 65,
-    "kind": "environment"
-  },
-  {
-    "id": 18,
-    "name": "CS_Building_Entrance_Steps",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Steps.fpe",
-    "x": 0,
-    "y": 640.0,
-    "z": -3470,
-    "rotation": 0,
-    "scale": 72,
-    "kind": "environment"
-  },
-  {
-    "id": 19,
     "name": "Roadblock2",
     "asset": "Booster Pack\\Construction Pack\\Roadblock2.fpe",
-    "x": -430,
-    "y": 640.0,
+    "x": -240,
+    "y": 640,
     "z": -3540,
     "rotation": 8,
     "scale": 90,
     "kind": "environment"
   },
   {
-    "id": 20,
+    "id": 16,
     "name": "Roadblock3",
     "asset": "Booster Pack\\Construction Pack\\Roadblock3.fpe",
     "x": 430,
-    "y": 640.0,
+    "y": 640,
     "z": -3540,
     "rotation": -8,
     "scale": 90,
     "kind": "environment"
   },
   {
-    "id": 21,
+    "id": 17,
     "name": "Light Generator",
     "asset": "Booster Pack\\Construction Pack\\Light Generator.fpe",
-    "x": 850,
-    "y": 649.9626457725948,
-    "z": -2860,
+    "x": 760,
+    "y": 640,
+    "z": -3240,
     "rotation": 90,
     "scale": 82,
     "kind": "environment"
   },
   {
+    "id": 18,
+    "name": "Freight Container",
+    "asset": "Booster Pack\\Construction Pack\\Freight Container.fpe",
+    "x": 480,
+    "y": 640,
+    "z": -3270,
+    "rotation": 90,
+    "scale": 68,
+    "kind": "environment"
+  },
+  {
+    "id": 19,
+    "name": "Wooden Crate 01a",
+    "asset": "Booster Pack\\Military Pack\\Wooden Crate 01a.fpe",
+    "x": 610,
+    "y": 640,
+    "z": -3370,
+    "rotation": 0,
+    "scale": 68,
+    "kind": "environment"
+  },
+  {
+    "id": 20,
+    "name": "Wooden Crate 01a",
+    "asset": "Booster Pack\\Military Pack\\Wooden Crate 01a.fpe",
+    "x": 620,
+    "y": 640,
+    "z": -3280,
+    "rotation": 0,
+    "scale": 68,
+    "kind": "environment"
+  },
+  {
+    "id": 21,
+    "name": "Desk 01a",
+    "asset": "Booster Pack\\Military Pack\\Desk 01a.fpe",
+    "x": -660,
+    "y": 640.4,
+    "z": -3260,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "environment"
+  },
+  {
     "id": 22,
-    "name": "Concrete Barrier 01",
-    "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
-    "x": -690,
-    "y": 640.0,
-    "z": -3470,
-    "rotation": 15,
-    "scale": 92,
+    "name": "Desk Chair 01a",
+    "asset": "Booster Pack\\Military Pack\\Desk Chair 01a.fpe",
+    "x": -590,
+    "y": 640,
+    "z": -3290,
+    "rotation": 90,
+    "scale": 100,
     "kind": "environment"
   },
   {
     "id": 23,
-    "name": "Container 02a",
-    "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
-    "x": 1030,
-    "y": 593.1169418554816,
-    "z": -3000,
-    "rotation": 90,
-    "scale": 86,
+    "name": "Desk 01a",
+    "asset": "Booster Pack\\Military Pack\\Desk 01a.fpe",
+    "x": -790,
+    "y": 900.4,
+    "z": -1360,
+    "rotation": 0,
+    "scale": 100,
     "kind": "environment"
   },
   {
     "id": 24,
-    "name": "Northstar / stack pair",
+    "name": "Desk Chair 01a",
+    "asset": "Booster Pack\\Military Pack\\Desk Chair 01a.fpe",
+    "x": -720,
+    "y": 900,
+    "z": -1390,
+    "rotation": 90,
+    "scale": 100,
+    "kind": "environment"
+  },
+  {
+    "id": 25,
+    "name": "Northstar / maintenance office",
+    "asset": "Aegis Reach\\First Light\\Meridian Service Module.fpe",
+    "x": -650,
+    "y": 900,
+    "z": -1400,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "environment"
+  },
+  {
+    "id": 26,
+    "name": "Northstar / power block",
     "asset": "Aegis Reach\\First Light\\Northstar Stack Pair.fpe",
     "x": -1510,
     "y": 900,
@@ -264,62 +286,29 @@
     "kind": "environment"
   },
   {
-    "id": 25,
-    "name": "CS_Building_Entrance_Overpass_02",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_02.fpe",
-    "x": -1420,
-    "y": 900,
-    "z": -760,
-    "rotation": 90,
-    "scale": 64,
-    "kind": "environment"
-  },
-  {
-    "id": 26,
-    "name": "CS_Building_Entrance_Overpass_Support",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Support.fpe",
-    "x": -1420,
-    "y": 900,
-    "z": -1230,
-    "rotation": 90,
-    "scale": 64,
-    "kind": "environment"
-  },
-  {
     "id": 27,
-    "name": "CS_Building_Entrance_Overpass_Support",
-    "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_Support.fpe",
-    "x": -1420,
-    "y": 900,
-    "z": -280,
-    "rotation": -90,
-    "scale": 64,
+    "name": "Generator 04a",
+    "asset": "Booster Pack\\Military Pack\\Generator 04a.fpe",
+    "x": -1700,
+    "y": 902,
+    "z": -1120,
+    "rotation": 90,
+    "scale": 92,
     "kind": "environment"
   },
   {
     "id": 28,
-    "name": "Generator 04a",
-    "asset": "Booster Pack\\Military Pack\\Generator 04a.fpe",
-    "x": -1700,
+    "name": "Storage Tank - Small",
+    "asset": "Industrial Collection\\Industrial\\Storage Tank - Small.fpe",
+    "x": -2180,
     "y": 902,
     "z": -1120,
-    "rotation": 90,
-    "scale": 92,
+    "rotation": 0,
+    "scale": 95,
     "kind": "environment"
   },
   {
     "id": 29,
-    "name": "Storage Tank - Small",
-    "asset": "Industrial Collection\\Industrial\\Storage Tank - Small.fpe",
-    "x": -2180,
-    "y": 902,
-    "z": -1120,
-    "rotation": 0,
-    "scale": 95,
-    "kind": "environment"
-  },
-  {
-    "id": 30,
     "name": "Generator 04a",
     "asset": "Booster Pack\\Military Pack\\Generator 04a.fpe",
     "x": -1700,
@@ -330,7 +319,7 @@
     "kind": "environment"
   },
   {
-    "id": 31,
+    "id": 30,
     "name": "Storage Tank - Small",
     "asset": "Industrial Collection\\Industrial\\Storage Tank - Small.fpe",
     "x": -2180,
@@ -341,18 +330,7 @@
     "kind": "environment"
   },
   {
-    "id": 32,
-    "name": "Industrial Stairs",
-    "asset": "Industrial Collection\\Industrial\\Industrial Stairs.fpe",
-    "x": -2150,
-    "y": 900,
-    "z": -840,
-    "rotation": 90,
-    "scale": 92,
-    "kind": "environment"
-  },
-  {
-    "id": 33,
+    "id": 31,
     "name": "Industrial Shelves",
     "asset": "Industrial Collection\\Industrial\\Industrial Shelves.fpe",
     "x": -2110,
@@ -363,7 +341,7 @@
     "kind": "environment"
   },
   {
-    "id": 34,
+    "id": 32,
     "name": "Control Box - Large",
     "asset": "Industrial Collection\\Industrial\\Control Box - Large.fpe",
     "x": -1320,
@@ -374,7 +352,7 @@
     "kind": "environment"
   },
   {
-    "id": 35,
+    "id": 33,
     "name": "Control Box - Large",
     "asset": "Industrial Collection\\Industrial\\Control Box - Large.fpe",
     "x": -1080,
@@ -385,7 +363,7 @@
     "kind": "environment"
   },
   {
-    "id": 36,
+    "id": 34,
     "name": "CableReel",
     "asset": "Booster Pack\\Construction Pack\\CableReel.fpe",
     "x": -1950,
@@ -396,7 +374,7 @@
     "kind": "environment"
   },
   {
-    "id": 37,
+    "id": 35,
     "name": "CS_Wall_01_Entry_01",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_01.fpe",
     "x": 720,
@@ -407,7 +385,7 @@
     "kind": "environment"
   },
   {
-    "id": 38,
+    "id": 36,
     "name": "CS_Wall_01_Window",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Window.fpe",
     "x": 1260,
@@ -418,7 +396,7 @@
     "kind": "environment"
   },
   {
-    "id": 39,
+    "id": 37,
     "name": "CS_Wall_01",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01.fpe",
     "x": 1800,
@@ -429,7 +407,7 @@
     "kind": "environment"
   },
   {
-    "id": 40,
+    "id": 38,
     "name": "CS_Wall_01",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01.fpe",
     "x": 2110,
@@ -440,7 +418,7 @@
     "kind": "environment"
   },
   {
-    "id": 41,
+    "id": 39,
     "name": "CS_Wall_01_Entry_03",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_03.fpe",
     "x": 2110,
@@ -451,7 +429,7 @@
     "kind": "environment"
   },
   {
-    "id": 42,
+    "id": 40,
     "name": "CS_Wall_01",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01.fpe",
     "x": 2110,
@@ -462,7 +440,7 @@
     "kind": "environment"
   },
   {
-    "id": 43,
+    "id": 41,
     "name": "CS_Wall_01_Overhang",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Overhang.fpe",
     "x": 1180,
@@ -473,7 +451,7 @@
     "kind": "environment"
   },
   {
-    "id": 44,
+    "id": 42,
     "name": "CS_Roof_Tile_4x4",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Roof_Tile_4x4.fpe",
     "x": 1450,
@@ -484,7 +462,7 @@
     "kind": "environment"
   },
   {
-    "id": 45,
+    "id": 43,
     "name": "CS_Sidewalk_Light",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Sidewalk_Light.fpe",
     "x": 540,
@@ -495,12 +473,34 @@
     "kind": "environment"
   },
   {
-    "id": 46,
+    "id": 44,
     "name": "Desk 01a",
     "asset": "Booster Pack\\Military Pack\\Desk 01a.fpe",
     "x": 900,
     "y": 1082,
     "z": 300,
+    "rotation": 90,
+    "scale": 90,
+    "kind": "environment"
+  },
+  {
+    "id": 45,
+    "name": "Computer 01a",
+    "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
+    "x": 900,
+    "y": 1157,
+    "z": 300,
+    "rotation": 90,
+    "scale": 90,
+    "kind": "environment"
+  },
+  {
+    "id": 46,
+    "name": "Desk 01a",
+    "asset": "Booster Pack\\Military Pack\\Desk 01a.fpe",
+    "x": 1280,
+    "y": 1082,
+    "z": 600,
     "rotation": 90,
     "scale": 90,
     "kind": "environment"
@@ -509,37 +509,15 @@
     "id": 47,
     "name": "Computer 01a",
     "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
-    "x": 900,
+    "x": 1280,
     "y": 1157,
-    "z": 300,
+    "z": 600,
     "rotation": 90,
     "scale": 90,
     "kind": "environment"
   },
   {
     "id": 48,
-    "name": "Desk 01a",
-    "asset": "Booster Pack\\Military Pack\\Desk 01a.fpe",
-    "x": 1280,
-    "y": 1082,
-    "z": 600,
-    "rotation": 90,
-    "scale": 90,
-    "kind": "environment"
-  },
-  {
-    "id": 49,
-    "name": "Computer 01a",
-    "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
-    "x": 1280,
-    "y": 1157,
-    "z": 600,
-    "rotation": 90,
-    "scale": 90,
-    "kind": "environment"
-  },
-  {
-    "id": 50,
     "name": "Locker 01a",
     "asset": "Booster Pack\\Military Pack\\Locker 01a.fpe",
     "x": 1900,
@@ -550,7 +528,7 @@
     "kind": "environment"
   },
   {
-    "id": 51,
+    "id": 49,
     "name": "Locker 01a",
     "asset": "Booster Pack\\Military Pack\\Locker 01a.fpe",
     "x": 1900,
@@ -561,7 +539,7 @@
     "kind": "environment"
   },
   {
-    "id": 52,
+    "id": 50,
     "name": "Industrial Shelves",
     "asset": "Industrial Collection\\Industrial\\Industrial Shelves.fpe",
     "x": 1850,
@@ -572,7 +550,7 @@
     "kind": "environment"
   },
   {
-    "id": 53,
+    "id": 51,
     "name": "Hand Trolly",
     "asset": "Industrial Collection\\Industrial\\Hand Trolly.fpe",
     "x": 1660,
@@ -583,7 +561,7 @@
     "kind": "environment"
   },
   {
-    "id": 54,
+    "id": 52,
     "name": "Portable Cot 01a",
     "asset": "Booster Pack\\Military Pack\\Portable Cot 01a.fpe",
     "x": 1350,
@@ -594,7 +572,7 @@
     "kind": "environment"
   },
   {
-    "id": 55,
+    "id": 53,
     "name": "AEGIS / arrival frame",
     "asset": "Aegis Reach\\First Light\\AEGIS Arrival Frame.fpe",
     "x": 0,
@@ -605,7 +583,7 @@
     "kind": "environment"
   },
   {
-    "id": 56,
+    "id": 54,
     "name": "CS_Wall_01_Entry_02",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Wall_01_Entry_02.fpe",
     "x": 0,
@@ -616,7 +594,7 @@
     "kind": "environment"
   },
   {
-    "id": 57,
+    "id": 55,
     "name": "CS_Building_Entrance_Overpass_02",
     "asset": "Cyberpunk Streets Booster Pack\\Buildings\\CS_Building_Entrance_Overpass_02.fpe",
     "x": 0,
@@ -627,7 +605,7 @@
     "kind": "environment"
   },
   {
-    "id": 58,
+    "id": 56,
     "name": "Light Generator",
     "asset": "Booster Pack\\Construction Pack\\Light Generator.fpe",
     "x": -1060,
@@ -638,7 +616,7 @@
     "kind": "environment"
   },
   {
-    "id": 59,
+    "id": 57,
     "name": "CableReel",
     "asset": "Booster Pack\\Construction Pack\\CableReel.fpe",
     "x": -890,
@@ -649,7 +627,7 @@
     "kind": "environment"
   },
   {
-    "id": 60,
+    "id": 58,
     "name": "Rebar1",
     "asset": "Booster Pack\\Construction Pack\\Rebar1.fpe",
     "x": 960,
@@ -660,7 +638,7 @@
     "kind": "environment"
   },
   {
-    "id": 61,
+    "id": 59,
     "name": "Control Box - Tall",
     "asset": "Industrial Collection\\Industrial\\Control Box - Tall.fpe",
     "x": -820,
@@ -671,7 +649,7 @@
     "kind": "environment"
   },
   {
-    "id": 62,
+    "id": 60,
     "name": "Control Box - Tall",
     "asset": "Industrial Collection\\Industrial\\Control Box - Tall.fpe",
     "x": 820,
@@ -682,7 +660,7 @@
     "kind": "environment"
   },
   {
-    "id": 63,
+    "id": 61,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": -980,
@@ -693,7 +671,7 @@
     "kind": "environment"
   },
   {
-    "id": 64,
+    "id": 62,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": 930,
@@ -704,7 +682,7 @@
     "kind": "environment"
   },
   {
-    "id": 65,
+    "id": 63,
     "name": "Meridian route marker 1",
     "asset": "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
     "x": -1180,
@@ -715,7 +693,7 @@
     "kind": "environment"
   },
   {
-    "id": 66,
+    "id": 64,
     "name": "Meridian route marker 2",
     "asset": "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
     "x": -430,
@@ -726,7 +704,7 @@
     "kind": "environment"
   },
   {
-    "id": 67,
+    "id": 65,
     "name": "Meridian route marker 3",
     "asset": "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
     "x": 280,
@@ -737,7 +715,7 @@
     "kind": "environment"
   },
   {
-    "id": 68,
+    "id": 66,
     "name": "Meridian route marker 4",
     "asset": "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
     "x": 350,
@@ -748,7 +726,7 @@
     "kind": "environment"
   },
   {
-    "id": 69,
+    "id": 67,
     "name": "Meridian route marker 5",
     "asset": "Aegis Reach\\First Light\\Meridian Route Beacon.fpe",
     "x": 140,
@@ -759,7 +737,7 @@
     "kind": "environment"
   },
   {
-    "id": 70,
+    "id": 68,
     "name": "CS_Street_Electrical_Pole_01",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Electrical_Pole_01.fpe",
     "x": -320,
@@ -770,7 +748,7 @@
     "kind": "environment"
   },
   {
-    "id": 71,
+    "id": 69,
     "name": "CS_Street_Electrical_Pole_01",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Electrical_Pole_01.fpe",
     "x": 470,
@@ -781,7 +759,7 @@
     "kind": "environment"
   },
   {
-    "id": 72,
+    "id": 70,
     "name": "CS_Street_Lamp",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Lamp.fpe",
     "x": 565,
@@ -792,7 +770,7 @@
     "kind": "environment"
   },
   {
-    "id": 73,
+    "id": 71,
     "name": "CS_Street_Electrical_Pole_01",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Electrical_Pole_01.fpe",
     "x": -500,
@@ -803,7 +781,7 @@
     "kind": "environment"
   },
   {
-    "id": 74,
+    "id": 72,
     "name": "CS_Street_Lamp",
     "asset": "Cyberpunk Streets Booster Pack\\Misc\\Sidewalk Misc\\CS_Street_Lamp.fpe",
     "x": -405,
@@ -814,7 +792,7 @@
     "kind": "environment"
   },
   {
-    "id": 75,
+    "id": 73,
     "name": "Choir / buried arch exposed by the receded sea",
     "asset": "Aegis Reach\\First Light\\Choir Breach Arch.fpe",
     "x": 0,
@@ -825,7 +803,7 @@
     "kind": "environment"
   },
   {
-    "id": 76,
+    "id": 74,
     "name": "AEGIS / inspection bridge at the fracture",
     "asset": "Aegis Reach\\First Light\\Excavation Service Bridge.fpe",
     "x": -940,
@@ -836,7 +814,7 @@
     "kind": "environment"
   },
   {
-    "id": 77,
+    "id": 75,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -700,
@@ -847,7 +825,7 @@
     "kind": "environment"
   },
   {
-    "id": 78,
+    "id": 76,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 940,
@@ -858,7 +836,7 @@
     "kind": "environment"
   },
   {
-    "id": 79,
+    "id": 77,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -850,
@@ -869,7 +847,7 @@
     "kind": "environment"
   },
   {
-    "id": 80,
+    "id": 78,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 650,
@@ -880,7 +858,7 @@
     "kind": "environment"
   },
   {
-    "id": 81,
+    "id": 79,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -490,
@@ -891,7 +869,7 @@
     "kind": "environment"
   },
   {
-    "id": 82,
+    "id": 80,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 1040,
@@ -902,7 +880,7 @@
     "kind": "environment"
   },
   {
-    "id": 83,
+    "id": 81,
     "name": "Brineglass bloom 01",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1180,
@@ -913,7 +891,7 @@
     "kind": "geology"
   },
   {
-    "id": 84,
+    "id": 82,
     "name": "Brineglass bloom 02",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1550,
@@ -924,7 +902,7 @@
     "kind": "geology"
   },
   {
-    "id": 85,
+    "id": 83,
     "name": "Brineglass bloom 03",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1490,
@@ -935,7 +913,7 @@
     "kind": "geology"
   },
   {
-    "id": 86,
+    "id": 84,
     "name": "Brineglass bloom 04",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1020,
@@ -946,7 +924,7 @@
     "kind": "geology"
   },
   {
-    "id": 87,
+    "id": 85,
     "name": "Brineglass bloom 05",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 710,
@@ -957,7 +935,7 @@
     "kind": "geology"
   },
   {
-    "id": 88,
+    "id": 86,
     "name": "Brineglass bloom 06",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -2650,
@@ -968,7 +946,7 @@
     "kind": "geology"
   },
   {
-    "id": 89,
+    "id": 87,
     "name": "Brineglass bloom 07",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 2450,
@@ -979,7 +957,7 @@
     "kind": "geology"
   },
   {
-    "id": 90,
+    "id": 88,
     "name": "Resonant Brineglass bloom 08",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": -1650,
@@ -990,7 +968,7 @@
     "kind": "geology"
   },
   {
-    "id": 91,
+    "id": 89,
     "name": "Resonant Brineglass bloom 09",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": 1250,
@@ -1001,7 +979,7 @@
     "kind": "geology"
   },
   {
-    "id": 92,
+    "id": 90,
     "name": "Resonant Brineglass bloom 10",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": 350,
@@ -1012,7 +990,7 @@
     "kind": "geology"
   },
   {
-    "id": 93,
+    "id": 91,
     "name": "Brineglass bloom 11",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 450,
@@ -1023,7 +1001,7 @@
     "kind": "geology"
   },
   {
-    "id": 94,
+    "id": 92,
     "name": "Brineglass bloom 12",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 1110,
@@ -1034,7 +1012,7 @@
     "kind": "geology"
   },
   {
-    "id": 95,
+    "id": 93,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": -720,
@@ -1045,7 +1023,7 @@
     "kind": "environment"
   },
   {
-    "id": 96,
+    "id": 94,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": 700,
@@ -1056,7 +1034,7 @@
     "kind": "environment"
   },
   {
-    "id": 97,
+    "id": 95,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": 1560,
@@ -1067,7 +1045,7 @@
     "kind": "environment"
   },
   {
-    "id": 98,
+    "id": 96,
     "name": "Container 01a",
     "asset": "Booster Pack\\Military Pack\\Container 01a.fpe",
     "x": 1630,
@@ -1078,7 +1056,7 @@
     "kind": "environment"
   },
   {
-    "id": 99,
+    "id": 97,
     "name": "Container 01a",
     "asset": "Booster Pack\\Military Pack\\Container 01a.fpe",
     "x": 1910,
@@ -1089,7 +1067,7 @@
     "kind": "environment"
   },
   {
-    "id": 100,
+    "id": 98,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -720,
@@ -1100,7 +1078,7 @@
     "kind": "environment"
   },
   {
-    "id": 101,
+    "id": 99,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": 570,
@@ -1111,7 +1089,7 @@
     "kind": "environment"
   },
   {
-    "id": 102,
+    "id": 100,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -960,
@@ -1122,7 +1100,7 @@
     "kind": "environment"
   },
   {
-    "id": 103,
+    "id": 101,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -750,
@@ -1133,7 +1111,7 @@
     "kind": "environment"
   },
   {
-    "id": 104,
+    "id": 102,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": 650,
@@ -1144,7 +1122,7 @@
     "kind": "environment"
   },
   {
-    "id": 105,
+    "id": 103,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3200,
@@ -1155,7 +1133,7 @@
     "kind": "environment"
   },
   {
-    "id": 106,
+    "id": 104,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3250,
@@ -1166,7 +1144,7 @@
     "kind": "environment"
   },
   {
-    "id": 107,
+    "id": 105,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3260,
@@ -1177,7 +1155,7 @@
     "kind": "environment"
   },
   {
-    "id": 108,
+    "id": 106,
     "name": "Gas Barrel 01a",
     "asset": "Booster Pack\\Military Pack\\Gas Barrel 01a.fpe",
     "x": -2810,
@@ -1188,7 +1166,7 @@
     "kind": "environment"
   },
   {
-    "id": 109,
+    "id": 107,
     "name": "Gas Barrel 01a",
     "asset": "Booster Pack\\Military Pack\\Gas Barrel 01a.fpe",
     "x": -2690,
@@ -1199,7 +1177,7 @@
     "kind": "environment"
   },
   {
-    "id": 110,
+    "id": 108,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -1570,
@@ -1210,7 +1188,7 @@
     "kind": "ammo"
   },
   {
-    "id": 111,
+    "id": 109,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -2050,
@@ -1221,7 +1199,7 @@
     "kind": "ammo"
   },
   {
-    "id": 112,
+    "id": 110,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -1150,
@@ -1232,7 +1210,7 @@
     "kind": "ammo"
   },
   {
-    "id": 113,
+    "id": 111,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": 1550,
@@ -1243,7 +1221,7 @@
     "kind": "ammo"
   },
   {
-    "id": 114,
+    "id": 112,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -850,
@@ -1254,7 +1232,7 @@
     "kind": "ammo"
   },
   {
-    "id": 115,
+    "id": 113,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": 300,
@@ -1265,7 +1243,7 @@
     "kind": "ammo"
   },
   {
-    "id": 116,
+    "id": 114,
     "name": "SEVEN // Meridian insertion",
     "asset": "_markers\\Player Start.fpe",
     "x": -900,
@@ -1276,7 +1254,7 @@
     "kind": "player"
   },
   {
-    "id": 117,
+    "id": 115,
     "name": "FIRST LIGHT // DIRECTOR",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 0,
@@ -1287,7 +1265,7 @@
     "kind": "controller"
   },
   {
-    "id": 118,
+    "id": 116,
     "name": "FL POWER",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": -1250,
@@ -1298,7 +1276,7 @@
     "kind": "objective"
   },
   {
-    "id": 119,
+    "id": 117,
     "name": "FL RECORDS",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": 1300,
@@ -1309,7 +1287,7 @@
     "kind": "objective"
   },
   {
-    "id": 120,
+    "id": 118,
     "name": "FL CORE",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": 0,
@@ -1320,7 +1298,7 @@
     "kind": "objective"
   },
   {
-    "id": 121,
+    "id": 119,
     "name": "FL EXTRACT",
     "asset": "Aegis Reach\\Extraction Pad.fpe",
     "x": 0,
@@ -1331,7 +1309,7 @@
     "kind": "objective"
   },
   {
-    "id": 122,
+    "id": 120,
     "name": "FL INTEL1",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -1690,
@@ -1342,7 +1320,7 @@
     "kind": "intel"
   },
   {
-    "id": 123,
+    "id": 121,
     "name": "FL INTEL2",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -2050,
@@ -1353,7 +1331,7 @@
     "kind": "intel"
   },
   {
-    "id": 124,
+    "id": 122,
     "name": "FL INTEL3",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 1750,
@@ -1364,7 +1342,7 @@
     "kind": "intel"
   },
   {
-    "id": 125,
+    "id": 123,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -2150,
@@ -1375,7 +1353,7 @@
     "kind": "medical"
   },
   {
-    "id": 126,
+    "id": 124,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 650,
@@ -1386,7 +1364,7 @@
     "kind": "medical"
   },
   {
-    "id": 127,
+    "id": 125,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -950,
@@ -1395,6 +1373,28 @@
     "rotation": 0,
     "scale": 55,
     "kind": "medical"
+  },
+  {
+    "id": 126,
+    "name": "FL GATELOG",
+    "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
+    "x": -635,
+    "y": 689.68,
+    "z": -3285,
+    "rotation": 180,
+    "scale": 100,
+    "kind": "record"
+  },
+  {
+    "id": 127,
+    "name": "FL GRIDLOG",
+    "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
+    "x": -765,
+    "y": 949.68,
+    "z": -1385,
+    "rotation": 180,
+    "scale": 100,
+    "kind": "record"
   },
   {
     "id": 128,
@@ -1775,8 +1775,8 @@
     "name": "FL LIGHT 7",
     "asset": "_markers\\White Light.fpe",
     "x": -520,
-    "y": 795.3197886297377,
-    "z": -3100,
+    "y": 767.0,
+    "z": -3290,
     "rotation": 0,
     "scale": 100,
     "kind": "light"
@@ -1785,9 +1785,9 @@
     "id": 163,
     "name": "FL LIGHT 8",
     "asset": "_markers\\White Light.fpe",
-    "x": 520,
-    "y": 795.3197886297377,
-    "z": -3100,
+    "x": 650,
+    "y": 850.0,
+    "z": -3420,
     "rotation": 0,
     "scale": 100,
     "kind": "light"
@@ -1796,9 +1796,9 @@
     "id": 164,
     "name": "FL LIGHT 9",
     "asset": "_markers\\White Light.fpe",
-    "x": -1700,
-    "y": 1055.0,
-    "z": -1120,
+    "x": -1703,
+    "y": 1060.0,
+    "z": -697,
     "rotation": 0,
     "scale": 100,
     "kind": "light"
@@ -1807,9 +1807,9 @@
     "id": 165,
     "name": "FL LIGHT 10",
     "asset": "_markers\\White Light.fpe",
-    "x": -1700,
-    "y": 1055.0,
-    "z": -180,
+    "x": -1317,
+    "y": 1060.0,
+    "z": -697,
     "rotation": 0,
     "scale": 100,
     "kind": "light"
@@ -1893,6 +1893,39 @@
   },
   {
     "id": 173,
+    "name": "FL LIGHT 18",
+    "asset": "_markers\\White Light.fpe",
+    "x": -448,
+    "y": 749.0,
+    "z": -3440,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "light"
+  },
+  {
+    "id": 174,
+    "name": "FL LIGHT 19",
+    "asset": "_markers\\White Light.fpe",
+    "x": -650,
+    "y": 1027.0,
+    "z": -1390,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "light"
+  },
+  {
+    "id": 175,
+    "name": "FL LIGHT 20",
+    "asset": "_markers\\White Light.fpe",
+    "x": -578,
+    "y": 1009.0,
+    "z": -1540,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "light"
+  },
+  {
+    "id": 176,
     "name": "FL BRINEGLASS LIGHT 1",
     "asset": "_markers\\White Light.fpe",
     "x": -1180,
@@ -1903,7 +1936,7 @@
     "kind": "light"
   },
   {
-    "id": 174,
+    "id": 177,
     "name": "FL BRINEGLASS LIGHT 2",
     "asset": "_markers\\White Light.fpe",
     "x": -1550,
@@ -1914,7 +1947,7 @@
     "kind": "light"
   },
   {
-    "id": 175,
+    "id": 178,
     "name": "FL BRINEGLASS LIGHT 3",
     "asset": "_markers\\White Light.fpe",
     "x": -1490,
@@ -1925,7 +1958,7 @@
     "kind": "light"
   },
   {
-    "id": 176,
+    "id": 179,
     "name": "FL BRINEGLASS LIGHT 4",
     "asset": "_markers\\White Light.fpe",
     "x": -1020,
@@ -1936,7 +1969,7 @@
     "kind": "light"
   },
   {
-    "id": 177,
+    "id": 180,
     "name": "FL BRINEGLASS LIGHT 5",
     "asset": "_markers\\White Light.fpe",
     "x": 710,
@@ -1947,7 +1980,7 @@
     "kind": "light"
   },
   {
-    "id": 178,
+    "id": 181,
     "name": "FL BRINEGLASS LIGHT 6",
     "asset": "_markers\\White Light.fpe",
     "x": -2650,
@@ -1958,7 +1991,7 @@
     "kind": "light"
   },
   {
-    "id": 179,
+    "id": 182,
     "name": "FL BRINEGLASS LIGHT 7",
     "asset": "_markers\\White Light.fpe",
     "x": 2450,
@@ -1969,7 +2002,7 @@
     "kind": "light"
   },
   {
-    "id": 180,
+    "id": 183,
     "name": "FL BRINEGLASS LIGHT 8",
     "asset": "_markers\\White Light.fpe",
     "x": -1650,
@@ -1980,7 +2013,7 @@
     "kind": "light"
   },
   {
-    "id": 181,
+    "id": 184,
     "name": "FL BRINEGLASS LIGHT 9",
     "asset": "_markers\\White Light.fpe",
     "x": 1250,
@@ -1991,7 +2024,7 @@
     "kind": "light"
   },
   {
-    "id": 182,
+    "id": 185,
     "name": "FL BRINEGLASS LIGHT 10",
     "asset": "_markers\\White Light.fpe",
     "x": 350,
@@ -2002,7 +2035,7 @@
     "kind": "light"
   },
   {
-    "id": 183,
+    "id": 186,
     "name": "FL BRINEGLASS LIGHT 11",
     "asset": "_markers\\White Light.fpe",
     "x": 450,
@@ -2013,7 +2046,7 @@
     "kind": "light"
   },
   {
-    "id": 184,
+    "id": 187,
     "name": "FL BRINEGLASS LIGHT 12",
     "asset": "_markers\\White Light.fpe",
     "x": 1110,
@@ -2024,7 +2057,7 @@
     "kind": "light"
   },
   {
-    "id": 185,
+    "id": 188,
     "name": "FIRST LIGHT // SCORE",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 50,
@@ -2035,7 +2068,7 @@
     "kind": "controller"
   },
   {
-    "id": 186,
+    "id": 189,
     "name": "Environmental sign: MERIDIAN / CAMP 12",
     "asset": "Aegis Reach\\First Light\\Evacuation Board.fpe",
     "x": -2219,
@@ -2046,7 +2079,7 @@
     "kind": "sign"
   },
   {
-    "id": 187,
+    "id": 190,
     "name": "Environmental sign: AEGIS // GATE 07",
     "asset": "Aegis Reach\\First Light\\Checkpoint Sign.fpe",
     "x": 0,
@@ -2057,7 +2090,7 @@
     "kind": "sign"
   },
   {
-    "id": 188,
+    "id": 191,
     "name": "Environmental sign: NORTHSTAR",
     "asset": "Aegis Reach\\First Light\\Power Sign.fpe",
     "x": -980,
@@ -2068,7 +2101,7 @@
     "kind": "sign"
   },
   {
-    "id": 189,
+    "id": 192,
     "name": "Environmental sign: OPERATIONS",
     "asset": "Aegis Reach\\First Light\\Operations Sign.fpe",
     "x": 850,
@@ -2079,7 +2112,7 @@
     "kind": "sign"
   },
   {
-    "id": 190,
+    "id": 193,
     "name": "Environmental sign: AEGIS ARRAY",
     "asset": "Aegis Reach\\First Light\\Core Sign.fpe",
     "x": -740,
@@ -2090,7 +2123,7 @@
     "kind": "sign"
   },
   {
-    "id": 191,
+    "id": 194,
     "name": "Meridian field board frame",
     "asset": "Aegis Reach\\First Light\\Extraction Sign Supports.fpe",
     "x": 420,
@@ -2101,7 +2134,7 @@
     "kind": "environment"
   },
   {
-    "id": 192,
+    "id": 195,
     "name": "Environmental sign: KESTREL // LZ 07",
     "asset": "Aegis Reach\\First Light\\Extraction Sign.fpe",
     "x": 420,

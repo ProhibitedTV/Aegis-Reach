@@ -19,6 +19,12 @@
     "Shield recharges after contact breaks",
     "Field repair restores armour",
     "Field records are collectible",
+    "GATELOG offers a physical read prompt",
+    "GATELOG reveals story without bypassing objectives",
+    "GATELOG cannot spam repeated messages",
+    "GRIDLOG offers a physical read prompt",
+    "GRIDLOG reveals story without bypassing objectives",
+    "GRIDLOG cannot spam repeated messages",
     "Reserve remains hidden before evacuation",
     "Reinforcements respect their arrival delay",
     "Reinforcement activates through native combat wrapper",
@@ -28,7 +34,7 @@
     "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references",
     "Storyboard points to First Light without a machine-specific path"
   ],
-  "mesh_count": 29,
-  "entity_count": 192,
+  "mesh_count": 30,
+  "entity_count": 195,
   "native_combat_playtest": false
 }

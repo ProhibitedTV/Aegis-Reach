@@ -133,8 +133,8 @@ def service_material(x,z):
  """
  for px,pz,rx,rz in BRINE_POOLS:
   if math.hypot((x-px)/rx,(z-pz)/rz)<1.10:return 19
- if not(-9800<=z<=-3050 and -3500<=x<=1500):return 0
- distance,_=road_sample(x,z,ROUTE[:7])
+ if not(-9800<=z<=-500 and -3500<=x<=1500):return 0
+ distance,_=road_sample(x,z,ROUTE[:11])
  edge=132+14*math.sin(z/83)+8*math.sin(z/31)
  court=rect_mask(x,z,-1910,-7250,595,400,70)
  if distance<edge:
@@ -153,7 +153,7 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
 
  # One original transportable field lab; installed equipment remains restrained.
  from meridian_fieldkit import build as build_fieldkit
- lab,mast=build_fieldkit(Mesh,own,asset_dir)
+ lab,mast,service,power=build_fieldkit(Mesh,own,asset_dir)
  camp_y=500
  add(lab,'Camp 12 / Meridian field lab',-2350,-7270,y=camp_y,ry=270)
  prop(P+'Desk 01a.fpe',-2390,-7130,y=camp_y+0.4,ry=0,scale=100)
@@ -170,33 +170,25 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  for x,z in ((-1430,-7357),(-1500,-6999)):
   prop(P+'Concrete Barrier 01.fpe',x,z,y=camp_y,ry=90,scale=92)
 
+ # Gate 07 inspection post: a complete room beside an open cargo lane.
  gate_y=640
- prop(CYB+'CS_Building_Entrance_Overpass.fpe',0,-3160,y=gate_y,ry=0,scale=72)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-610,-3160,y=gate_y,ry=0,scale=72)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',610,-3160,y=gate_y,ry=180,scale=72)
- prop(CYB+'CS_Building_Entrance_Overpass_Wall.fpe',-800,-3110,y=gate_y,ry=90,scale=65)
- prop(CYB+'CS_Building_Entrance_Overpass_Wall.fpe',800,-3110,y=gate_y,ry=-90,scale=65)
- prop(CYB+'CS_Building_Entrance_Steps.fpe',0,-3470,y=ground(0,-3470),ry=0,scale=72)
- prop(C+'Roadblock2.fpe',-430,-3540,y=ground(-430,-3540),ry=8,scale=90)
- prop(C+'Roadblock3.fpe',430,-3540,y=ground(430,-3540),ry=-8,scale=90)
- prop(C+'Light Generator.fpe',850,-2860,y=ground(850,-2860),ry=90,scale=82)
- prop(P+'Concrete Barrier 01.fpe',-690,-3470,y=ground(-690,-3470),ry=15,scale=92)
- prop(P+'Container 02a.fpe',1030,-3000,y=ground(1030,-3000),ry=90,scale=86)
-
- m=Mesh()
- for x in (-430,430):
-  beam(m,x,0,0,125,930,125,2)
-  beam(m,x,850,0,175,70,175,5)
- beam(m,0,700,0,900,40,90,2)
- stacks=own('Northstar Stack Pair',m)
- add(stacks,'Northstar / stack pair',-1510,-540,y=900)
- prop(CYB+'CS_Building_Entrance_Overpass_02.fpe',-1420,-760,y=900,ry=90,scale=64)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-1420,-1230,y=900,ry=90,scale=64)
- prop(CYB+'CS_Building_Entrance_Overpass_Support.fpe',-1420,-280,y=900,ry=-90,scale=64)
+ add(service,'Gate 07 / inspection office',-520,-3300,y=gate_y)
+ add(mast,'Gate 07 / communications mast',650,-3420,y=gate_y)
+ prop(C+'Roadblock2.fpe',-240,-3540,y=gate_y,ry=8,scale=90)
+ prop(C+'Roadblock3.fpe',430,-3540,y=gate_y,ry=-8,scale=90)
+ prop(C+'Light Generator.fpe',760,-3240,y=gate_y,ry=90,scale=82)
+ prop(C+'Freight Container.fpe',480,-3270,y=gate_y,ry=90,scale=68)
+ prop(P+'Wooden Crate 01a.fpe',610,-3370,y=gate_y,scale=68)
+ prop(P+'Wooden Crate 01a.fpe',620,-3280,y=gate_y,scale=68)
+ # Furnished service rooms share proven player-scale parts, not floating props.
+ for cx,cz,yy in [(-520,-3300,640),(-650,-1400,900)]:
+  prop(P+'Desk 01a.fpe',cx-140,cz+40,y=yy+.4)
+  prop(P+'Desk Chair 01a.fpe',cx-70,cz+10,y=yy,ry=90)
+ add(service,'Northstar / maintenance office',-650,-1400,y=900)
+ add(power,'Northstar / power block',-1510,-540,y=900)
  for z in (-1120,-250):
   prop(P+'Generator 04a.fpe',-1700,z,y=902,ry=90,scale=92)
   prop(I+'Storage Tank - Small.fpe',-2180,z,y=902,ry=0,scale=95)
- prop(I+'Industrial Stairs.fpe',-2150,-840,y=900,ry=90,scale=92)
  prop(I+'Industrial Shelves.fpe',-2110,-50,y=900,ry=90,scale=86)
  for x,z in [(-1320,-80),(-1080,-80)]:
   prop(I+'Control Box - Large.fpe',x,z,y=902,ry=180,scale=92)

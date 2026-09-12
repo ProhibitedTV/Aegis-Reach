@@ -6,6 +6,12 @@ local records={
  INTEL2={'SURVEY NOTE: The black ribs continue below the old waterline.','MIRA SEN: It answers the calibration tone. This is not a mineral deposit.'},
  INTEL3={'WARDEN ORDER: Seal Shelter 12. Retask AEGIS. Erase the survey.','KESTREL: They were never defending the relay. They were burying the evidence.'}
 }
+local fieldnotes={
+ GATELOG={'GATE 07 / INSPECTION LOG: Civilian freight ordered back to camp.',
+          'KESTREL: The Wardens sealed the road after the evacuation. Northstar holds the local override.'},
+ GRIDLOG={'NORTHSTAR / MAINTENANCE: Generators intact. Civilian bus isolated remotely.',
+          'TECHNICIAN: Yard terminal can restore the bus. Do not disconnect the shelter feed.'}
+}
 function firstlight_interact_init_name(e,name)
  items[e]={role=string.match(name,'FL (%w+)'),hold=0,last=0,used=false}
 end
@@ -16,6 +22,16 @@ function firstlight_interact_main(e)
  if item.used then return end
  local role=item.role;local radius=role=='EXTRACT' and 360 or 210
  if GetPlayerDistance(e)>radius then item.hold=0;return end
+ if fieldnotes[role] then
+  if GetPlayerDistance(e)>110 then return end
+  Prompt('E // Read '..(role=='GATELOG' and 'inspection log' or 'maintenance record'))
+  if g_KeyPressE==1 then
+   item.used=true;local note=fieldnotes[role];fl_say(note[1],note[2],13)
+   fl.discovery_until=g_Time+10000;fl.discovery_track='discovery_human'
+   fl_log('fieldnote '..role)
+  end
+  return
+ end
  if records[role] then
   Prompt('E // Read field record')
   if g_KeyPressE==1 then

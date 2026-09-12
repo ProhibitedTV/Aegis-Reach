@@ -235,6 +235,11 @@ for role,x,z in [('INTEL1',-1690,-6980),('INTEL2',-2050,-5100),('INTEL3',1750,11
  add(ct,'FL '+role,x,z,y=ground(x,z),scale=55,kind='intel' if role.startswith('INTEL') else 'medical',
      script=SCRIPT+'interact.lua')
 
+# Optional workstation records; physical monitor origin is 13.62 inches above its base.
+for role,x,z,yy in [('GATELOG',-635,-3285,640),('GRIDLOG',-765,-1385,900)]:
+ add(P+'Computer 01a.fpe','FL '+role,x,z,y=yy+49.68,ry=180,kind='record',
+     script=SCRIPT+'interact.lua')
+
 groups={
  1:[(-950,-5500),(650,-5080),(-300,-4600)],
  2:[(-800,-2700),(500,-2250),(1450,-2050)],
@@ -258,8 +263,8 @@ lightp=r'_markers\White Light.fpe';lighttemplate=T[lightp]
 light_locations=[
  (-2350,-7260,0xE6C49A,250),(*CAMP_MAST,0xBDA27D,330),(-2195,-7200,0xE8C49A,240),
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
- (-520,-3100,0x67D8EA,760),(520,-3100,0x67D8EA,760),
- (-1700,-1120,0xF0A35E,820),(-1700,-180,0xF0A35E,820),
+ (-520,-3290,0xDCC4A0,240),(650,-3420,0xC8AE87,370),
+ (-1703,-697,0xD7B48A,430),(-1317,-697,0xD7B48A,430),
  (980,120,0xC2D7DF,560),(1530,1080,0xC2D7DF,580),
  (-760,2800,0x70C7DC,900),(760,3380,0x70C7DC,900),
  (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
@@ -267,10 +272,13 @@ light_locations=[
 # One warm pool from the existing generator lamp array joins the court to the lab.
 light_locations.append((*CAMP_POWER_LIGHT,0xC3AA86,420))
 camp_work_light_index=len(light_locations)
+light_locations.extend([(-448,-3440,0xE0BD90,190),(-650,-1390,0xDCC4A0,240),(-578,-1540,0xE0BD90,190)])
+fixture_heights={1:127,2:210,3:109,7:127,8:210,9:160,10:160,camp_work_light_index:CAMP_POWER_LIGHT_HEIGHT,
+                 camp_work_light_index+1:109,camp_work_light_index+2:127,camp_work_light_index+3:109}
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  # Fixture geometry owns camp lamp height; the stock marker adds 45 inches.
- fixture={'eleprof.light.offsetup':0} if idx<=3 or idx==camp_work_light_index else {}
- add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+({1:127,2:210,3:109,camp_work_light_index:CAMP_POWER_LIGHT_HEIGHT}.get(idx,155)),kind='light',template=lighttemplate,
+ fixture={'eleprof.light.offsetup':0} if idx in fixture_heights else {}
+ add(lightp,'FL LIGHT '+str(idx),x,z,y=ground(x,z)+fixture_heights.get(idx,155),kind='light',template=lighttemplate,
      script=r'markers\ConstantLight.lua',
      **{'eleprof.light.color':color,'eleprof.light.range':radius,'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0,**fixture})
 crystal_light_base=len(light_locations)

@@ -169,6 +169,52 @@ These checks cannot approve water appearance, reflected sky, materials, collisio
 or composition. Required next MAX views: AEGIS after removals, Camp 12 roof/mast,
 and the lower approach showing ruts, pool shoreline and brineglass in context.
 
+## Gate 07 and Northstar: facilities and optional interactions
+
+The user's latest native images confirm the camp's revised roof dish, mast,
+lighting and equipment groups in play, while showing broad empty shelves and
+skeletal downstream architecture. They requested a wider level-design pass and
+promotion when review permits. These images precede the changes below.
+
+![Native Camp 12 with communications equipment](Review/2026-09-11-camp-comms-native.png)
+![Native downstream shelves before facility pass](Review/2026-09-11-northstar-before.png)
+
+Gate 07 now has a complete inspection office at (-520, -3300), using the tested
+Meridian shell without its roof dish. An original FIELD SERVICES atlas replaces
+Camp 12-specific lettering. Its desk, chair and usable computer fit inside; the
+monitor's measured negative Y origin is compensated so its base meets the desk.
+The office fronts onto the arrival lane. A grounded communications mast, generator,
+freight container and two supply crates form a compact logistics area across the
+lane. Six disconnected urban modules are removed. The cargo footprints were read
+from installed DBOs and checked for level feet and non-overlap.
+
+Northstar gains a maintenance office at (-650, -1400), also furnished and usable.
+Its giant empty arch becomes a solid power enclosure with panel ribs, control
+faces, mounted work lamps, two cylindrical exhaust towers and low feeder conduits
+to the western generator cluster. Three disconnected urban modules and the stairs
+with no landing are removed. Existing generators, tanks and the mission's power
+terminal retain their positions. The enclosure occupies the old stack footprint
+and stays clear of the objective and enemy starting positions.
+
+The existing route surface continues from Gate 07 onto Northstar's shelf. Several
+large cyan/orange light pools become smaller practical pools at actual fixtures:
+inspection-room ceiling, gate mast, power-block lamp housings and maintenance room.
+Three doorway/interior lights are added. Camp 12, brine pools, terrain heights and
+main mission objective positions remain unchanged.
+
+Two optional computer interactions use the existing E prompt and radio-caption
+presentation. The inspection log explains the civilian road closure; the
+maintenance record describes the deliberate isolation of the shelter feed.
+Reading them triggers the existing human-discovery score state. They do not advance
+mission stages, increase collectible counts, grant supplies or spam repeated text.
+Lua checks cover both prompts, unchanged progression/counts and one-shot behavior.
+
+Native review is still required for these new facilities: inspection approach,
+inside both rooms, Northstar power-terminal approach, route clearance, light spill,
+computer use and enemy navigation. The user has approved progress, but the new
+geometry has not been shown in MAX yet; do not substitute Python checks for that
+review or claim that the previously empty areas are now finished.
+
 ## September 10 opening-view correction
 
 The supplied native opening screenshot shows the lab at the far left, a brightly
@@ -240,7 +286,7 @@ safeguards; the corrected view still needs native screenshot review.
 
 ## Gameplay and build verification
 
-Current build: 192 entities, 65 asset types, 29 lights. Mission/score Lua, all three
+Current build: 195 entities, 61 asset types, 32 lights. Mission/score Lua, all three
 music masters, combat/objective positions, route control points and downstream
 architecture sources are unchanged. Insertion now starts farther down the existing approach and faces the camp court,
 as described above. The Camp 12 ammo pickup remains ground-relative at its existing
@@ -257,7 +303,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `3c9cdaae690e1cb7cb0309e77b688e203aa9e8fe3d4b82698fdb4bf1d7c0589a`
+Current map SHA256: `06fd965d4ef08516f7f4d1fd4eb44fcd5413d87f7a8719a5e2564ce4fbb22ecb`
 
 ## Original-art load freshness
 

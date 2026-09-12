@@ -102,6 +102,7 @@ for p in placements:
 allowed={
  'Camp 12 Survey Mast.fpe',
  'Meridian Field Lab.fpe',
+ 'Meridian Service Module.fpe',
  'Northstar Stack Pair.fpe',
  'AEGIS Arrival Frame.fpe',
  'Meridian Route Beacon.fpe',

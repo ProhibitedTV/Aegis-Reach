@@ -129,7 +129,7 @@ def comms_dish(m):
  for t in (math.pi*7/6,math.pi*11/6):strut(m,point(48,t),feed,2,2)
  m.box(feed[0],feed[1]-4,feed[2],10,8,12,3)
 
-def shell(Mesh):
+def shell(Mesh,comms=True):
  m=Mesh()
  # 10.67 x 6.60m transportable shell; 3.76m tall with a chamfered crown.
  # Curved-looking faceted roof has thickness and an interior ceiling.
@@ -188,7 +188,7 @@ def shell(Mesh):
  m.box(-140,26,119,85,55,4,7)
  m.box(10,137,0,148,3,12,1) # housing meets the 140-inch interior ceiling
  m.box(10,135,0,140,2,7,4)
- comms_dish(m)
+ if comms:comms_dish(m)
  return m
 
 def mast(Mesh):
@@ -211,13 +211,49 @@ def mast(Mesh):
   m.box(x,233,-8.5,5,4,1,5)
  return m
 
+def power_station(Mesh):
+ """Grounded machinery enclosure with two exhaust towers, not an empty arch."""
+ m=Mesh()
+ m.box(0,0,0,560,16,300,1)
+ m.box(0,16,0,544,176,284,0)
+ m.box(0,192,0,568,14,304,1)
+ for x in (-268,-134,0,134,268):m.box(x,16,-145,7,176,7,2)
+ for x in (-193,193):
+  m.box(x,44,-148,90,84,5,7)
+  m.box(x,156,-152,64,8,8,1);m.box(x,158,-157,54,4,2,4)
+ for x in (-140,140):
+  # Faceted cylinders have continuous sides; recessed dark caps read as vents.
+  for j in range(20):
+   a=j*math.tau/20;b=(j+1)*math.tau/20
+   for radius,y,h,tile in ((47,206,136,2),(53,329,12,1)):
+    quad(m,[(x+radius*math.cos(a),y,radius*math.sin(a)),
+            (x+radius*math.cos(a),y+h,radius*math.sin(a)),
+            (x+radius*math.cos(b),y+h,radius*math.sin(b)),
+            (x+radius*math.cos(b),y,radius*math.sin(b))],tile)
+  m.box(x,314,0,61,4,61,1)
+ # Two low feeder conduits join the west generator cluster to the plant.
+ for x in (-210,-145):
+  strut(m,(x,10,-550),(x,10,-154),6,2)
+  strut(m,(x,10,-154),(x,65,-154),6,2)
+ return m
+
 def build(Mesh,own,folder):
  textures(folder)
  lab=own(NAME,shell(Mesh),ATLAS)
  tower=own('Camp 12 Survey Mast',mast(Mesh),ATLAS)
- for name in (NAME,'Camp 12 Survey Mast'):
+ service_atlas='meridian_services.png'
+ atlas=Image.open(folder/ATLAS).convert('RGB')
+ atlas.paste(atlas.crop((0,0,TILE,TILE)),(6*TILE,0))
+ d=ImageDraw.Draw(atlas)
+ for text,size,yy in [('MERIDIAN',51,100),('FIELD SERVICES',29,208),('AUTHORIZED ACCESS',23,295)]:
+  font=ImageFont.truetype('C:/Windows/Fonts/bahnschrift.ttf',size)
+  d.text((6*TILE+70,yy),text,font=font,fill=(29,55,60))
+ atlas.save(folder/service_atlas,optimize=True)
+ service=own('Meridian Service Module',shell(Mesh,comms=False),service_atlas)
+ power=own('Northstar Stack Pair',power_station(Mesh),ATLAS)
+ for name in (NAME,'Camp 12 Survey Mast','Meridian Service Module','Northstar Stack Pair'):
   f=folder/(name+'.fpe');text=f.read_text()
   text=text.replace('roughnessStrength = 0.82','roughnessStrength = 1.0').replace('metalnessStrength = 0.22','metalnessStrength = 1.0')
   text+='normalMap = '+NORMAL+'\nnormalStrength = 0.65\nsurfaceMap = '+SURFACE+'\n'
   f.write_text(text+'basecolor = 4294967295\nreflectance = 0.04\nemissivecolor = 4294967295\nemissiveMap = '+EMISSION+'\nemissiveStrength = 0.6\n')
- return lab,tower
+ return lab,tower,service,power
