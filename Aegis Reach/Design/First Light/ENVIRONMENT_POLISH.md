@@ -303,7 +303,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `54b2fb066193c2073a2e7f5914d8827f531f448cf291f7340d45d35614c91785`
+Current map SHA256: `51cde90b328693ae23a77f89a8c0bf691378c976e1133fa54d9c565c39864a81`
 
 ## September 12 Operations workstation support correction
 
@@ -322,6 +322,44 @@ archive comparison confirms only the two computer transforms differ.
 This correction adds no assets and changes
 no terrain, lighting, mission logic or combat. Native appearance remains pending;
 the current tool session exposes browser control but disables native app control.
+
+## September 12 Camp 12 sheltered work bay
+
+The user's native view below is the **before** image. It shows the accepted lab
+surrounded by disconnected equipment, with the reel hiding the generator and
+little definition between the road and working court. The earlier concept's
+useful direction is attached shelter, functional utility connections and warm
+human activity, rather than its much larger excavation complex.
+
+![Native Camp 12 before the sheltered work bay](Review/2026-09-12-camp-before-work-bay.png)
+
+The existing Meridian lab now includes an attached 9.86m-wide, 3.15m-deep canopy.
+Its ivory roof joins the facade, with a graphite front beam, two corner posts,
+short braces and a low wind screen beside the bench. The doorway and its covered
+approach remain open; no floor slab is introduced. The left side contains a
+small sample bench with drawers, a closed specimen case and an instrument. A
+single additional amber practical mounts under the canopy above this work area.
+The shared Gate 07/Northstar service shell does not receive these additions.
+
+Two low feeds connect the generator and survey mast to side-mounted lab terminal
+boxes. This is one original utility assembly using the existing material suite,
+entirely on the native camp pad and outside the entrance and vehicle lane. The
+reel moves behind the generator-side work area at 44% scale, freeing the front
+view of the generator. Its light range drops from 420 to 280 inches and its
+color becomes warmer, reducing spill onto the broad rear bank.
+
+A painted delivery turnout branches from the through-road and stops beside the
+logistics area. A narrow basalt shoulder outlines the graded court. Native
+terrain remains the walking surface; its heights, downstream paint, combat,
+objectives, music and brineglass placements are unchanged. Camp environment
+entities increase from 13 to 14, including the nearby route marker. No licensed
+payloads are added.
+
+Review the **new native result** from the supplied approach, under the canopy,
+and looking back from the outbound route. In particular, check canopy silhouette,
+doorway collision, the bench's scale, utility contact, lamp glare and turnout
+readability. The source checks are not native approval. No after screenshot is
+available from the current tool session, which disables native app control.
 
 ## Original-art load freshness
 

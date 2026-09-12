@@ -15,6 +15,7 @@ CAMP_MAST=(-2145,-6960)
 CAMP_POWER=(-2150,-7550)
 CAMP_POWER_YAW=175
 CAMP_POWER_SCALE=86
+CAMP_SERVICE_SPUR=[(-1700,-7490,500),(-1930,-7490,500),(-1960,-7330,500),(-1960,-7100,500)]
 # Installed generator lamp array, measured in its DBO local coordinates.
 _power_angle=math.radians(CAMP_POWER_YAW)
 CAMP_POWER_LIGHT=(CAMP_POWER[0]-31.5*math.cos(_power_angle)*CAMP_POWER_SCALE/100,
@@ -135,11 +136,16 @@ def service_material(x,z):
   if math.hypot((x-px)/rx,(z-pz)/rz)<1.10:return 19
  if not(-9800<=z<=-500 and -3500<=x<=1500):return 0
  distance,_=road_sample(x,z,ROUTE[:11])
+ # A real delivery turnout branches off the through-road and ends alongside
+ # the cargo area. The lab's covered pedestrian apron stays outside the ruts.
+ if -7750<z<-6800 and -2500<x<-1300:
+  distance=min(distance,road_sample(x,z,CAMP_SERVICE_SPUR)[0])
  edge=132+14*math.sin(z/83)+8*math.sin(z/31)
  court=rect_mask(x,z,-1910,-7250,595,400,70)
  if distance<edge:
   return 16 if abs(distance-62)<23 else 23  # wheel bands continue through the open court
  if court>.5:return 23  # installed mineral fines; no white/snow material
+ if court>.05:return 19 # basalt shoulder outlines the graded working court
  return 0
 
 def architecture(Mesh,own,add,prop,P,I,asset_dir):
@@ -153,14 +159,15 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
 
  # One original transportable field lab; installed equipment remains restrained.
  from meridian_fieldkit import build as build_fieldkit
- lab,mast,service,power=build_fieldkit(Mesh,own,asset_dir)
+ lab,mast,service,power,utility=build_fieldkit(Mesh,own,asset_dir)
  camp_y=500
  add(lab,'Camp 12 / Meridian field lab',-2350,-7270,y=camp_y,ry=270)
+ add(utility,'Camp 12 / connected service feeds',-2350,-7270,y=camp_y)
  prop(P+'Desk 01a.fpe',-2390,-7130,y=camp_y+0.4,ry=0,scale=100)
  prop(P+'Desk Chair 01a.fpe',-2315,-7160,y=camp_y,ry=90,scale=100)
  add(mast,'Camp 12 / Meridian survey mast',*CAMP_MAST,y=camp_y,ry=270)
  prop(C+'Light Generator.fpe',*CAMP_POWER,y=camp_y,ry=CAMP_POWER_YAW,scale=CAMP_POWER_SCALE)
- prop(C+'CableReel.fpe',-2010,-7570,y=camp_y,ry=90,scale=64)
+ prop(C+'CableReel.fpe',-2320,-7560,y=camp_y,ry=90,scale=44)
  prop(C+'Freight Container.fpe',-1825,-7000,y=camp_y,ry=90,scale=68)
  prop(P+'Wooden Crate 01a.fpe',-1735,-7120,y=camp_y,ry=0,scale=68)
  prop(C+'SurveyorStand1.fpe',-1950,-6875,y=camp_y,ry=18,scale=102)

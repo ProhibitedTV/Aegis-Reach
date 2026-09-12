@@ -1,10 +1,11 @@
 {
   "map": "Aegis Reach - First Light.fpm",
-  "entities": 195,
+  "entities": 197,
   "enemy_count": 28,
-  "lights": 32,
+  "lights": 33,
   "assets": [
     "Aegis Reach\\First Light\\Meridian Field Lab.fpe",
+    "Aegis Reach\\First Light\\Camp 12 Utility Spine.fpe",
     "Booster Pack\\Military Pack\\Desk 01a.fpe",
     "Booster Pack\\Military Pack\\Desk Chair 01a.fpe",
     "Aegis Reach\\First Light\\Camp 12 Survey Mast.fpe",
@@ -136,7 +137,7 @@
     ]
   ],
   "native_terrain": true,
-  "service_road_painted_cells": 7055,
+  "service_road_painted_cells": 7204,
   "route": [
     [
       0,

@@ -270,11 +270,13 @@ light_locations=[
  (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
 ]
 # One warm pool from the existing generator lamp array joins the court to the lab.
-light_locations.append((*CAMP_POWER_LIGHT,0xC3AA86,420))
+light_locations.append((*CAMP_POWER_LIGHT,0xCFA877,280))
 camp_work_light_index=len(light_locations)
 light_locations.extend([(-448,-3440,0xE0BD90,190),(-650,-1390,0xDCC4A0,240),(-578,-1540,0xE0BD90,190)])
+light_locations.append((-2146,-7362,0xE2B77E,185)) # under the attached Camp 12 bench light
 fixture_heights={1:127,2:210,3:109,7:127,8:210,9:160,10:160,camp_work_light_index:CAMP_POWER_LIGHT_HEIGHT,
-                 camp_work_light_index+1:109,camp_work_light_index+2:127,camp_work_light_index+3:109}
+                 camp_work_light_index+1:109,camp_work_light_index+2:127,camp_work_light_index+3:109,
+                 camp_work_light_index+4:121}
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  # Fixture geometry owns camp lamp height; the stock marker adds 45 inches.
  fixture={'eleprof.light.offsetup':0} if idx in fixture_heights else {}

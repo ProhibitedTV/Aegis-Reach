@@ -19,7 +19,7 @@ for x in (40,70,104):
    v=((c[1]-a[1])*(x-c[0])+(a[0]-c[0])*(y-c[1]))/den
    if min(u,v,1-u-v)<-1e-6:continue
    z=u*a[2]+v*b[2]+(1-u-v)*c[2]
-   assert not -175<z<-110, ('blocked field-lab doorway',x,y,z)
+   assert not -270<z<-110, ('blocked field-lab doorway or covered approach',x,y,z)
 # A closed exterior is insufficient: inside views need inward-facing end panels.
 # Trace toward each end at head-above-door heights, checking the first surface's
 # normal from both directions. This catches a single-sided roof gable.
@@ -53,9 +53,12 @@ with zipfile.ZipFile(mapfile) as z:
  z.setpassword(PASSWORD);paint=z.read('16777216.ptd');ed=terrain_settings({'ggterrain.dat':z.read('ggterrain.dat')})['editable_size']
 assert len(paint)==4096**2
 # Native paint data uses ordinary Z rows; sculpt data uses reversed rows.
-for x,z in ((-1910,-7250),(-700,-8350),(0,-9600)):
+for x,z in ((-2100,-7250),(-700,-8350),(0,-9600)):
  gx=world_to_grid(x,ed);gz=world_to_grid(z,ed)
  assert paint[gz*4096+gx]==23, ('wrong native road/court material or row orientation',x,z)
+for x,z,expected in ((-1960,-7250,23),(-2022,-7250,16),(-2550,-7250,19)):
+ gx=world_to_grid(x,ed);gz=world_to_grid(z,ed)
+ assert paint[gz*4096+gx]==expected, ('missing delivery turnout or court shoulder',x,z)
 with zipfile.ZipFile(ROOT/'Aegis Reach/Files/mapbank/Aegis Reach - Relayfall.fpm') as source:
  source.setpassword(PASSWORD);original=source.read('16777216.ptd')
 # Preserve unowned geography; do not mirror the route onto the far side of MAX.

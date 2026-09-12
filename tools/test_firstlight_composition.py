@@ -124,6 +124,7 @@ for p in placements:
  if asset.startswith('Aegis Reach\\First Light\\'):
   custom_environment.append(asset.split('\\')[-1])
 allowed={
+ 'Camp 12 Utility Spine.fpe',
  'Camp 12 Survey Mast.fpe',
  'Meridian Field Lab.fpe',
  'Meridian Service Module.fpe',

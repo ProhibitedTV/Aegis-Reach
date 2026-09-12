@@ -129,6 +129,54 @@ def comms_dish(m):
  for t in (math.pi*7/6,math.pi*11/6):strut(m,point(48,t),feed,2,2)
  m.box(feed[0],feed[1]-4,feed[2],10,8,12,3)
 
+def field_work_bay(m):
+ """An attached, sheltered work bay; its middle/right remains a clear entrance."""
+ # Roof bolts into the facade, with front posts outside the door's sightline.
+ m.box(0,128,-190,388,6,124,0)
+ m.box(0,121,-248,388,7,8,2)
+ for x in (-185,185):
+  m.box(x,0,-244,8,121,8,2)
+  m.box(x,0,-244,18,3,18,1)
+  m.box(x,121,-188,8,7,112,2)
+  strut(m,(x,96,-244),(x,121,-214),5,2)
+ # A half-height side screen protects the bench without closing the court.
+ m.box(-185,4,-190,5,58,100,0)
+ m.box(-185,62,-190,7,4,102,2)
+ # Compact sample workstation, low enough to keep the technical window visible.
+ for x in (-144,-54):m.box(x,0,-185,7,32,28,2)
+ m.box(-99,32,-185,112,3,38,2)
+ m.box(-99,9,-185,82,20,28,0)
+ for x in (-120,-78):
+  m.box(x,12,-200,38,13,2,1)
+  m.box(x,20,-202,16,2,2,2)
+ m.box(-116,35,-183,38,12,22,1) # closed specimen transport case
+ for x in (-130,-102):m.box(x,38,-195,3,6,2,2)
+ m.box(-68,35,-183,23,4,25,3) # bench instrument, with a restrained status bar
+ m.box(-68,39,-184,19,9,5,1)
+ m.box(-68,42,-187,14,3,1,5)
+ # Housing touches the roof underside; the practical lights the occupied bay.
+ m.box(-92,124,-204,110,4,14,1)
+ m.box(-92,122,-204,100,2,8,4)
+
+
+def utility_spine(Mesh):
+ """Two low feeds attached to the lab side panels, in camp-relative inches.
+
+ Origin is the lab centre (-2350,-7270), unrotated. All runs stay on the flat
+ native pad, outside the doorway and vehicle lane. No replacement floor.
+ """
+ m=Mesh()
+ for points,terminal_z in [([(140,-255),(50,-255),(50,-216)],-214),
+                            ([(205,310),(50,310),(50,214)],214)]:
+  for (x,z),(xx,zz) in zip(points,points[1:]):
+   strut(m,(x,3,z),(xx,3,zz),6,1)
+  x,z=points[-1]
+  strut(m,(x,3,z),(x,41,z),5,2)
+  m.box(x,25,terminal_z,26,28,8,0)
+  m.box(x,29,terminal_z+(-5 if terminal_z<0 else 5),18,17,2,3)
+ return m
+
+
 def shell(Mesh,comms=True):
  m=Mesh()
  # 10.67 x 6.60m transportable shell; 3.76m tall with a chamfered crown.
@@ -188,7 +236,9 @@ def shell(Mesh,comms=True):
  m.box(-140,26,119,85,55,4,7)
  m.box(10,137,0,148,3,12,1) # housing meets the 140-inch interior ceiling
  m.box(10,135,0,140,2,7,4)
- if comms:comms_dish(m)
+ if comms:
+  comms_dish(m)
+  field_work_bay(m)
  return m
 
 def mast(Mesh):
@@ -251,9 +301,10 @@ def build(Mesh,own,folder):
  atlas.save(folder/service_atlas,optimize=True)
  service=own('Meridian Service Module',shell(Mesh,comms=False),service_atlas)
  power=own('Northstar Stack Pair',power_station(Mesh),ATLAS)
- for name in (NAME,'Camp 12 Survey Mast','Meridian Service Module','Northstar Stack Pair'):
+ utility=own('Camp 12 Utility Spine',utility_spine(Mesh),ATLAS)
+ for name in (NAME,'Camp 12 Survey Mast','Meridian Service Module','Northstar Stack Pair','Camp 12 Utility Spine'):
   f=folder/(name+'.fpe');text=f.read_text()
   text=text.replace('roughnessStrength = 0.82','roughnessStrength = 1.0').replace('metalnessStrength = 0.22','metalnessStrength = 1.0')
   text+='normalMap = '+NORMAL+'\nnormalStrength = 0.65\nsurfaceMap = '+SURFACE+'\n'
   f.write_text(text+'basecolor = 4294967295\nreflectance = 0.04\nemissivecolor = 4294967295\nemissiveMap = '+EMISSION+'\nemissiveStrength = 0.6\n')
- return lab,tower,service,power
+ return lab,tower,service,power,utility

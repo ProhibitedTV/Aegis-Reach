@@ -5,11 +5,11 @@ import math
 import tempfile
 from PIL import Image,ImageStat
 from environment_pass import Mesh
-from meridian_fieldkit import textures,shell,mast,ATLAS,EMISSION,NORMAL,SURFACE,TILE
+from meridian_fieldkit import textures,shell,mast,utility_spine,ATLAS,EMISSION,NORMAL,SURFACE,TILE
 from native_format import ROOT
 
 # Every rendered triangle needs a noncollapsed UV frame before normal mapping.
-for mesh in (shell(Mesh),mast(Mesh)):
+for mesh in (shell(Mesh),mast(Mesh),utility_spine(Mesh)):
  for ids in mesh.faces:
   a,b,c=[mesh.uv[i] for i in ids]
   area=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
@@ -55,7 +55,7 @@ with tempfile.TemporaryDirectory() as directory:
 
 # Verify the deployed FPEs reference the generated maps and do not suppress them.
 folder=ROOT/'Aegis Reach/Files/entitybank/Aegis Reach/First Light'
-for name in ('Meridian Field Lab','Camp 12 Survey Mast'):
+for name in ('Meridian Field Lab','Camp 12 Survey Mast','Camp 12 Utility Spine'):
  fields={k.strip().lower():v.strip() for k,v in
          (line.split('=',1) for line in (folder/(name+'.fpe')).read_text().splitlines() if '=' in line)}
  for field,filename in (('normalmap',NORMAL),('surfacemap',SURFACE)):
