@@ -99,9 +99,9 @@ def _crystal_prism(mesh,x,z,r,h,angle=0,leanx=0,leanz=0):
  tip=(x+leanx*1.45,h,z+leanz*1.45)
  for i in range(sides):
   j=(i+1)%sides
-  _mesh_tri(mesh,lower[i],lower[j],upper[j])
-  _mesh_tri(mesh,lower[i],upper[j],upper[i])
-  _mesh_tri(mesh,upper[i],upper[j],tip)
+  _mesh_tri(mesh,lower[i],upper[j],lower[j])
+  _mesh_tri(mesh,lower[i],upper[i],upper[j])
+  _mesh_tri(mesh,upper[i],tip,upper[j])
 
 def _build_energy_texture(filename,resonant=False):
  size=1024
@@ -159,14 +159,42 @@ def _build_brineglass(name,texture):
   (-72,42,19,130,25,-5,9),(12,-58,15,105,4,3,5),(78,48,12,82,-30,-2,4)
  ]
  for x,z,r,h,angle,lx,lz in specs:_crystal_prism(m,x,z,r,h,angle,lx,lz)
- path=own(name,m,texture=texture,collision=0)
+ # Separate the mineral body from its internal emission. Using one bright,
+ # high-frequency image for both flattened every face into the same blue noise.
+ source=Image.open(AS/texture).convert('RGB')
+ tint=(36,20,64) if 'Resonant' in name else (12,43,64)
+ albedo=Image.blend(source.filter(ImageFilter.GaussianBlur(3)),Image.new('RGB',source.size,tint),.68)
+ albedo_name=texture.replace('_energy','_mineral').replace('_resonant','_resonant_mineral')
+ albedo.save(AS/albedo_name,optimize=True)
+ surface_name=albedo_name.replace('.png','_surface.png')
+ # Preserve modest roughness variation without embossing painted light veins.
+ rough=source.convert('L').point(lambda p:55+p//5)
+ surface=Image.merge('RGBA',(Image.new('L',source.size,255),rough,Image.new('L',source.size,0),Image.new('L',source.size,255)))
+ surface.save(AS/surface_name,optimize=True)
+ path=own(name,m,texture=albedo_name,collision=0)
  f=AS/(name+'.fpe')
- text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 0.38').replace('metalnessStrength = 0.22','metalnessStrength = 0.05')
- f.write_text(text+'reflectance = 0.18\nbasecolor = 4294967295\nemissivecolor = 4294967295\nemissiveMap = '+texture+'\nemissiveStrength = 0.10\n')
+ text=f.read_text().replace('roughnessStrength = 0.82','roughnessStrength = 1.0').replace('metalnessStrength = 0.22','metalnessStrength = 1.0')
+ f.write_text(text+'surfaceMap = '+surface_name+'\nreflectance = 0.45\nbasecolor = 4294967295\nemissivecolor = 4294967295\nemissiveMap = '+texture+'\nemissiveStrength = 0.18\n')
  return path
 
 # One authoring layer owns all human-built spaces.
 architecture(Mesh,own,add,prop,P,I,AS)
+
+# Sparse, measured installed dry scrub on the flat camp margins. Bury only the
+# root knot, preserve the clear road/court and never turn Vesper into grassland.
+for x,z,scale,angle in [(-2420,-7650,48,20),(-2460,-7580,40,105),
+                       (-2460,-6920,55,210),(-2300,-6860,42,310),
+                       (-1710,-6860,48,65),(-1380,-7600,50,140),
+                       (-1330,-7120,40,240),(-1350,-7010,48,10)]:
+ add(r'Max Collection\Shrubs\Desert Bush - Form A.fpe','Vesper / salt scrub',x,z,
+     y=ground(x,z)+1.99216*scale/100-3,scale=scale,ry=angle,kind='vegetation',
+     **{'eleprof.physics':0})
+# Planar-reflective installed puddle decals only on the exactly flat native pad.
+# Its mesh plane is local Y=1.05751; offset that origin to prevent z-fighting.
+for x,z,scale,angle in [(-1940,-7400,95,18),(-2010,-7160,75,132),(-1750,-7570,65,265)]:
+ add(r'Max Collection\Cellar\Small Puddle.fpe','Camp 12 / residual surface brine',x,z,
+     y=500+.4-1.05751*scale/100,scale=scale,ry=angle,kind='surface',
+     **{'eleprof.physics':0})
 
 # Sparse geology: terrain carries the landscape; rocks only break long silhouettes.
 ROCK=r'Max Collection\Rocks\Rock Boulder.fpe'
@@ -395,10 +423,10 @@ visual,_=patch_visuals(payload['visuals.ini']);visual='\r\n'.join(line for line 
 # Native sun RGB uses 0..255 (MAX divides by 255); full color is DeSaturate=1.
 # Keep the horizon subordinate to the shelf and practical lights.
 atmosphere={'FogNearest#':6200,'FogDistance#':19500,'FogR#':48,'FogG#':62,'FogB#':80,'FogA#':0.45,
- 'Exposure':0.84,'SunIntensity':1.45,'SunRed':218,'SunGreen':232,'SunBlue':255,
- 'SunAngleX':18,'SunAngleY':315,'SunAngleZ':0,'Simulate24Hours':0,
+ 'Exposure':0.84,'SunIntensity':1.65,'SunRed':255,'SunGreen':211,'SunBlue':163,
+ 'SunAngleX':78,'SunAngleY':315,'SunAngleZ':0,'Simulate24Hours':0,
  'AmbienceRed#':70,'AmbienceGeen#':84,'AmbienceBlue#':108,'EnvProbeBrightness':0.75,
- 'sky$':'overcast','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
+ 'sky$':'sunset','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
  'LensFlare':0,'SkyCloudCoverage':0.5,'SkyCloudiness':0.45}
 water={'WaterEnable':1,'Waterheight':WATER_LEVEL,'Waterred':13,'Watergreen':37,'Waterblue':43,
  'WaterWaveAmplitude':1.5,'WaterChoppyScale':0,'WaterWindDependency':0,'WaterSpeed1':.018,

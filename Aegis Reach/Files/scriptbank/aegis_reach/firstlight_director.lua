@@ -1,4 +1,5 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
+require 'scriptbank\\aegis_reach\\firstlight_hud'
 -- Mission 01: FIRST LIGHT. Native MAX mission state and presentation.
 fl=fl or {}
 local native_qa=os.getenv('AEGIS_FIRSTLIGHT_QA')=='1'
@@ -82,6 +83,7 @@ local function update_music_state(contacts)
 end
 
 function firstlight_director_init(e)
+ fl_hud_reset()
  fl={
   started=false,stage=1,last_stage=1,enemies={},intel={},shield=100,armour=100,
   last_health=200,last_hit=0,next_regen=0,message={},message_until=0,
@@ -163,16 +165,10 @@ function firstlight_director_main(e)
  end
 
  -- Compact mission HUD. Space and landmarks should carry navigation; HUD confirms it.
- Panel(1,1,43,14);Panel(75,1,99,13)
- TextColor(3,3,2,'FIRST LIGHT',103,220,230)
- TextColor(3,7,2,objectives[fl.stage],230,235,231)
  local p=points[fl.stage];local dist=fl_distance(p[1],p[2])
  local dx=p[1]-g_PlayerPosX;local dz=p[2]-g_PlayerPosZ
- local bearing=math.deg(math.atan2(dx,dz));local delta=(bearing-(g_PlayerAngY or 0)+540)%360-180
- local direction=math.abs(delta)<25 and 'AHEAD' or (math.abs(delta)>145 and 'BEHIND' or (delta>0 and 'RIGHT' or 'LEFT'))
- TextColor(3,11,1,'NAV  '..math.floor(dist*.0254)..' m  /  '..direction,239,189,113)
- TextColor(77,3,2,'SHIELD '..math.floor(fl.shield),103,220,230)
- TextColor(77,8,2,'ARMOUR '..math.floor(fl.armour),232,234,224)
+ local bearing=math.deg(math.atan2(dx,dz))
+ fl_hud_draw(objectives[fl.stage],dist*.0254,bearing,g_PlayerAngY or 0,fl.shield,fl.armour)
 
  if contacts>0 then
   TextCenterOnXColor(50,17,2,'HOSTILE CONTACT  //  '..contacts,239,153,96)

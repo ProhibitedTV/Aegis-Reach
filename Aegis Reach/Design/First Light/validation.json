@@ -29,12 +29,17 @@
     "Reinforcements respect their arrival delay",
     "Reinforcement activates through native combat wrapper",
     "Native death lifecycle continues after zero health",
+    "HUD compass wraps north correctly",
+    "HUD graphics stay in the viewport",
+    "Shield meter represents partial segments",
+    "Empty armour has no filled segments",
+    "HUD releases its sprite between sessions",
     "All new architectural and sign meshes import in installed Assimp",
     "All native terrain layers use installed landscape materials, no placeholder",
     "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references",
     "Storyboard points to First Light without a machine-specific path"
   ],
   "mesh_count": 31,
-  "entity_count": 197,
+  "entity_count": 208,
   "native_combat_playtest": false
 }

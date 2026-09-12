@@ -826,6 +826,127 @@
   },
   {
     "id": 76,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -2420,
+    "y": 497.9562368,
+    "z": -7650,
+    "rotation": 20,
+    "scale": 48,
+    "kind": "vegetation"
+  },
+  {
+    "id": 77,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -2460,
+    "y": 497.796864,
+    "z": -7580,
+    "rotation": 105,
+    "scale": 40,
+    "kind": "vegetation"
+  },
+  {
+    "id": 78,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -2460,
+    "y": 498.095688,
+    "z": -6920,
+    "rotation": 210,
+    "scale": 55,
+    "kind": "vegetation"
+  },
+  {
+    "id": 79,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -2300,
+    "y": 497.8367072,
+    "z": -6860,
+    "rotation": 310,
+    "scale": 42,
+    "kind": "vegetation"
+  },
+  {
+    "id": 80,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -1710,
+    "y": 497.9562368,
+    "z": -6860,
+    "rotation": 65,
+    "scale": 48,
+    "kind": "vegetation"
+  },
+  {
+    "id": 81,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -1380,
+    "y": 497.99608,
+    "z": -7600,
+    "rotation": 140,
+    "scale": 50,
+    "kind": "vegetation"
+  },
+  {
+    "id": 82,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -1330,
+    "y": 497.796864,
+    "z": -7120,
+    "rotation": 240,
+    "scale": 40,
+    "kind": "vegetation"
+  },
+  {
+    "id": 83,
+    "name": "Vesper / salt scrub",
+    "asset": "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
+    "x": -1350,
+    "y": 497.9562368,
+    "z": -7010,
+    "rotation": 10,
+    "scale": 48,
+    "kind": "vegetation"
+  },
+  {
+    "id": 84,
+    "name": "Camp 12 / residual surface brine",
+    "asset": "Max Collection\\Cellar\\Small Puddle.fpe",
+    "x": -1940,
+    "y": 499.39536549999997,
+    "z": -7400,
+    "rotation": 18,
+    "scale": 95,
+    "kind": "surface"
+  },
+  {
+    "id": 85,
+    "name": "Camp 12 / residual surface brine",
+    "asset": "Max Collection\\Cellar\\Small Puddle.fpe",
+    "x": -2010,
+    "y": 499.60686749999996,
+    "z": -7160,
+    "rotation": 132,
+    "scale": 75,
+    "kind": "surface"
+  },
+  {
+    "id": 86,
+    "name": "Camp 12 / residual surface brine",
+    "asset": "Max Collection\\Cellar\\Small Puddle.fpe",
+    "x": -1750,
+    "y": 499.71261849999996,
+    "z": -7570,
+    "rotation": 265,
+    "scale": 65,
+    "kind": "surface"
+  },
+  {
+    "id": 87,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -700,
@@ -836,7 +957,7 @@
     "kind": "environment"
   },
   {
-    "id": 77,
+    "id": 88,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 940,
@@ -847,7 +968,7 @@
     "kind": "environment"
   },
   {
-    "id": 78,
+    "id": 89,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -850,
@@ -858,7 +979,7 @@
     "kind": "environment"
   },
   {
-    "id": 79,
+    "id": 90,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 650,
@@ -869,7 +990,7 @@
     "kind": "environment"
   },
   {
-    "id": 80,
+    "id": 91,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": -490,
@@ -880,7 +1001,7 @@
     "kind": "environment"
   },
   {
-    "id": 81,
+    "id": 92,
     "name": "Basalt remnant / tide channel cover",
     "asset": "Max Collection\\Rocks\\Rock Boulder.fpe",
     "x": 1040,
@@ -891,7 +1012,7 @@
     "kind": "environment"
   },
   {
-    "id": 82,
+    "id": 93,
     "name": "Brineglass bloom 01",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1180,
@@ -902,7 +1023,7 @@
     "kind": "geology"
   },
   {
-    "id": 83,
+    "id": 94,
     "name": "Brineglass bloom 02",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1550,
@@ -913,7 +1034,7 @@
     "kind": "geology"
   },
   {
-    "id": 84,
+    "id": 95,
     "name": "Brineglass bloom 03",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1490,
@@ -924,7 +1045,7 @@
     "kind": "geology"
   },
   {
-    "id": 85,
+    "id": 96,
     "name": "Brineglass bloom 04",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -1020,
@@ -935,7 +1056,7 @@
     "kind": "geology"
   },
   {
-    "id": 86,
+    "id": 97,
     "name": "Brineglass bloom 05",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 710,
@@ -946,7 +1067,7 @@
     "kind": "geology"
   },
   {
-    "id": 87,
+    "id": 98,
     "name": "Brineglass bloom 06",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": -2650,
@@ -957,7 +1078,7 @@
     "kind": "geology"
   },
   {
-    "id": 88,
+    "id": 99,
     "name": "Brineglass bloom 07",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 2450,
@@ -968,7 +1089,7 @@
     "kind": "geology"
   },
   {
-    "id": 89,
+    "id": 100,
     "name": "Resonant Brineglass bloom 08",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": -1650,
@@ -979,7 +1100,7 @@
     "kind": "geology"
   },
   {
-    "id": 90,
+    "id": 101,
     "name": "Resonant Brineglass bloom 09",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": 1250,
@@ -990,7 +1111,7 @@
     "kind": "geology"
   },
   {
-    "id": 91,
+    "id": 102,
     "name": "Resonant Brineglass bloom 10",
     "asset": "Aegis Reach\\First Light\\Vesper Resonant Brineglass Bloom.fpe",
     "x": 350,
@@ -1001,7 +1122,7 @@
     "kind": "geology"
   },
   {
-    "id": 92,
+    "id": 103,
     "name": "Brineglass bloom 11",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 450,
@@ -1012,7 +1133,7 @@
     "kind": "geology"
   },
   {
-    "id": 93,
+    "id": 104,
     "name": "Brineglass bloom 12",
     "asset": "Aegis Reach\\First Light\\Vesper Brineglass Bloom.fpe",
     "x": 1110,
@@ -1023,7 +1144,7 @@
     "kind": "geology"
   },
   {
-    "id": 94,
+    "id": 105,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": -720,
@@ -1034,7 +1155,7 @@
     "kind": "environment"
   },
   {
-    "id": 95,
+    "id": 106,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": 700,
@@ -1045,7 +1166,7 @@
     "kind": "environment"
   },
   {
-    "id": 96,
+    "id": 107,
     "name": "Concrete Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Concrete Barrier 01.fpe",
     "x": 1560,
@@ -1056,7 +1177,7 @@
     "kind": "environment"
   },
   {
-    "id": 97,
+    "id": 108,
     "name": "Container 01a",
     "asset": "Booster Pack\\Military Pack\\Container 01a.fpe",
     "x": 1630,
@@ -1067,7 +1188,7 @@
     "kind": "environment"
   },
   {
-    "id": 98,
+    "id": 109,
     "name": "Container 01a",
     "asset": "Booster Pack\\Military Pack\\Container 01a.fpe",
     "x": 1910,
@@ -1078,7 +1199,7 @@
     "kind": "environment"
   },
   {
-    "id": 99,
+    "id": 110,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -720,
@@ -1089,7 +1210,7 @@
     "kind": "environment"
   },
   {
-    "id": 100,
+    "id": 111,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": 570,
@@ -1100,7 +1221,7 @@
     "kind": "environment"
   },
   {
-    "id": 101,
+    "id": 112,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -960,
@@ -1111,7 +1232,7 @@
     "kind": "environment"
   },
   {
-    "id": 102,
+    "id": 113,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": -750,
@@ -1122,7 +1243,7 @@
     "kind": "environment"
   },
   {
-    "id": 103,
+    "id": 114,
     "name": "Hesco Barrier 01",
     "asset": "Booster Pack\\Military Pack\\Hesco Barrier 01.fpe",
     "x": 650,
@@ -1133,7 +1254,7 @@
     "kind": "environment"
   },
   {
-    "id": 104,
+    "id": 115,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3200,
@@ -1144,7 +1265,7 @@
     "kind": "environment"
   },
   {
-    "id": 105,
+    "id": 116,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3250,
@@ -1155,7 +1276,7 @@
     "kind": "environment"
   },
   {
-    "id": 106,
+    "id": 117,
     "name": "Container 02a",
     "asset": "Booster Pack\\Military Pack\\Container 02a.fpe",
     "x": -3260,
@@ -1166,7 +1287,7 @@
     "kind": "environment"
   },
   {
-    "id": 107,
+    "id": 118,
     "name": "Gas Barrel 01a",
     "asset": "Booster Pack\\Military Pack\\Gas Barrel 01a.fpe",
     "x": -2810,
@@ -1177,7 +1298,7 @@
     "kind": "environment"
   },
   {
-    "id": 108,
+    "id": 119,
     "name": "Gas Barrel 01a",
     "asset": "Booster Pack\\Military Pack\\Gas Barrel 01a.fpe",
     "x": -2690,
@@ -1188,7 +1309,7 @@
     "kind": "environment"
   },
   {
-    "id": 109,
+    "id": 120,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -1570,
@@ -1199,7 +1320,7 @@
     "kind": "ammo"
   },
   {
-    "id": 110,
+    "id": 121,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -2050,
@@ -1210,7 +1331,7 @@
     "kind": "ammo"
   },
   {
-    "id": 111,
+    "id": 122,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -1150,
@@ -1221,7 +1342,7 @@
     "kind": "ammo"
   },
   {
-    "id": 112,
+    "id": 123,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": 1550,
@@ -1232,7 +1353,7 @@
     "kind": "ammo"
   },
   {
-    "id": 113,
+    "id": 124,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": -850,
@@ -1243,7 +1364,7 @@
     "kind": "ammo"
   },
   {
-    "id": 114,
+    "id": 125,
     "name": "Supply: rifle ammunition",
     "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
     "x": 300,
@@ -1254,7 +1375,7 @@
     "kind": "ammo"
   },
   {
-    "id": 115,
+    "id": 126,
     "name": "SEVEN // Meridian insertion",
     "asset": "_markers\\Player Start.fpe",
     "x": -900,
@@ -1265,7 +1386,7 @@
     "kind": "player"
   },
   {
-    "id": 116,
+    "id": 127,
     "name": "FIRST LIGHT // DIRECTOR",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 0,
@@ -1276,7 +1397,7 @@
     "kind": "controller"
   },
   {
-    "id": 117,
+    "id": 128,
     "name": "FL POWER",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": -1250,
@@ -1287,7 +1408,7 @@
     "kind": "objective"
   },
   {
-    "id": 118,
+    "id": 129,
     "name": "FL RECORDS",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": 1300,
@@ -1298,7 +1419,7 @@
     "kind": "objective"
   },
   {
-    "id": 119,
+    "id": 130,
     "name": "FL CORE",
     "asset": "Aegis Reach\\Relay Terminal.fpe",
     "x": 0,
@@ -1309,7 +1430,7 @@
     "kind": "objective"
   },
   {
-    "id": 120,
+    "id": 131,
     "name": "FL EXTRACT",
     "asset": "Aegis Reach\\Extraction Pad.fpe",
     "x": 0,
@@ -1320,7 +1441,7 @@
     "kind": "objective"
   },
   {
-    "id": 121,
+    "id": 132,
     "name": "FL INTEL1",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -1690,
@@ -1331,7 +1452,7 @@
     "kind": "intel"
   },
   {
-    "id": 122,
+    "id": 133,
     "name": "FL INTEL2",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -2050,
@@ -1342,7 +1463,7 @@
     "kind": "intel"
   },
   {
-    "id": 123,
+    "id": 134,
     "name": "FL INTEL3",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 1750,
@@ -1353,7 +1474,7 @@
     "kind": "intel"
   },
   {
-    "id": 124,
+    "id": 135,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -2150,
@@ -1364,7 +1485,7 @@
     "kind": "medical"
   },
   {
-    "id": 125,
+    "id": 136,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 650,
@@ -1375,7 +1496,7 @@
     "kind": "medical"
   },
   {
-    "id": 126,
+    "id": 137,
     "name": "FL MED",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": -950,
@@ -1386,7 +1507,7 @@
     "kind": "medical"
   },
   {
-    "id": 127,
+    "id": 138,
     "name": "FL GATELOG",
     "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
     "x": -635,
@@ -1397,7 +1518,7 @@
     "kind": "record"
   },
   {
-    "id": 128,
+    "id": 139,
     "name": "FL GRIDLOG",
     "asset": "Booster Pack\\Military Pack\\Computer 01a.fpe",
     "x": -765,
@@ -1408,7 +1529,7 @@
     "kind": "record"
   },
   {
-    "id": 129,
+    "id": 140,
     "name": "FL ENEMY 1 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -950,
@@ -1419,7 +1540,7 @@
     "kind": "enemy"
   },
   {
-    "id": 130,
+    "id": 141,
     "name": "FL ENEMY 1 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 650,
@@ -1430,7 +1551,7 @@
     "kind": "enemy"
   },
   {
-    "id": 131,
+    "id": 142,
     "name": "FL ENEMY 1 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -300,
@@ -1441,7 +1562,7 @@
     "kind": "enemy"
   },
   {
-    "id": 132,
+    "id": 143,
     "name": "FL ENEMY 2 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -800,
@@ -1452,7 +1573,7 @@
     "kind": "enemy"
   },
   {
-    "id": 133,
+    "id": 144,
     "name": "FL ENEMY 2 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 500,
@@ -1463,7 +1584,7 @@
     "kind": "enemy"
   },
   {
-    "id": 134,
+    "id": 145,
     "name": "FL ENEMY 2 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 1450,
@@ -1474,7 +1595,7 @@
     "kind": "enemy"
   },
   {
-    "id": 135,
+    "id": 146,
     "name": "FL ENEMY 3 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -2000,
@@ -1485,7 +1606,7 @@
     "kind": "enemy"
   },
   {
-    "id": 136,
+    "id": 147,
     "name": "FL ENEMY 3 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -1100,
@@ -1496,7 +1617,7 @@
     "kind": "enemy"
   },
   {
-    "id": 137,
+    "id": 148,
     "name": "FL ENEMY 3 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -1060,
@@ -1507,7 +1628,7 @@
     "kind": "enemy"
   },
   {
-    "id": 138,
+    "id": 149,
     "name": "FL ENEMY 3 4",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -840,
@@ -1518,7 +1639,7 @@
     "kind": "enemy"
   },
   {
-    "id": 139,
+    "id": 150,
     "name": "FL ENEMY 4 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 450,
@@ -1529,7 +1650,7 @@
     "kind": "enemy"
   },
   {
-    "id": 140,
+    "id": 151,
     "name": "FL ENEMY 4 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 1650,
@@ -1540,7 +1661,7 @@
     "kind": "enemy"
   },
   {
-    "id": 141,
+    "id": 152,
     "name": "FL ENEMY 4 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 850,
@@ -1551,7 +1672,7 @@
     "kind": "enemy"
   },
   {
-    "id": 142,
+    "id": 153,
     "name": "FL ENEMY 4 4",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 1880,
@@ -1562,7 +1683,7 @@
     "kind": "enemy"
   },
   {
-    "id": 143,
+    "id": 154,
     "name": "FL ENEMY 5 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -750,
@@ -1573,7 +1694,7 @@
     "kind": "enemy"
   },
   {
-    "id": 144,
+    "id": 155,
     "name": "FL ENEMY 5 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 650,
@@ -1584,7 +1705,7 @@
     "kind": "enemy"
   },
   {
-    "id": 145,
+    "id": 156,
     "name": "FL ENEMY 5 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -900,
@@ -1595,7 +1716,7 @@
     "kind": "enemy"
   },
   {
-    "id": 146,
+    "id": 157,
     "name": "FL ENEMY 5 4",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 800,
@@ -1606,7 +1727,7 @@
     "kind": "enemy"
   },
   {
-    "id": 147,
+    "id": 158,
     "name": "FL ENEMY 6 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -2760,
@@ -1617,7 +1738,7 @@
     "kind": "enemy"
   },
   {
-    "id": 148,
+    "id": 159,
     "name": "FL ENEMY 6 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -3090,
@@ -1628,7 +1749,7 @@
     "kind": "enemy"
   },
   {
-    "id": 149,
+    "id": 160,
     "name": "FL ENEMY 6 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -3030,
@@ -1639,7 +1760,7 @@
     "kind": "enemy"
   },
   {
-    "id": 150,
+    "id": 161,
     "name": "FL ENEMY 6 4",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -2950,
@@ -1650,7 +1771,7 @@
     "kind": "enemy"
   },
   {
-    "id": 151,
+    "id": 162,
     "name": "FL ENEMY 7 1",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 2050,
@@ -1661,7 +1782,7 @@
     "kind": "enemy"
   },
   {
-    "id": 152,
+    "id": 163,
     "name": "FL ENEMY 7 2",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 2050,
@@ -1672,7 +1793,7 @@
     "kind": "enemy"
   },
   {
-    "id": 153,
+    "id": 164,
     "name": "FL ENEMY 7 3",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -3270,
@@ -1683,7 +1804,7 @@
     "kind": "enemy"
   },
   {
-    "id": 154,
+    "id": 165,
     "name": "FL ENEMY 7 4",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -3270,
@@ -1694,7 +1815,7 @@
     "kind": "enemy"
   },
   {
-    "id": 155,
+    "id": 166,
     "name": "FL ENEMY 7 5",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": 2060,
@@ -1705,7 +1826,7 @@
     "kind": "enemy"
   },
   {
-    "id": 156,
+    "id": 167,
     "name": "FL ENEMY 7 6",
     "asset": "Characters\\Tony - Armed Response.fpe",
     "x": -3190,
@@ -1716,7 +1837,7 @@
     "kind": "enemy"
   },
   {
-    "id": 157,
+    "id": 168,
     "name": "FL LIGHT 1",
     "asset": "_markers\\White Light.fpe",
     "x": -2350,
@@ -1727,7 +1848,7 @@
     "kind": "light"
   },
   {
-    "id": 158,
+    "id": 169,
     "name": "FL LIGHT 2",
     "asset": "_markers\\White Light.fpe",
     "x": -2145,
@@ -1738,7 +1859,7 @@
     "kind": "light"
   },
   {
-    "id": 159,
+    "id": 170,
     "name": "FL LIGHT 3",
     "asset": "_markers\\White Light.fpe",
     "x": -2195,
@@ -1749,7 +1870,7 @@
     "kind": "light"
   },
   {
-    "id": 160,
+    "id": 171,
     "name": "FL LIGHT 4",
     "asset": "_markers\\White Light.fpe",
     "x": -430,
@@ -1760,7 +1881,7 @@
     "kind": "light"
   },
   {
-    "id": 161,
+    "id": 172,
     "name": "FL LIGHT 5",
     "asset": "_markers\\White Light.fpe",
     "x": 280,
@@ -1771,7 +1892,7 @@
     "kind": "light"
   },
   {
-    "id": 162,
+    "id": 173,
     "name": "FL LIGHT 6",
     "asset": "_markers\\White Light.fpe",
     "x": 320,
@@ -1782,7 +1903,7 @@
     "kind": "light"
   },
   {
-    "id": 163,
+    "id": 174,
     "name": "FL LIGHT 7",
     "asset": "_markers\\White Light.fpe",
     "x": -520,
@@ -1793,7 +1914,7 @@
     "kind": "light"
   },
   {
-    "id": 164,
+    "id": 175,
     "name": "FL LIGHT 8",
     "asset": "_markers\\White Light.fpe",
     "x": 650,
@@ -1804,7 +1925,7 @@
     "kind": "light"
   },
   {
-    "id": 165,
+    "id": 176,
     "name": "FL LIGHT 9",
     "asset": "_markers\\White Light.fpe",
     "x": -1703,
@@ -1815,7 +1936,7 @@
     "kind": "light"
   },
   {
-    "id": 166,
+    "id": 177,
     "name": "FL LIGHT 10",
     "asset": "_markers\\White Light.fpe",
     "x": -1317,
@@ -1826,7 +1947,7 @@
     "kind": "light"
   },
   {
-    "id": 167,
+    "id": 178,
     "name": "FL LIGHT 11",
     "asset": "_markers\\White Light.fpe",
     "x": 980,
@@ -1837,7 +1958,7 @@
     "kind": "light"
   },
   {
-    "id": 168,
+    "id": 179,
     "name": "FL LIGHT 12",
     "asset": "_markers\\White Light.fpe",
     "x": 1530,
@@ -1848,7 +1969,7 @@
     "kind": "light"
   },
   {
-    "id": 169,
+    "id": 180,
     "name": "FL LIGHT 13",
     "asset": "_markers\\White Light.fpe",
     "x": -760,
@@ -1859,7 +1980,7 @@
     "kind": "light"
   },
   {
-    "id": 170,
+    "id": 181,
     "name": "FL LIGHT 14",
     "asset": "_markers\\White Light.fpe",
     "x": 760,
@@ -1870,7 +1991,7 @@
     "kind": "light"
   },
   {
-    "id": 171,
+    "id": 182,
     "name": "FL LIGHT 15",
     "asset": "_markers\\White Light.fpe",
     "x": -750,
@@ -1881,7 +2002,7 @@
     "kind": "light"
   },
   {
-    "id": 172,
+    "id": 183,
     "name": "FL LIGHT 16",
     "asset": "_markers\\White Light.fpe",
     "x": -2400,
@@ -1892,7 +2013,7 @@
     "kind": "light"
   },
   {
-    "id": 173,
+    "id": 184,
     "name": "FL LIGHT 17",
     "asset": "_markers\\White Light.fpe",
     "x": -2123.0130856286946,
@@ -1903,7 +2024,7 @@
     "kind": "light"
   },
   {
-    "id": 174,
+    "id": 185,
     "name": "FL LIGHT 18",
     "asset": "_markers\\White Light.fpe",
     "x": -448,
@@ -1914,7 +2035,7 @@
     "kind": "light"
   },
   {
-    "id": 175,
+    "id": 186,
     "name": "FL LIGHT 19",
     "asset": "_markers\\White Light.fpe",
     "x": -650,
@@ -1925,7 +2046,7 @@
     "kind": "light"
   },
   {
-    "id": 176,
+    "id": 187,
     "name": "FL LIGHT 20",
     "asset": "_markers\\White Light.fpe",
     "x": -578,
@@ -1936,7 +2057,7 @@
     "kind": "light"
   },
   {
-    "id": 177,
+    "id": 188,
     "name": "FL LIGHT 21",
     "asset": "_markers\\White Light.fpe",
     "x": -2146,
@@ -1947,7 +2068,7 @@
     "kind": "light"
   },
   {
-    "id": 178,
+    "id": 189,
     "name": "FL BRINEGLASS LIGHT 1",
     "asset": "_markers\\White Light.fpe",
     "x": -1180,
@@ -1958,7 +2079,7 @@
     "kind": "light"
   },
   {
-    "id": 179,
+    "id": 190,
     "name": "FL BRINEGLASS LIGHT 2",
     "asset": "_markers\\White Light.fpe",
     "x": -1550,
@@ -1969,7 +2090,7 @@
     "kind": "light"
   },
   {
-    "id": 180,
+    "id": 191,
     "name": "FL BRINEGLASS LIGHT 3",
     "asset": "_markers\\White Light.fpe",
     "x": -1490,
@@ -1980,7 +2101,7 @@
     "kind": "light"
   },
   {
-    "id": 181,
+    "id": 192,
     "name": "FL BRINEGLASS LIGHT 4",
     "asset": "_markers\\White Light.fpe",
     "x": -1020,
@@ -1991,7 +2112,7 @@
     "kind": "light"
   },
   {
-    "id": 182,
+    "id": 193,
     "name": "FL BRINEGLASS LIGHT 5",
     "asset": "_markers\\White Light.fpe",
     "x": 710,
@@ -2002,7 +2123,7 @@
     "kind": "light"
   },
   {
-    "id": 183,
+    "id": 194,
     "name": "FL BRINEGLASS LIGHT 6",
     "asset": "_markers\\White Light.fpe",
     "x": -2650,
@@ -2013,7 +2134,7 @@
     "kind": "light"
   },
   {
-    "id": 184,
+    "id": 195,
     "name": "FL BRINEGLASS LIGHT 7",
     "asset": "_markers\\White Light.fpe",
     "x": 2450,
@@ -2024,7 +2145,7 @@
     "kind": "light"
   },
   {
-    "id": 185,
+    "id": 196,
     "name": "FL BRINEGLASS LIGHT 8",
     "asset": "_markers\\White Light.fpe",
     "x": -1650,
@@ -2035,7 +2156,7 @@
     "kind": "light"
   },
   {
-    "id": 186,
+    "id": 197,
     "name": "FL BRINEGLASS LIGHT 9",
     "asset": "_markers\\White Light.fpe",
     "x": 1250,
@@ -2046,7 +2167,7 @@
     "kind": "light"
   },
   {
-    "id": 187,
+    "id": 198,
     "name": "FL BRINEGLASS LIGHT 10",
     "asset": "_markers\\White Light.fpe",
     "x": 350,
@@ -2057,7 +2178,7 @@
     "kind": "light"
   },
   {
-    "id": 188,
+    "id": 199,
     "name": "FL BRINEGLASS LIGHT 11",
     "asset": "_markers\\White Light.fpe",
     "x": 450,
@@ -2068,7 +2189,7 @@
     "kind": "light"
   },
   {
-    "id": 189,
+    "id": 200,
     "name": "FL BRINEGLASS LIGHT 12",
     "asset": "_markers\\White Light.fpe",
     "x": 1110,
@@ -2079,7 +2200,7 @@
     "kind": "light"
   },
   {
-    "id": 190,
+    "id": 201,
     "name": "FIRST LIGHT // SCORE",
     "asset": "Aegis Reach\\Supply Crate.fpe",
     "x": 50,
@@ -2090,7 +2211,7 @@
     "kind": "controller"
   },
   {
-    "id": 191,
+    "id": 202,
     "name": "Environmental sign: MERIDIAN / CAMP 12",
     "asset": "Aegis Reach\\First Light\\Evacuation Board.fpe",
     "x": -2219,
@@ -2101,7 +2222,7 @@
     "kind": "sign"
   },
   {
-    "id": 192,
+    "id": 203,
     "name": "Environmental sign: AEGIS // GATE 07",
     "asset": "Aegis Reach\\First Light\\Checkpoint Sign.fpe",
     "x": 0,
@@ -2112,7 +2233,7 @@
     "kind": "sign"
   },
   {
-    "id": 193,
+    "id": 204,
     "name": "Environmental sign: NORTHSTAR",
     "asset": "Aegis Reach\\First Light\\Power Sign.fpe",
     "x": -980,
@@ -2123,7 +2244,7 @@
     "kind": "sign"
   },
   {
-    "id": 194,
+    "id": 205,
     "name": "Environmental sign: OPERATIONS",
     "asset": "Aegis Reach\\First Light\\Operations Sign.fpe",
     "x": 850,
@@ -2134,7 +2255,7 @@
     "kind": "sign"
   },
   {
-    "id": 195,
+    "id": 206,
     "name": "Environmental sign: AEGIS ARRAY",
     "asset": "Aegis Reach\\First Light\\Core Sign.fpe",
     "x": -740,
@@ -2145,7 +2266,7 @@
     "kind": "sign"
   },
   {
-    "id": 196,
+    "id": 207,
     "name": "Meridian field board frame",
     "asset": "Aegis Reach\\First Light\\Extraction Sign Supports.fpe",
     "x": 420,
@@ -2156,7 +2277,7 @@
     "kind": "environment"
   },
   {
-    "id": 197,
+    "id": 208,
     "name": "Environmental sign: KESTREL // LZ 07",
     "asset": "Aegis Reach\\First Light\\Extraction Sign.fpe",
     "x": 420,

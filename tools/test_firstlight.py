@@ -50,6 +50,7 @@ end
 ''')
 FILES=ROOT/'Aegis Reach/Files';g=lua.globals();checks=[]
 lua.execute((FILES/'scriptbank/aegis_reach/firstlight_audit.lua').read_text());lua.execute("package.loaded['scriptbank\\\\aegis_reach\\\\firstlight_audit']=true")
+lua.execute((FILES/'scriptbank/aegis_reach/firstlight_hud.lua').read_text());lua.execute("package.loaded['scriptbank\\\\aegis_reach\\\\firstlight_hud']=true")
 for name in ('director','interact','enemy'):lua.execute((FILES/f'scriptbank/aegis_reach/firstlight_{name}.lua').read_text())
 def check(name,ok):
  assert ok,name
@@ -116,6 +117,27 @@ g.fl.stage=4;g.fl.evac_start=g.g_Time;g.firstlight_enemy_main(40);check('Reinfor
 g.g_Time+=4100;g.firstlight_enemy_main(40);check('Reinforcement activates through native combat wrapper',not g.calls.hidden40 and g.ai_ticks>0)
 before=g.ai_ticks;g.g_Entity[40].health=0;g.firstlight_enemy_main(40)
 check('Native death lifecycle continues after zero health',g.ai_ticks>before)
+# Exercise the real HUD through MAX's documented sprite API shape.
+lua.execute('''
+hud_rects={};hud_size={};hud_color={}
+function LoadImage(path) calls.hud_image=path;return 81 end
+function CreateSprite(image) return 82 end
+function SetSpritePosition(...) end
+function SetSpriteOffset(...) end
+function SetSpriteSize(id,w,h) hud_size={w,h} end
+function SetSpriteColor(id,r,g,b,a) hud_color={r,g,b,a} end
+function PasteSpritePosition(id,x,y) table.insert(hud_rects,{x=x,y=y,w=hud_size[1],h=hud_size[2],r=hud_color[1],g=hud_color[2],b=hud_color[3]}) end
+function DeleteSprite(id) calls.hud_deleted=id end
+fl_hud_reset()
+fl_hud_draw('Restore Northstar power',177,1,359,45,0)
+''')
+rects=list(g.hud_rects.values())
+check('HUD compass wraps north correctly',g.fl_hud_delta(1,359)==2 and g.fl_hud_delta(359,1)==-2)
+check('HUD graphics stay in the viewport',all(0<=r.x<=100-r.w and 0<=r.y<=100-r.h for r in rects))
+bars=[r.w for r in rects if r.r==65 and r.g==183 and r.b==236]
+check('Shield meter represents partial segments',len(bars)==3 and abs(sum(bars)-6.975)<.001)
+check('Empty armour has no filled segments',not any(r.r==212 and r.g==222 and r.b==225 for r in rects))
+g.fl_hud_reset();check('HUD releases its sprite between sessions',g.calls.hud_deleted==82)
 # Native assets and encrypted archive match exactly what the engine will load.
 modelchecks=0;dll=C.CDLL(str(INSTALL.parent/'assimp.dll'));dll.aiImportFile.argtypes=[C.c_char_p,C.c_uint];dll.aiImportFile.restype=C.c_void_p;dll.aiReleaseImport.argtypes=[C.c_void_p]
 for p in (FILES/'entitybank/Aegis Reach/First Light').glob('*.x'):

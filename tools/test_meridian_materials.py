@@ -3,10 +3,23 @@ from pathlib import Path
 import hashlib
 import math
 import tempfile
+import ast
 from PIL import Image,ImageStat
 from environment_pass import Mesh
 from meridian_fieldkit import textures,shell,mast,utility_spine,ATLAS,EMISSION,NORMAL,SURFACE,TILE
 from native_format import ROOT
+
+# A mathematically correct normal can still point into the crystal. Test its
+# relation to the prism centre, independently of the generator's cross product.
+tree=ast.parse((ROOT/'tools/build_first_light.py').read_text())
+functions=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in ('_mesh_tri','_crystal_prism')]
+namespace={'math':math}
+exec(compile(ast.Module(body=functions,type_ignores=[]),'<crystal geometry>','exec'),namespace)
+crystal=Mesh();namespace['_crystal_prism'](crystal,0,0,30,150)
+for ids in crystal.faces:
+ centre=[sum(crystal.verts[i][j] for i in ids)/3 for j in range(3)]
+ normal=crystal.norm[ids[0]]
+ assert centre[0]*normal[0]+centre[2]*normal[2]>0, 'inward-facing crystal facet'
 
 # Every rendered triangle needs a noncollapsed UV frame before normal mapping.
 for mesh in (shell(Mesh),mast(Mesh),utility_spine(Mesh)):
@@ -55,6 +68,14 @@ with tempfile.TemporaryDirectory() as directory:
 
 # Verify the deployed FPEs reference the generated maps and do not suppress them.
 folder=ROOT/'Aegis Reach/Files/entitybank/Aegis Reach/First Light'
+for name in ('Vesper Brineglass Bloom','Vesper Resonant Brineglass Bloom'):
+ fields={k.strip().lower():v.strip() for k,v in
+         (line.split('=',1) for line in (folder/(name+'.fpe')).read_text().splitlines() if '=' in line)}
+ assert fields['basecolormap']!=fields['emissivemap'], 'crystal body and glow flattened into one image'
+ with Image.open(folder/fields['surfacemap']) as surface:
+  assert surface.getchannel('B').getextrema()==(0,0), 'brineglass became metal'
+  lo,hi=surface.getchannel('G').getextrema()
+  assert 45<=lo<=hi<=110, 'crystal polish response escaped intended range'
 for name in ('Meridian Field Lab','Camp 12 Survey Mast','Camp 12 Utility Spine'):
  fields={k.strip().lower():v.strip() for k,v in
          (line.split('=',1) for line in (folder/(name+'.fpe')).read_text().splitlines() if '=' in line)}

@@ -101,6 +101,7 @@ def main():
     required_scripts = [
         'firstlight_audit.lua',
         'firstlight_director.lua',
+        'firstlight_hud.lua',
         'firstlight_enemy.lua',
         'firstlight_interact.lua',
         'firstlight_qa.lua',
@@ -110,6 +111,8 @@ def main():
         path = FILES / 'scriptbank/aegis_reach' / name
         if not path.is_file():
             raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: missing runtime script {name}')
+    if not (FILES/'scriptbank/aegis_reach/images/hud_pixel.png').is_file():
+        raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: missing HUD sprite texture')
 
     qa_text = (FILES / 'scriptbank/aegis_reach/firstlight_qa.lua').read_text(errors='replace')
     destructive = [token for token in QA_FORBIDDEN if token in qa_text]

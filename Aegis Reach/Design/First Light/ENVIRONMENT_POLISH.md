@@ -303,7 +303,7 @@ in-level visual or collision pass. New original art files are intentional game
 content; runtime caches, testmap state, savegames, logs and local references are
 excluded from Git.
 
-Current map SHA256: `51cde90b328693ae23a77f89a8c0bf691378c976e1133fa54d9c565c39864a81`
+Current map SHA256: `df4bdd42113f3f8c72161f40a73a4eee39c50e9ae5568afa371114dc81e69a28`
 
 ## September 12 Operations workstation support correction
 
@@ -360,6 +360,43 @@ and looking back from the outbound route. In particular, check canopy silhouette
 doorway collision, the bench's scale, utility contact, lamp glare and turnout
 readability. The source checks are not native approval. No after screenshot is
 available from the current tool session, which disables native app control.
+
+## September 12 HUD and surface-depth candidate
+
+The user compared the native image below with a generated AAA-style concept.
+This image shows the canopy in MAX but precedes this HUD/material pass. The
+concept guides hierarchy, wet highlights and sparse scrub; it is not evidence
+that MAX can reproduce its lighting or detailed cliff geometry exactly.
+
+![Native Camp 12 before HUD and surface changes](Review/2026-09-12-before-surface-hud-pass.png)
+
+- A native sprite HUD gives mission text a compact translucent backing, adds a
+  heading compass with an objective-bearing cursor, and moves shield/armour to
+  segmented lower-right meters. Values remain live; partial segments represent
+  partial charge. The stock ammunition display remains authoritative. No invented
+  grenade or medkit counts are shown. The original white sprite texture is 4x4.
+- The crystal generator's side/crown winding was inward. A radial-normal check
+  proved the defect; reversing triangle winding restores outward facets. Original
+  mineral albedo and dielectric roughness maps now differ from the emission map,
+  with stronger surface reflectance and restrained internal glow. This is an
+  opaque mineral material, not a claim of refractive glass.
+- Three installed `Max Collection\\Cellar\\Small Puddle.fpe` instances use the
+  asset's existing planar-reflection material. Their measured local plane is
+  Y=1.05751; corrected placements sit 0.4 inches above the exactly flat camp pad.
+  Every mesh vertex was checked for this clearance. No global water height or
+  terrain geometry changes are made, and no reflective floor plane covers the camp.
+- Eight installed `Max Collection\\Shrubs\\Desert Bush - Form A.fpe` tufts use
+  40–55% scale on court margins, with buried root knots and physics disabled.
+  Its installed preview shows dry pale scrub, not lush green foliage. Installed
+  mesh bounds were measured; no plant models or textures are copied into Git.
+- The installed sunset sky replaces overcast. Exposure and bloom stay restrained;
+  a low warmer sun is paired with the existing cool ambient fill. This affects
+  the whole level and requires skyline/readability review downstream as well.
+
+Native review must check HUD legibility at the player's resolution, sprite
+ordering/pause behavior, crystal lighting from both sides, puddle reflections and
+frame time, scrub roots, and shadow/readability changes from the low sun. The
+current tools cannot capture native MAX, so this remains a review candidate.
 
 ## Original-art load freshness
 
