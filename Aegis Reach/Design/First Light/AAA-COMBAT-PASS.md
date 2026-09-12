@@ -27,7 +27,7 @@ The north star remains the broad combat readability and encounter rhythm of a cl
 `firstlight_enemy.lua`
 
 - Keeps GameGuru MAX `character_attack` responsible for actual locomotion, combat and death.
-- Gives each authored squad a light role pattern: assault / rifle / anchor.
+- Maps authored roles onto MAX's real tactical choices: assault = Get Close, rifle = Use Cover, anchor = Stay Back / Stand Ground, flanker = Wide Flank.
 - Staggers reveal cadence so a group reads as an encounter instead of a simultaneous spawn dump.
 - Uses the director's reveal budget only for dormant soldiers. Active Wardens retain full agency.
 - Preserves fixed extraction reserve timing and native death lifecycle.
@@ -64,7 +64,7 @@ A pass should explicitly verify:
 
 1. **Opening restraint** — the first 20 seconds remain readable and the first Warden group does not stomp the Kestrel introduction.
 2. **Squad cadence** — groups arrive in beats; no visible T-pose/bind-pose reveal; no dormant visible characters.
-3. **Native combat** — idle, navigation, aim, firing, hit response and death all remain native and credible.
+3. **Native combat** — assault pushes, rifle seeks cover, anchor holds range, flanker takes a wide route; idle, navigation, aim, firing, hit response and death remain native and credible.
 4. **Pressure fairness** — critically damaged players stop receiving new reveals temporarily, while existing enemies continue fighting normally.
 5. **Shield loop** — shield collapse is obvious; breaking contact creates a believable recharge window; AEGIS interference delays recharge as intended.
 6. **Terminal readability** — current objective cyan, contested amber, completed green, future objectives subdued. No emissive state should wash out the underlying PBR material.
@@ -78,7 +78,7 @@ A pass should explicitly verify:
 Do not redesign before seeing a real run. Tune these in order:
 
 - `firstlight_director.lua`: `combat_budget`, pressure thresholds (16 / 42 / 72), shield-recharge delays.
-- `firstlight_enemy.lua`: regular reveal cadence (600 ms), reserve cadence, assault/rifle/anchor stand-off values.
+- `firstlight_enemy.lua`: regular reveal cadence (600 ms), reserve cadence, role retreat ranges, native `FlankTarget` choice and combat/hearing windows.
 - `firstlight_score.lua`: dialogue duck (-14), combat intensity lift (up to +6), track-change dwell (4.5 s) and minimum identity duration (15 s).
 - `firstlight_interact.lua`: emissive strengths and terminal denial radius.
 
