@@ -128,6 +128,7 @@ allowed={
  'Camp 12 Survey Mast.fpe',
  'Meridian Field Lab.fpe',
  'Meridian Service Module.fpe',
+ 'Meridian Service Link.fpe',
  'Northstar Stack Pair.fpe',
  'AEGIS Arrival Frame.fpe',
  'Meridian Route Beacon.fpe',

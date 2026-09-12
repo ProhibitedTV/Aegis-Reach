@@ -178,7 +178,7 @@ def _build_brineglass(name,texture):
  return path
 
 # One authoring layer owns all human-built spaces.
-architecture(Mesh,own,add,prop,P,I,AS)
+CONTROL_CONSOLE=architecture(Mesh,own,add,prop,P,I,AS)
 
 # Sparse, measured installed dry scrub on the flat camp margins. Bury only the
 # root knot, preserve the clear road/court and never turn Vesper into grassland.
@@ -254,7 +254,7 @@ objectives=[
  ('EXTRACT',0,-2350,'KESTREL // EXTRACTION')
 ]
 for role,x,z,label in objectives:
- asset=r'Aegis Reach\Extraction Pad.fpe' if role=='EXTRACT' else r'Aegis Reach\Relay Terminal.fpe'
+ asset=r'Aegis Reach\Extraction Pad.fpe' if role=='EXTRACT' else CONTROL_CONSOLE
  add(asset,'FL '+role,x,z,y=ground(x,z),kind='objective',script=SCRIPT+'interact.lua',
      **{'eleprof.soundset_s':r'aegis_reach\relay.wav',
         'eleprof.soundset1_s':('aegis_reach\\firstlight\\'+role.lower()+'.wav') if role!='EXTRACT' else ''})
@@ -293,18 +293,20 @@ light_locations=[
  (-430,-5600,0xCFA875,430),(280,-5000,0xCFA875,450),(320,-4050,0xCFA875,460),
  (-520,-3290,0xDCC4A0,240),(650,-3420,0xC8AE87,370),
  (-1703,-697,0xD7B48A,430),(-1317,-697,0xD7B48A,430),
- (980,120,0xC2D7DF,560),(1530,1080,0xC2D7DF,580),
- (-760,2800,0x70C7DC,900),(760,3380,0x70C7DC,900),
- (-750,-2200,0x67D8EA,850),(-2400,950,0xD6A96A,620)
+ (1250,1050,0xDCC4A0,240),(1935,1000,0xDCC4A0,240),
+ (-72,3210,0xB7CAD4,240),(0,3060,0xA0C3D0,230),
+ (-750,-2200,0xC9CFCC,440),(-2400,950,0xD6A96A,620)
 ]
 # One warm pool from the existing generator lamp array joins the court to the lab.
 light_locations.append((*CAMP_POWER_LIGHT,0xCFA877,280))
 camp_work_light_index=len(light_locations)
 light_locations.extend([(-448,-3440,0xE0BD90,190),(-650,-1390,0xDCC4A0,240),(-578,-1540,0xE0BD90,190)])
 light_locations.append((-2146,-7362,0xE2B77E,185)) # under the attached Camp 12 bench light
+light_locations.extend([(-830,-3510,0xD9CEB6,155),(1632.5,940,0xE0BD90,200)])
 fixture_heights={1:127,2:210,3:109,7:127,8:210,9:160,10:160,camp_work_light_index:CAMP_POWER_LIGHT_HEIGHT,
                  camp_work_light_index+1:109,camp_work_light_index+2:127,camp_work_light_index+3:109,
-                 camp_work_light_index+4:121}
+                 camp_work_light_index+4:121,11:127,12:127,13:127,14:109,
+                 camp_work_light_index+5:94,camp_work_light_index+6:121}
 for idx,(x,z,color,radius) in enumerate(light_locations,1):
  # Fixture geometry owns camp lamp height; the stock marker adds 45 inches.
  fixture={'eleprof.light.offsetup':0} if idx in fixture_heights else {}
@@ -355,24 +357,32 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
   for rivet_x in (25,982):
    for yy in (25,358):d.ellipse((rivet_x-4,yy-4,rivet_x+4,yy+4),fill=(60,73,75))
  tex=name+'.png';im.save(AS/tex)
- panel_y=ground(x,z)+(y-(500 if z<-5000 else 600)) if camp_panel else ground(x,z)+84
- width,height,depth=(60,25,2) if camp_panel else (168,64,4)
+ panel_y=ground(x,z)+(y-(500 if z<-5000 else 600)) if camp_panel else ground(x,z)+52
+ width,height,depth=(60,25,2) if camp_panel else (96,36,3)
  m=Mesh();m.box(0,0,0,width,height,depth,0)
  face_uv=[((u*8-.07)/.86,(v-.07)/.86) for u,v in m.uv]
  # Front uses the whole image; unprinted edges/back cannot repeat cropped text.
  m.uv=[uv if i<4 else ((.47+uv[0]*.01,.91+uv[1]*.01) if camp_panel else (.50,.96)) for i,uv in enumerate(face_uv)]
+ if name=='Checkpoint Sign':
+  lamp=Mesh()
+  for xx in (-24,24):lamp.box(xx,height-3,-3,4,5,6,2)
+  lamp.box(0,height+2,-5,62,3,8,2)
+  lamp.box(0,height+1,-8,52,1,3,0)
+  start=len(m.verts);m.verts.extend(lamp.verts);m.norm.extend(lamp.norm)
+  m.uv.extend([(.50,.96)]*len(lamp.uv))
+  m.faces.extend(tuple(i+start for i in face) for face in lamp.faces)
  if not camp_panel:
   support=Mesh();angle=math.radians(ry)
-  for px in (-66,66):
-   pz=6
+  for px in (-36,36):
+   pz=4.5
    wx=x+px*math.cos(angle)+pz*math.sin(angle)
    wz=z+pz*math.cos(angle)-px*math.sin(angle)
    footing=ground(wx,wz)-panel_y
-   support.box(px,footing,pz,8,height-6-footing,8,2)
-   support.box(px,footing,pz,14,3,14,2)
+   support.box(px,footing,pz,5,height-6-footing,5,2)
+   support.box(px,footing,pz,10,3,10,2)
   if name=='Extraction Sign':
    # Keep the existing frame entity; its posts sit entirely behind the board.
-   for i,(vx,vy,vz) in enumerate(support.verts):support.verts[i]=(vx,vy+84,vz)
+   for i,(vx,vy,vz) in enumerate(support.verts):support.verts[i]=(vx,vy+52,vz)
    post=own(name+' Supports',support)
    add(post,'Meridian field board frame',x,z,ry=ry)
   else:
@@ -388,7 +398,7 @@ def sign(name,lines,x,z,y,ry=0,color=(105,218,233)):
  add(path,'Environmental sign: '+lines[0],x,z,y=panel_y,ry=ry,scale=100,kind='sign')
 
 sign('Evacuation Board',['MERIDIAN / CAMP 12','EVACUATED: 42 / EXPECTED: 43','M. SEN - SUBSURFACE TEAM'],-2219,-7104,548,ry=270)
-sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],0,-3445,985)
+sign('Checkpoint Sign',['AEGIS // GATE 07','CIVILIAN EVACUATION SUSPENDED','ALL PERSONNEL RETURN INSIDE'],-830,-3500,985)
 sign('Power Sign',['NORTHSTAR','GRID ISOLATED / MANUAL RESTART','SERVICE ACCESS ON WEST SIDE'],-980,-1450,915)
 sign('Operations Sign',['OPERATIONS','MERIDIAN PERSONNEL ARCHIVE','WARDEN OVERRIDE IN FORCE'],850,-264,885)
 sign('Core Sign',['AEGIS ARRAY','TARGET: MERIDIAN SHELTER 12','FIRING AUTHORITY: IRON WARDEN'],-740,2188,850)
@@ -451,8 +461,8 @@ scene_recipe={
  'Camp 12':'compact Meridian field lab + survey/power/logistics clusters',
  'Gate 07':'modular overpass threshold + Warden retrofit',
  'Northstar':'twin-stack industrial yard',
- 'Operations':'low modular civilian workplace',
- 'AEGIS':'arrival frame + modular excavation threshold',
+ 'Operations':'archive and crew modules with covered service connection',
+ 'AEGIS':'control pavilion with paired relay equipment',
  'Choir':'bespoke buried nonhuman structure + increasingly active resonant brineglass',
 }
 (DESIGN/'layout.json').write_text(json.dumps(placements,indent=2))

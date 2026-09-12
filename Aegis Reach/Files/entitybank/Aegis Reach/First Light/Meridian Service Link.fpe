@@ -1,5 +1,5 @@
-desc = AEGIS Arrival Frame
-model = AEGIS Arrival Frame.x
+desc = Meridian Service Link
+model = Meridian Service Link.x
 scale = 100
 textured = meridian_fieldkit.png
 baseColorMap = meridian_fieldkit.png

@@ -4,6 +4,50 @@ Baseline: remote main `0fbb6960c94168367c50c34692d6a2fb084d2e8b`.
 This branch changes the actual First Light map. There is no showroom or separate
 prototype map. It is not qualified for merge until the new native views pass.
 
+## September 12 facility completion candidate
+
+The latest user-supplied native view shows an oversized Gate 07 sign, intrusive
+road-closure board, large HUD backings and skeletal downstream structures. This
+pass replaces those authored structures rather than scattering more props.
+
+![Native Gate 07 before this facility pass](Review/2026-09-12-before-facility-completion.png)
+
+- Operations: archive and crew modules connected by a covered service link.
+  Reused desks/computers sit in the archive; lockers and a cot sit in the crew
+  room. Shelves and trolley form a rear service area. The archive objective is
+  inside the room, at its existing mission position.
+- AEGIS: an enclosed control pavilion and two grounded relay cabinets with
+  antenna spines replace the giant empty frame and disconnected urban modules.
+- Mission equipment: the three 334-inch-tall relay terminals become 65-inch
+  control consoles. Objective positions, scripts and ordering remain unchanged.
+- Gate 07: smaller 96 x 36-inch route boards replace the 168 x 64-inch boards.
+  The checkpoint board moves beside the office and receives a physical lamp and
+  local light. Two concrete barriers replace the Earth road-closure boards.
+- Lighting: local archive/crew/covered-link pools, restrained technical pavilion
+  lighting, and reduced cyan spill across the extraction shelf. Two lights added.
+- HUD: narrower objective/compass panels, intercardinal headings and a smaller
+  vital panel with larger labels. Stock ammo and actual vital values preserved.
+
+The Camp 12 lab/court, terrain sculpt/paint, water, sky/exposure, crystal and scrub
+placement, music and mission logic are preserved. Binary comparison against the
+previous committed map confirms terrain/paint/visuals are unchanged and all 32
+existing enemy/objective transforms and scripts match. Architecture changes
+collision and enemy sightlines: the defender at (1880,1090) now occupies the crew
+room and needs a native combat/navigation check.
+
+Current map SHA256:
+`d2f3100fe3dda2a3a6038e13ce04305e21579416c24e8cfcfdee40fb0959e450`.
+202 entities, 52 asset types, 35 lights. Full deploy/preflight passed: 38 mission,
+HUD, reference and mesh-import checks; composition, grounding, indoor-console,
+terrain/material and cache checks. Original models use the existing coordinated
+Meridian textures. Installed DLC is referenced only; no licensed payload added.
+
+**Not native-approved.** The screenshot above predates these changes. Current
+session tools expose browser control only; native MAX capture/input is disabled.
+No new screenshot has been fabricated or substituted. Keep the PR unmerged until
+room traversal, collision, console use, AI navigation, sign readability and
+lighting are checked in MAX. See `NEXT_PLAYTEST.md` for the tuning handoff.
+
 ## Why the previous camp was rejected
 
 The supplied September 8 native screenshot, compared with the concept reference,
@@ -443,9 +487,9 @@ outside the authored route. Installed terrain texture payloads remain local.
 
 The September 11 user-supplied native views show the new lab and approach in
 normal gameplay and informed the panel correction. The corrected panel and the
-remaining viewpoints below still need native review. Desktop tools now load and
-read MAX window text, but native screenshot capture fails on this Windows 10
-host with SetIsBorderRequired / 0x80004002. No generated render or structural
+remaining viewpoints below still need native review. That earlier session encountered a Windows capture-interface error. In the
+current session native desktop control/capture is disabled; only browser control
+is exposed. No generated render or structural
 test is offered as a substitute for native evidence.
 
 Required next views:

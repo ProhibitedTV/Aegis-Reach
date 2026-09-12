@@ -287,6 +287,52 @@ def power_station(Mesh):
   strut(m,(x,10,-154),(x,65,-154),6,2)
  return m
 
+def control_console(Mesh):
+ """Standing-height sealed workstation, maximum height 65 inches."""
+ m=Mesh()
+ m.box(0,0,0,44,5,38,2)
+ m.box(0,5,0,22,30,24,0)
+ m.box(0,35,0,50,6,38,1)
+ quad(m,[(-25,41,-20),(-25,65,9),(25,65,9),(25,41,-20)],1)
+ quad(m,[(-21,44,-17),(-21,62,5),(21,62,5),(21,44,-17)],3)
+ m.box(0,41,-22,40,2,5,2)
+ for x in (-12,0,12):m.box(x,43,-22,7,1,3,5)
+ # Rear enclosure physically supports the sloped display.
+ m.box(0,41,11,50,24,6,0)
+ for x in (-24,24):
+  side=[(x,41,-20),(x,41,11),(x,65,11),(x,65,9)]
+  if x>0:side.reverse()
+  quad(m,side,2)
+ return m
+
+
+def service_link(Mesh):
+ """Covered connection between two field modules, without a floor slab."""
+ m=Mesh();m.box(0,128,0,345,7,120,0)
+ for z in (-56,56):m.box(0,121,z,345,7,8,2)
+ for x in (-162.5,162.5):
+  for z in (-50,50):
+   m.box(x,0,z,8,121,8,2);m.box(x,0,z,18,3,18,1)
+ m.box(0,124,0,100,4,12,1);m.box(0,122,0,90,2,8,4)
+ return m
+
+
+def array_equipment(Mesh):
+ """Paired grounded relay cabinets with antenna spines; no giant empty frame."""
+ m=Mesh()
+ for x in (-450,450):
+  m.box(x,0,0,156,12,176,2)
+  m.box(x,12,0,140,168,160,0)
+  m.box(x,180,0,152,10,172,1)
+  m.box(x,28,-82,94,100,5,7)
+  for xx in (-56,56):m.box(x+xx,12,-83,6,168,7,2)
+  m.box(x,146,-85,88,6,7,1);m.box(x,147,-90,74,3,2,5)
+  m.box(x,190,0,28,150,34,2)
+  m.box(x,215,-19,8,90,3,5)
+  for y in (240,285,330):m.box(x,y,0,100,7,18,1)
+ return m
+
+
 def build(Mesh,own,folder):
  textures(folder)
  lab=own(NAME,shell(Mesh),ATLAS)
@@ -302,9 +348,13 @@ def build(Mesh,own,folder):
  service=own('Meridian Service Module',shell(Mesh,comms=False),service_atlas)
  power=own('Northstar Stack Pair',power_station(Mesh),ATLAS)
  utility=own('Camp 12 Utility Spine',utility_spine(Mesh),ATLAS)
- for name in (NAME,'Camp 12 Survey Mast','Meridian Service Module','Northstar Stack Pair','Camp 12 Utility Spine'):
+ console=own('Meridian Control Console',control_console(Mesh),ATLAS)
+ link=own('Meridian Service Link',service_link(Mesh),ATLAS)
+ array=own('AEGIS Arrival Frame',array_equipment(Mesh),ATLAS)
+ for name in (NAME,'Camp 12 Survey Mast','Meridian Service Module','Northstar Stack Pair','Camp 12 Utility Spine',
+              'Meridian Control Console','Meridian Service Link','AEGIS Arrival Frame'):
   f=folder/(name+'.fpe');text=f.read_text()
   text=text.replace('roughnessStrength = 0.82','roughnessStrength = 1.0').replace('metalnessStrength = 0.22','metalnessStrength = 1.0')
   text+='normalMap = '+NORMAL+'\nnormalStrength = 0.65\nsurfaceMap = '+SURFACE+'\n'
   f.write_text(text+'basecolor = 4294967295\nreflectance = 0.04\nemissivecolor = 4294967295\nemissiveMap = '+EMISSION+'\nemissiveStrength = 0.6\n')
- return lab,tower,service,power,utility
+ return lab,tower,service,power,utility,console,link,array

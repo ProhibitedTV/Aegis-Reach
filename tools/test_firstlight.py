@@ -135,7 +135,7 @@ rects=list(g.hud_rects.values())
 check('HUD compass wraps north correctly',g.fl_hud_delta(1,359)==2 and g.fl_hud_delta(359,1)==-2)
 check('HUD graphics stay in the viewport',all(0<=r.x<=100-r.w and 0<=r.y<=100-r.h for r in rects))
 bars=[r.w for r in rects if r.r==65 and r.g==183 and r.b==236]
-check('Shield meter represents partial segments',len(bars)==3 and abs(sum(bars)-6.975)<.001)
+check('Shield meter represents partial segments',len(bars)==3 and abs(sum(bars)-5.4)<.001)
 check('Empty armour has no filled segments',not any(r.r==212 and r.g==222 and r.b==225 for r in rects))
 g.fl_hud_reset();check('HUD releases its sprite between sessions',g.calls.hud_deleted==82)
 # Native assets and encrypted archive match exactly what the engine will load.

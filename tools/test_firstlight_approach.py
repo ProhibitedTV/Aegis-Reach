@@ -81,3 +81,30 @@ for e in entities:
  if e['101:eleprof.name_s'].startswith(('FL ENEMY','FL POWER','FL RECORDS','FL CORE','FL EXTRACT','SEVEN')):
   assert height(e['101:x'],e['101:z'])>WATER_LEVEL+40, 'gameplay footing flooded'
 print('WATER PASS: native pockets contain shallow water; service routes and gameplay footing remain dry.')
+
+# New facilities must have grounded supports and room for the objective console.
+from environment_pass import Mesh
+from meridian_fieldkit import shell,service_link,array_equipment,control_console
+models={
+ 'Operations / archive module':shell(Mesh,False),
+ 'Operations / crew module':shell(Mesh,False),
+ 'Operations / covered service connection':service_link(Mesh),
+ 'AEGIS / control pavilion':shell(Mesh,False),
+ 'AEGIS / paired relay equipment':array_equipment(Mesh),
+ 'FL POWER':control_console(Mesh),'FL RECORDS':control_console(Mesh),'FL CORE':control_console(Mesh),
+}
+assert 48<=max(v[1] for v in control_console(Mesh).verts)<=72, 'oversized objective pylon returned'
+for name,mesh in models.items():
+ e=by_name[name];a=math.radians(e['101:ry']);co,si=math.cos(a),math.sin(a)
+ for vx,vy,vz in mesh.verts:
+  if abs(vy)<.01:
+   wx=e['101:x']+vx*co+vz*si;wz=e['101:z']+vz*co-vx*si
+   assert abs(height(wx,wz)-e['101:y'])<.5, ('facility footing floats or sinks',name,wx,wz)
+for room,terminal in [('Operations / archive module','FL RECORDS'),('AEGIS / control pavilion','FL CORE')]:
+ r,t=by_name[room],by_name[terminal]
+ # Both objective rooms face -Z. Full console footprint, not only its origin,
+ # must fit inside the room without crossing the end wall or roof.
+ dx,dz=t['101:x']-r['101:x'],t['101:z']-r['101:z']
+ assert -202<dx-25<dx+25<202 and -122<dz-22<dz+14<122, ('console crosses room wall',room)
+ assert t['101:y']==r['101:y'], ('console floats above room floor',room)
+print('FACILITIES PASS: human-scale controls, full indoor footprints and native-ground support vertices.')

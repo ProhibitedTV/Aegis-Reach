@@ -159,7 +159,7 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
 
  # One original transportable field lab; installed equipment remains restrained.
  from meridian_fieldkit import build as build_fieldkit
- lab,mast,service,power,utility=build_fieldkit(Mesh,own,asset_dir)
+ lab,mast,service,power,utility,console,link,array=build_fieldkit(Mesh,own,asset_dir)
  camp_y=500
  add(lab,'Camp 12 / Meridian field lab',-2350,-7270,y=camp_y,ry=270)
  add(utility,'Camp 12 / connected service feeds',-2350,-7270,y=camp_y)
@@ -181,8 +181,7 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  gate_y=640
  add(service,'Gate 07 / inspection office',-520,-3300,y=gate_y)
  add(mast,'Gate 07 / communications mast',650,-3420,y=gate_y)
- prop(C+'Roadblock2.fpe',-240,-3540,y=gate_y,ry=8,scale=90)
- prop(C+'Roadblock3.fpe',430,-3540,y=gate_y,ry=-8,scale=90)
+ for x in (-250,350):prop(P+'Concrete Barrier 01.fpe',x,-3540,y=gate_y,ry=90,scale=90)
  prop(C+'Light Generator.fpe',760,-3240,y=gate_y,ry=90,scale=82)
  prop(C+'Freight Container.fpe',480,-3270,y=gate_y,ry=90,scale=68)
  prop(P+'Wooden Crate 01a.fpe',610,-3370,y=gate_y,scale=68)
@@ -202,43 +201,29 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
  prop(C+'CableReel.fpe',-1950,250,y=ground(-1950,250),ry=25,scale=86)
 
  op_y=1080
- prop(CYB+'CS_Wall_01_Entry_01.fpe',720,-230,y=op_y,ry=0,scale=62)
- prop(CYB+'CS_Wall_01_Window.fpe',1260,-230,y=op_y,ry=0,scale=62)
- prop(CYB+'CS_Wall_01.fpe',1800,-230,y=op_y,ry=0,scale=62)
- prop(CYB+'CS_Wall_01.fpe',2110,280,y=op_y,ry=90,scale=62)
- prop(CYB+'CS_Wall_01_Entry_03.fpe',2110,820,y=op_y,ry=90,scale=62)
- prop(CYB+'CS_Wall_01.fpe',2110,1360,y=op_y,ry=90,scale=62)
- prop(CYB+'CS_Wall_01_Overhang.fpe',1180,-70,y=op_y+6,ry=0,scale=62)
- prop(CYB+'CS_Roof_Tile_4x4.fpe',1450,580,y=op_y+260,ry=0,scale=60)
- prop(CYM+'CS_Sidewalk_Light.fpe',540,-340,y=ground(540,-340),ry=0,scale=72)
- for x,z in [(900,300),(1280,600)]:
-  prop(P+'Desk 01a.fpe',x,z,y=op_y+2,ry=90,scale=90)
+ add(service,'Operations / archive module',1250,1050,y=op_y)
+ add(service,'Operations / crew module',1935,1000,y=op_y,ry=90)
+ add(link,'Operations / covered service connection',1632.5,940,y=op_y)
+ for x,z in [(1135,1020),(1160,1150)]:
+  prop(P+'Desk 01a.fpe',x,z,y=op_y+.4,ry=90,scale=90)
   # Measured installed bounds: desk top Y=35.6557, computer base Y=-13.6167.
   # Desk origin is a corner. Rotate its local (25,-25) working point with
   # the 90-degree desk; sharing the origin leaves the computer off the edge.
   prop(P+'Computer 01a.fpe',x-22.5,z-22.5,
-       y=op_y+2+(35.6557+13.6167)*.9,ry=90,scale=90)
- for z in (300,560):
-  prop(P+'Locker 01a.fpe',1900,z,y=op_y+2,ry=-90,scale=90)
- prop(I+'Industrial Shelves.fpe',1850,1100,y=op_y,ry=90,scale=82)
- prop(I+'Hand Trolly.fpe',1660,1180,y=op_y,ry=-20,scale=86)
- prop(P+'Portable Cot 01a.fpe',1350,1180,y=op_y+2,ry=90,scale=88)
+       y=op_y+.4+(35.6557+13.6167)*.9,ry=90,scale=90)
+ for x,z in ((1190,990),(1220,1130)):
+  prop(P+'Desk Chair 01a.fpe',x,z,y=op_y,ry=90)
+ for z in (1030,1080):
+  prop(P+'Locker 01a.fpe',2030,z,y=op_y,ry=-90,scale=100)
+ prop(I+'Industrial Shelves.fpe',1850,1370,y=op_y+.15,ry=90,scale=65)
+ prop(I+'Hand Trolly.fpe',1730,1330,y=op_y-.9,ry=-20,scale=75)
+ prop(P+'Portable Cot 01a.fpe',1935,1150,y=op_y,ry=0,scale=100)
 
  aegis_y=1540
- m=Mesh()
- for x in (-720,720):
-  beam(m,x,0,0,100,900,100,2)
-  beam(m,x,210,-65,18,520,18,5)
- beam(m,0,820,0,1540,95,150,2)
- frame=own('AEGIS Arrival Frame',m)
- add(frame,'AEGIS / arrival frame',0,3090,y=aegis_y)
- prop(CYB+'CS_Wall_01_Entry_02.fpe',0,2320,y=ground(0,2320),ry=0,scale=70)
- prop(CYB+'CS_Building_Entrance_Overpass_02.fpe',0,3260,y=aegis_y,ry=0,scale=62)
+ add(service,'AEGIS / control pavilion',-72,3210,y=aegis_y)
+ add(array,'AEGIS / paired relay equipment',0,3340,y=aegis_y)
  prop(C+'Light Generator.fpe',-1060,3500,y=ground(-1060,3500),ry=45,scale=82)
  prop(C+'CableReel.fpe',-890,3560,y=ground(-890,3560),ry=20,scale=86)
- prop(C+'Rebar1.fpe',960,3500,y=ground(960,3500),ry=70,scale=82)
- for x in (-820,820):
-  prop(I+'Control Box - Tall.fpe',x,3250,y=aegis_y+2,ry=180,scale=92)
  for x,z,ry in [(-980,2700,0),(930,2780,90)]:
   prop(P+'Concrete Barrier 01.fpe',x,z,y=ground(x,z),ry=ry,scale=92)
 
@@ -272,3 +257,4 @@ def architecture(Mesh,own,add,prop,P,I,asset_dir):
   for z in (-460,0,460):beam(m,x,0,z,12,100,12,2)
  bridge=own('Excavation Service Bridge',m)
  add(bridge,'AEGIS / inspection bridge at the fracture',-940,4050,y=1540)
+ return console
