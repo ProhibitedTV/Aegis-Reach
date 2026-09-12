@@ -7,7 +7,8 @@ local records={
  INTEL2={'SURVEY NOTE: The black ribs continue below the old waterline.','MIRA SEN: It answers the calibration tone. This is not a mineral deposit.'},
  INTEL3={'WARDEN ORDER: Seal Shelter 12. Retask AEGIS. Erase the survey.','KESTREL: They were never defending the relay. They were burying the evidence.'}
 }
-
+local requirements={POWER=1,RECORDS=2,CORE=3,EXTRACT=4}
+local labels={POWER='Restore power',RECORDS='Recover manifest',CORE='Cancel firing order',EXTRACT='Board Kestrel'}
 local visual={
  locked={75,88,96,5},ready={50,210,230,28},holding={110,235,245,42},
  blocked={239,153,96,34},waiting={185,132,76,18},complete={92,218,132,18},intel={150,112,230,18}
@@ -39,10 +40,14 @@ function firstlight_interact_main(e)
  local role=item.role
  if item.used then return end
  local radius=role=='EXTRACT' and 360 or 210
- if GetPlayerDistance(e)>radius then item.hold=0;return end
+ local near=GetPlayerDistance(e)<=radius
 
+ -- Persistent emissive language makes mission state readable before the player is
+ -- standing on top of a terminal: violet intel, cyan live objectives, amber holds,
+ -- green completed systems, and dim steel for objectives that are not yet relevant.
  if records[role] then
   set_visual(e,item,'intel')
+  if not near then return end
   Prompt('E // Read field record')
   if g_KeyPressE==1 then
    item.used=true;fl.intel[role]=true;local r=records[role];set_visual(e,item,'complete');fl_say(r[1],r[2],13)
@@ -54,6 +59,7 @@ function firstlight_interact_main(e)
 
  if role=='MED' then
   set_visual(e,item,fl.armour<100 and 'ready' or 'locked')
+  if not near then return end
   Prompt(fl.armour<100 and 'E // Field repair: restore armour' or 'ARMOUR NOMINAL')
   if g_KeyPressE==1 and fl.armour<100 then
    item.used=true;fl.armour=100;fl.armour_warned=false;fl.last_health=math.floor(fl.armour+fl.shield);SetPlayerHealth(fl.last_health)
@@ -62,14 +68,22 @@ function firstlight_interact_main(e)
   return
  end
 
- local required=({POWER=1,RECORDS=2,CORE=3,EXTRACT=4})[role]
- if fl.stage>required then set_visual(e,item,'complete');Prompt('SYSTEM RESTORED');return end
- if fl.stage<required then set_visual(e,item,'locked');Prompt('Complete the current objective first');return end
+ local required=requirements[role]
+ if fl.stage>required then
+  set_visual(e,item,'complete')
+  if near then Prompt('SYSTEM RESTORED') end
+  return
+ end
+ if fl.stage<required then
+  set_visual(e,item,'locked')
+  if near then Prompt('Complete the current objective first') end
+  return
+ end
+ if role=='EXTRACT' and (fl.evac_start==0 or fl.evac_elapsed<60000) then set_visual(e,item,'waiting') else set_visual(e,item,'ready') end
+ if not near then item.hold=0;return end
 
  if role=='EXTRACT' then
-  if fl.evac_start==0 or fl.evac_elapsed<60000 then
-   set_visual(e,item,'waiting');Prompt('Defend the landing zone until Kestrel arrives');return
-  end
+  if fl.evac_start==0 or fl.evac_elapsed<60000 then Prompt('Defend the landing zone until Kestrel arrives');return end
   if fl_hostiles(0,-2350,1500)>0 then
    set_visual(e,item,'blocked');Prompt('Clear nearby Wardens before boarding');return
   end
@@ -84,7 +98,7 @@ function firstlight_interact_main(e)
  end
 
  if g_KeyPressE==1 then item.hold=item.hold+dt;set_visual(e,item,'holding') else item.hold=0;set_visual(e,item,'ready') end
- Prompt('Hold E // '..({POWER='Restore power',RECORDS='Recover manifest',CORE='Cancel firing order',EXTRACT='Board Kestrel'})[role]..' '..hold_meter(item.hold))
+ Prompt('Hold E // '..labels[role]..' '..hold_meter(item.hold))
  if item.hold<3000 then return end
  item.used=true
  set_visual(e,item,'complete')
