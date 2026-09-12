@@ -6,9 +6,11 @@ require 'scriptbank\\people\\character_attack'
 local soldiers={}
 
 local function role_for(index)
- if index%3==0 then return 'anchor' end
- if index%3==1 then return 'assault' end
- return 'rifle'
+ local slot=(index-1)%4
+ if slot==0 then return 'assault' end
+ if slot==1 then return 'rifle' end
+ if slot==2 then return 'anchor' end
+ return 'flanker'
 end
 
 function firstlight_enemy_init_name(e,name)
@@ -25,14 +27,23 @@ local function prime_native_character(e,w)
  -- The interpreter reads health/position in masterinterpreter_restart. Defer until
  -- MAX has populated the entity table, then initialize exactly once.
  character_attack_init_file(e,'people\\character_attack')
- local anchor=w.role=='anchor'
- local stand_off=anchor and 450 or (w.role=='assault' and 260 or 340)
- local aggression=w.role=='assault' and 3 or 2
- if w.group>=6 then aggression=3 end
- character_attack_properties(e,0,anchor and 0 or 1,stand_off,anchor and 1 or 0,0,aggression,0,1,w.group>=5 and 15500 or 14000,1,anchor and 1650 or 1450,0,0)
+
+ -- Use the stock MAX tactical choices deliberately rather than replacing its AI:
+ -- FlankTarget 1=Stay Back, 2=Get Close, 3=Wide Flank, 4=Use Cover.
+ local canretreat=w.role=='anchor' and 0 or 1
+ local retreatrange=400
+ local standground=0
+ local flanktarget=4
+ if w.role=='assault' then retreatrange=260;flanktarget=2 end
+ if w.role=='flanker' then retreatrange=430;flanktarget=3 end
+ if w.role=='anchor' then retreatrange=520;standground=1;flanktarget=1 end
+ local alerted=w.group>=6 and 1 or 0
+ local combattime=(w.group>=5 or w.role=='anchor') and 16000 or 14000
+ local hearingrange=w.role=='anchor' and 1750 or 1500
+ character_attack_properties(e,0,canretreat,retreatrange,standground,0,flanktarget,alerted,1,combattime,1,hearingrange,0,0)
 
  if SetAnimationName then SetAnimationName(e,'idle_aim');SetAnimationSpeed(e,1);LoopAnimation(e) end
- firstlight_audit('enemy_init e='..e..' group='..w.group..' role='..w.role..' bytecode='..tostring(g_character_attack_behavior_count))
+ firstlight_audit('enemy_init e='..e..' group='..w.group..' role='..w.role..' tactic='..flanktarget..' bytecode='..tostring(g_character_attack_behavior_count))
  w.primed=true
 end
 
