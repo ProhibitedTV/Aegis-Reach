@@ -6,6 +6,8 @@ require 'scriptbank\\people\\character_attack'
 local soldiers={}
 local squad_clock={}
 local squad_epoch=-1
+local group_metrics={}
+local metrics_epoch=-1
 
 -- Each four-person cell has a readable battlefield job. The first contact is a rifleman
 -- rather than an instant rusher; pressure then builds through assault, anchor and flank.
@@ -19,13 +21,67 @@ end
 
 local ROLE_DELAY={anchor=0,rifle=350,assault=750,flanker=1250}
 local ROLE_WEIGHT={anchor=1.15,rifle=1.0,assault=1.15,flanker=1.10}
+local GROUP_SIZE={[1]=3,[2]=3,[3]=4,[4]=4,[5]=4,[6]=4,[7]=6}
+
+local function ensure_metrics_epoch()
+ local epoch=(fl and fl.born) or 0
+ if metrics_epoch~=epoch then
+  group_metrics={};metrics_epoch=epoch
+  if fl then fl.squad_metrics=group_metrics end
+ end
+end
+
+local function metric_for(group)
+ ensure_metrics_epoch()
+ local m=group_metrics[group]
+ if not m then
+  m={started=0,deaths=0,cleared=false,start_armour=100,start_shield=100,peak_pressure=0}
+  group_metrics[group]=m
+ end
+ return m
+end
+
+local function start_group_metric(w)
+ local m=metric_for(w.group)
+ if m.started==0 then
+  m.started=g_Time
+  m.start_armour=fl.armour or 100
+  m.start_shield=fl.shield or 100
+  m.peak_pressure=fl.pressure or 0
+  fl_log('squad_start group='..w.group..' role='..w.role..' armour='..math.floor(m.start_armour)..' shield='..math.floor(m.start_shield)..' pressure='..math.floor(m.peak_pressure))
+ end
+ return m
+end
+
+local function sample_group_metric(w)
+ local m=metric_for(w.group)
+ m.peak_pressure=math.max(m.peak_pressure or 0,fl.pressure or 0)
+end
+
+local function record_death(w)
+ if w.death_logged then return end
+ w.death_logged=true
+ local m=metric_for(w.group)
+ if m.started==0 then start_group_metric(w) end
+ m.deaths=m.deaths+1
+ m.peak_pressure=math.max(m.peak_pressure or 0,fl.pressure or 0)
+ local elapsed=math.max(0,g_Time-m.started)
+ fl_log('enemy_down group='..w.group..' index='..w.index..' role='..w.role..' elapsed_ms='..elapsed..' squad_deaths='..m.deaths..'/'..(GROUP_SIZE[w.group] or 0))
+ if not m.cleared and m.deaths>=(GROUP_SIZE[w.group] or 999) then
+  m.cleared=true;m.cleared_at=g_Time
+  m.duration_ms=g_Time-m.started
+  m.armour_loss=math.max(0,(m.start_armour or 100)-(fl.armour or 0))
+  m.end_armour=fl.armour or 0;m.end_shield=fl.shield or 0
+  fl_log('squad_clear group='..w.group..' duration_ms='..m.duration_ms..' armour_loss='..math.floor(m.armour_loss)..' end_armour='..math.floor(m.end_armour)..' end_shield='..math.floor(m.end_shield)..' peak_pressure='..math.floor(m.peak_pressure or 0))
+ end
+end
 
 function firstlight_enemy_init_name(e,name)
  local group,index=string.match(name,'FL ENEMY (%d+) (%d+)')
  group=tonumber(group);index=tonumber(index)
  soldiers[e]={
   group=group,index=index,role=role_for(index),active=false,registered=false,queued=0,
-  eligible_since=0,watch_since=0,reveal_reason='',reveal_wait=0
+  eligible_since=0,watch_since=0,reveal_reason='',reveal_wait=0,death_logged=false
  }
  -- Dormant MAX characters can otherwise remain visible in their bind/T pose until
  -- character_attack_main takes ownership. First Light reveals each encounter locally.
@@ -165,7 +221,10 @@ function firstlight_enemy_main(e)
  if not w.primed then prime_native_character(e,w) end
  if not w.registered then fl.enemies[e]=w;w.registered=true end
  if g_Entity[e] and g_Entity[e].health<=0 then
-  if w.active then character_attack_main(e) end -- Let the native death state finish.
+  if w.active then
+   record_death(w)
+   character_attack_main(e) -- Let the native death state finish.
+  end
   return
  end
 
@@ -178,6 +237,7 @@ function firstlight_enemy_main(e)
    return
   end
   w.active=true
+  start_group_metric(w)
   -- Prime a valid named pose before revealing the character. The stock MAX
   -- character behavior takes over immediately afterward.
   if SetAnimationName and LoopAnimation then
@@ -190,6 +250,7 @@ function firstlight_enemy_main(e)
   fl_log('enemy_activated group='..w.group..' index='..w.index..' role='..w.role..' reason='..w.reveal_reason..' wait='..math.floor(w.reveal_wait or 0)..' entity='..e..' budget='..tostring(fl.combat_budget))
  end
 
+ sample_group_metric(w)
  character_attack_main(e)
  if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and (not w.audit_at or g_Time-w.audit_at>1000) then
   w.audit_at=g_Time
