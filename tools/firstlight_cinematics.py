@@ -1,12 +1,8 @@
-"""Sparse CineGuru MAX story cameras for FIRST LIGHT.
+"""CineGuru story cameras for FIRST LIGHT.
 
-The mission remains playable if CineGuru is unavailable: these are presentation
-entities only. Runtime progression lives in the normal FIRST LIGHT director/interact
-scripts and firstlight_cinematic.lua requests named cameras when appropriate.
-
-CineGuru camera/controller entities are forced always-active because native MAX may
-otherwise defer their script registration until the player enters a local culling
-radius. Story beats retry registration and are consumed only once a camera rolls.
+The opening is now a two-shot insertion sequence built around the visible Kestrel:
+(1) arrival/descent and (2) mission handoff as the ship departs. Mid-mission story
+beats remain sparse and gameplay owns the extraction approach itself.
 """
 import math
 
@@ -15,20 +11,23 @@ CONTROLLER_SCRIPT=r'aegis_reach\firstlight_cinematic.lua'
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 
 SHOT_PROFILES={
-    'ARRIVAL':dict(seconds=9.5,focal_start=54,focal_end=82),
-    'MIRA_SIGNAL':dict(seconds=5.0,focal_start=70,focal_end=82),
-    'AEGIS_REVEAL':dict(seconds=6.0,focal_start=58,focal_end=88),
-    'EXTRACTION':dict(seconds=5.0,focal_start=66,focal_end=82),
+    'ARRIVAL':dict(seconds=6.5,focal_start=58,focal_end=76),
+    'ARRIVAL_HANDOFF':dict(seconds=6.2,focal_start=64,focal_end=84),
+    'MIRA_SIGNAL':dict(seconds=5.2,focal_start=70,focal_end=84),
+    'AEGIS_REVEAL':dict(seconds=6.3,focal_start=58,focal_end=90),
+    'EXTRACTION':dict(seconds=6.0,focal_start=62,focal_end=82),
 }
 
 SHOTS=(
-    # beat, entity name, camera x/z, height above terrain, target x/z, target height
-    # ARRIVAL sits behind the insertion point and looks down the dead service corridor
-    # toward Camp 12. The runtime slowly widens its focal length during the briefing.
-    ('ARRIVAL','FL CG ARRIVAL',-160,-9060,460,-2050,-7200,120),
+    # beat, name, camera x/z, height, target x/z, target height
+    # Side-on insertion view: Kestrel crosses the frame and settles into the drop point.
+    ('ARRIVAL','FL CG ARRIVAL',690,-9640,330,-120,-9140,180),
+    # Handoff faces up the dead service corridor while Kestrel climbs out behind/above Seven.
+    ('ARRIVAL_HANDOFF','FL CG ARRIVAL HANDOFF',-560,-9270,250,-1980,-7240,105),
     ('MIRA_SIGNAL','FL CG MIRA SIGNAL',820,650,205,1420,1050,85),
     ('AEGIS_REVEAL','FL CG AEGIS REVEAL',-1060,2070,335,0,3200,175),
-    ('EXTRACTION','FL CG EXTRACTION',-820,-3020,300,0,-2350,80),
+    # Boarding shot owns the Kestrel lift-off, not the combat approach.
+    ('EXTRACTION','FL CG EXTRACTION',-1050,-3070,340,0,-2350,125),
 )
 
 
@@ -54,31 +53,23 @@ def apply(build):
         cameras.append({
             'beat':beat,'name':name,'x':x,'y':round(y,2),'z':z,
             'pitch':round(pitch,2),'yaw':round(yaw,2),
-            'seconds':profile['seconds'],
-            'focal_start':profile['focal_start'],'focal_end':profile['focal_end'],
-            'always_active':True,
+            'seconds':profile['seconds'],'focal_start':profile['focal_start'],
+            'focal_end':profile['focal_end'],'always_active':True,
         })
-
-    # A separate invisible mission-side coordinator requests CineGuru by camera name.
-    # Keep it always active so the opening request cannot be lost during MAX startup.
     build.add(
         MARKER,'FIRST LIGHT // CINEMATIC',180,-9500,y=100,kind='controller',
-        script=CONTROLLER_SCRIPT,
-        **{'eleprof.physics':0,'eleprof.phyalways':1}
+        script=CONTROLLER_SCRIPT,**{'eleprof.physics':0,'eleprof.phyalways':1}
     )
     return {
-        'system':'CineGuru MAX',
-        'camera_count':len(cameras),
-        'beats':[c['beat'] for c in cameras],
+        'system':'CineGuru MAX','camera_count':len(cameras),'beats':[c['beat'] for c in cameras],
         'cameras':cameras,
         'opening':{
-            'purpose':'recover 42 missing colonists and investigate Mira Sen last burst',
-            'warden_clue':'Gate 07 transponder crossed after communications failed',
+            'shots':['ARRIVAL','ARRIVAL_HANDOFF'],
+            'purpose':'show Kestrel insertion, establish 42 missing colonists, Mira signal, Warden intrusion, then hand control toward Northstar',
             'first_action':'Restore Northstar and recover the evacuation packet',
-            'seconds':SHOT_PROFILES['ARRIVAL']['seconds'],
+            'seconds':SHOT_PROFILES['ARRIVAL']['seconds']+SHOT_PROFILES['ARRIVAL_HANDOFF']['seconds'],
         },
-        'always_active':True,
-        'registration_retry':True,
-        'fail_open':True,
+        'extraction':'Kestrel approaches visibly during gameplay; EXTRACTION camera is reserved for boarding/liftoff',
+        'always_active':True,'registration_retry':True,'fail_open':True,
         'music_owner':'firstlight_score.lua',
     }
