@@ -8,6 +8,8 @@ local configs={
  POWER_VENT={kind='smoke',opacity=18,speed=60,life=55,color={171,186,200}},
  ARCHIVE_SMOKE={kind='smoke',opacity=24,speed=38,life=60,color={87,98,110}},
  ARRAY_FAULT={kind='spark',opacity=78,speed=210,life=16,color={112,185,235},period=2200},
+ WRECK_FIRE={kind='fire',opacity=72,speed=65,life=65,color={255,208,164},range=3400},
+ WRECK_SMOKE={kind='smoke',opacity=34,speed=55,life=95,color={91,98,108},range=4500},
 }
 
 function firstlight_effects_init_name(e,name)
@@ -39,13 +41,20 @@ function firstlight_effects_main(e)
  end
  -- Hysteresis avoids repeatedly starting/stopping at the edge of an effect area.
  local distance=GetPlayerDistance(e)
- local range=s.active and 2400 or 2100
+ local range=(c.range or 2100)+(s.active and 300 or 0)
  local on=fl and fl.started and not fl.won and g_PlayerHealth>0
           and allowed(s.role,fl.stage) and distance<range
  if on and not s.active then
   EffectStart(e);s.active=true;s.next_burst=g_Time+(e%5)*110
  elseif not on and s.active then
   EffectStop(e);s.active=false
+ end
+ -- Existing MAX 3D audio stays local to the hot engine, below music/dialogue.
+ if s.role=='WRECK_FIRE' and LoopSound and SetSoundVolume and StopSound then
+  if on and distance<900 then
+   LoopSound(e,0);SetSoundVolume(math.min(48,math.max(0,(900-distance)*.08)))
+   s.audible=true
+  elseif s.audible then StopSound(e,0);s.audible=false end
  end
  if s.active and c.kind=='spark' and g_Time>=s.next_burst then
   EffectFireBurst(e);s.next_burst=g_Time+c.period
@@ -54,5 +63,6 @@ end
 
 function firstlight_effects_exit(e)
  if EffectStop then EffectStop(e) end
+ if states[e] and states[e].audible and StopSound then StopSound(e,0) end
  states[e]=nil
 end

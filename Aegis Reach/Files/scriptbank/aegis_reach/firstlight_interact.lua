@@ -11,7 +11,9 @@ local fieldnotes={
  GATELOG={'GATE 07 / INSPECTION LOG: Civilian freight ordered back to camp.',
           'KESTREL: The Wardens sealed the road after the evacuation. Northstar holds the local override.'},
  GRIDLOG={'NORTHSTAR / MAINTENANCE: Generators intact. Civilian bus isolated remotely.',
-          'TECHNICIAN: Yard terminal can restore the bus. Do not disconnect the shelter feed.'}
+          'TECHNICIAN: Yard terminal can restore the bus. Do not disconnect the shelter feed.'},
+ FLIGHTLOG={'M-17 / CARGO: Air filters. Medical packs. Security ammunition. Colony resupply, inbound.',
+            'PILOT: Landing clearance revoked. Gate 07 refuses our distress call. Putting her down in the tide channel.'}
 }
 local requirements={POWER=1,RECORDS=2,CORE=3,EXTRACT=4}
 local labels={POWER='Restore power',RECORDS='Recover manifest',CORE='Cancel firing order',EXTRACT='Board Kestrel'}
@@ -53,7 +55,8 @@ function firstlight_interact_main(e)
  -- green completed systems, and dim steel for objectives that are not yet relevant.
  if fieldnotes[role] then
   if GetPlayerDistance(e)>110 then return end
-  Prompt('E // Read '..(role=='GATELOG' and 'inspection log' or 'maintenance record'))
+  local note_label=role=='GATELOG' and 'inspection log' or role=='FLIGHTLOG' and 'M-17 flight recorder' or 'maintenance record'
+  Prompt('E // Read '..note_label)
   if g_KeyPressE==1 then
    item.used=true;local note=fieldnotes[role];fl_say(note[1],note[2],13)
    fl.discovery_until=g_Time+10000;fl.discovery_track='discovery_human'

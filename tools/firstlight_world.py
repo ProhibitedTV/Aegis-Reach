@@ -109,6 +109,11 @@ def ground(x,z):
   blend=(1-smoothstep(.25,1.65,r))*smoothstep(350,450,distance)
   h-=max(0,h-35)*blend
  # Wheel ruts are shallow native relief; preserve camp/combat pad heights.
+ # M-17 slid into a shallow shelf west of the road; no generated ground plane.
+ # A bounded contact patch keeps its compressed landing gear grounded, while
+ # the graded edge is traversable and does not reach existing combat positions.
+ wreck=rect_mask(x,z,-1790,-5560,260,340,110)
+ h=h*(1-wreck)+385*wreck
  if -7800<z<-3650 and not any(abs(x-px)<hx+20 and abs(z-pz)<hz+20 for px,pz,hx,hz,_ in PADS):
   h-=3*(1-smoothstep(12,27,abs(distance-62)))
  return h
@@ -134,6 +139,11 @@ def service_material(x,z):
  """
  for px,pz,rx,rz in BRINE_POOLS:
   if math.hypot((x-px)/rx,(z-pz)/rz)<1.10:return 19
+ # Two scoured landing-gear tracks end at M-17; this is a crash scar, not
+ # another service road or a decal plane fighting the native terrain.
+ if -5980<z<-5320 and abs(x+1790)<260:
+  if abs(abs(x+1790)-122)<19+5*math.sin(z/27):return 19
+  if abs(x+1790)<96 and z>-5570:return 19
  if not(-9800<=z<=-500 and -3500<=x<=1500):return 0
  distance,_=road_sample(x,z,ROUTE[:11])
  # A real delivery turnout branches off the through-road and ends alongside

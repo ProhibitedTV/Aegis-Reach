@@ -23,6 +23,9 @@ function EffectSetBurstMode(...) end
 function EffectSetLocalRotation(...) end
 function EffectFireBurst(e) calls['bursts'..e]=(calls['bursts'..e] or 0)+1 end
 function GetPlayerDistance(e) return dist end
+function LoopSound(e,slot) calls['audio'..e]=true end
+function StopSound(e,slot) calls['audio'..e]=false end
+function SetSoundVolume(v) calls.volume=v end
 ''')
 lua.execute((ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_effects.lua').read_text())
 g=lua.globals()
@@ -48,12 +51,24 @@ assert (g.calls.bursts1 or 0)-before<=1, 'sparks burst every frame'
 for e in range(1,7):g.firstlight_effects_exit(e)
 assert not any(g.calls['active'+str(e)] for e in range(1,7))
 
+# Wreck smoke is readable from the road; close fire audio never becomes global.
+for e,site in enumerate(EFFECTS[6:],7):g.firstlight_effects_init_name(e,'FL FX '+site[0])
+def wreck_tick(distance):
+ g.dist=distance;g.g_Time+=120
+ for e in (7,8):g.firstlight_effects_main(e)
+wreck_tick(500);assert g.calls.active7 and g.calls.active8 and g.calls.audio7
+assert g.calls.volume<=48
+wreck_tick(2800);assert g.calls.active7 and g.calls.active8 and not g.calls.audio7
+wreck_tick(4000);assert not g.calls.active7 and g.calls.active8
+g.fl.won=True;wreck_tick(500);assert not g.calls.active8 and not g.calls.audio7
+for e in (7,8):g.firstlight_effects_exit(e)
+
 design=ROOT/'Aegis Reach/Design/First Light'
 layout=json.loads((design/'layout.json').read_text())
 with zipfile.ZipFile(ROOT/'Aegis Reach/Files/mapbank/Aegis Reach - First Light.fpm') as z:
  _,entities=read_ele(z.read('map.ele',pwd=PASSWORD))
 by_name={e['101:eleprof.name_s']:e for e in entities}
-assert len([p for p in layout if p['kind']=='story_effect'])==6
+assert len([p for p in layout if p['kind']=='story_effect'])==len(EFFECTS)
 for role,preset,x,z,y,scale,story in EFFECTS:
  e=by_name['FL FX '+role]
  assert (e['101:x'],e['101:y'],e['101:z'])==(x,y,z)

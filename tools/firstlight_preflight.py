@@ -102,6 +102,7 @@ def main():
         'test_firstlight_collect.py',
         'test_vesper_sky.py',
         'test_firstlight_story_effects.py',
+        'test_firstlight_transport.py',
     ]
     for name in tests:
         run_test(name)

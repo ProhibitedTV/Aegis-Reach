@@ -3,7 +3,7 @@
 Original debris geometry plus installed MAX particle presets, referenced only.
 Effect markers remain native entities; Lua controls their mission-stage lifecycle.
 """
-from meridian_fieldkit import ATLAS, NORMAL, SURFACE, EMISSION, strut
+from meridian_fieldkit import ATLAS, NORMAL, SURFACE, strut
 
 SCRIPT = r'aegis_reach\firstlight_effects.lua'
 MARKER = r'_markers\Particles.fpe'
@@ -15,6 +15,8 @@ EFFECTS = [
  ('POWER_VENT','camp smoke',-1650,-540,1242,30,'generator exhaust resumes after Northstar restart'),
  ('ARCHIVE_SMOKE','smoke_billowy',1660,1350,1098,22,'physical records burned outside Operations'),
  ('ARRAY_FAULT','embers2',-450,3253,1620,18,'overloaded firing bus; clears when AEGIS is cancelled'),
+ ('WRECK_FIRE','fire_and_smoke',-1583,-5435,470,24,'fuel burns inside M-17 starboard engine'),
+ ('WRECK_SMOKE','smoke_billowy',-1710,-5355,523,40,'low aft cargo smoke marks the forced landing'),
 ]
 
 
@@ -66,12 +68,13 @@ def apply(build):
  for role,preset,x,z,y,scale,story in EFFECTS:
   if not (build.INSTALL/'particlesbank'/(preset+'.arx')).is_file():
    raise FileNotFoundError('Required installed MAX particle preset: '+preset)
+  audio={'eleprof.soundset_s':r'misc\Campfire_loop.wav'} if role=='WRECK_FIRE' else {}
   build.add(MARKER,'FL FX '+role,x,z,y=y,scale=scale,kind='story_effect',script=SCRIPT,
    **{'eleprof.physics':0,'eleprof.phyalways':0,
       'eleprof.newparticle.emittername':'particlesbank/'+preset,
       'eleprof.newparticle.bParticle_Show_At_Start':0,
       'eleprof.newparticle.bParticle_Preview':0,
       'eleprof.newparticle.bParticle_Looping_Animation':1,
-      'eleprof.newparticle.bParticle_Full_Screen':0})
+      'eleprof.newparticle.bParticle_Full_Screen':0,**audio})
   build.placements[-1].update(preset=preset,story=story)
  return {'effect_count':len(EFFECTS),'debris_count':3,'installed_presets':sorted({e[1] for e in EFFECTS})}

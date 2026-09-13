@@ -2780,5 +2780,86 @@
     "kind": "story_effect",
     "preset": "embers2",
     "story": "overloaded firing bus; clears when AEGIS is cancelled"
+  },
+  {
+    "id": 245,
+    "name": "FL FX WRECK_FIRE",
+    "asset": "_markers\\Particles.fpe",
+    "x": -1583,
+    "y": 470,
+    "z": -5435,
+    "rotation": 0,
+    "scale": 24,
+    "kind": "story_effect",
+    "preset": "fire_and_smoke",
+    "story": "fuel burns inside M-17 starboard engine"
+  },
+  {
+    "id": 246,
+    "name": "FL FX WRECK_SMOKE",
+    "asset": "_markers\\Particles.fpe",
+    "x": -1710,
+    "y": 523,
+    "z": -5355,
+    "rotation": 0,
+    "scale": 40,
+    "kind": "story_effect",
+    "preset": "smoke_billowy",
+    "story": "low aft cargo smoke marks the forced landing"
+  },
+  {
+    "id": 247,
+    "name": "M-17 / interrupted colony resupply",
+    "asset": "Aegis Reach\\First Light\\Meridian M17 Transport Wreck.fpe",
+    "x": -1790,
+    "y": 385,
+    "z": -5560,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "wreck"
+  },
+  {
+    "id": 248,
+    "name": "M-17 / ruptured cargo",
+    "asset": "Aegis Reach\\First Light\\Meridian Scorched Case.fpe",
+    "x": -1780,
+    "y": 385.0,
+    "z": -5250,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "wreck_detail"
+  },
+  {
+    "id": 249,
+    "name": "FL FLIGHTLOG",
+    "asset": "Aegis Reach\\First Light\\Meridian Flight Recorder.fpe",
+    "x": -1614,
+    "y": 385.0,
+    "z": -5253,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "record"
+  },
+  {
+    "id": 250,
+    "name": "M-17 / recoverable security ammunition",
+    "asset": "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
+    "x": -1640,
+    "y": 411.3798594728115,
+    "z": -5135,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "ammo"
+  },
+  {
+    "id": 251,
+    "name": "M-17 / engine fire practical",
+    "asset": "_markers\\White Light.fpe",
+    "x": -1578,
+    "y": 495,
+    "z": -5435,
+    "rotation": 0,
+    "scale": 100,
+    "kind": "wreck_light"
   }
 ]

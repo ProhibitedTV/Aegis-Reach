@@ -125,6 +125,8 @@ for p in placements:
   custom_environment.append(asset.split('\\')[-1])
 allowed={
  'Meridian Severed Junction.fpe',
+ 'Meridian M17 Transport Wreck.fpe',
+ 'Meridian Flight Recorder.fpe',
  'Meridian Scorched Case.fpe',
  'Camp 12 Utility Spine.fpe',
  'Camp 12 Survey Mast.fpe',

@@ -106,7 +106,7 @@ check('Shield recharges after contact breaks',g.fl.shield>0 and g.fl.armour==70)
 entity(8,0,-2350);g.firstlight_interact_init_name(8,'FL MED');pos(0,-2350);g.g_KeyPressE=1;step(100,8)
 check('Field repair restores armour',g.fl.armour==100)
 entity(9,0,-2350);g.firstlight_interact_init_name(9,'FL INTEL1');step(100,9);check('Field records are collectible',g.fl.intel.INTEL1)
-for e,role in ((70,'GATELOG'),(71,'GRIDLOG')):
+for e,role in ((70,'GATELOG'),(71,'GRIDLOG'),(72,'FLIGHTLOG')):
  entity(e,0,-2350);g.firstlight_interact_init_name(e,'FL '+role)
  stage=g.fl.stage;count=len(list(g.fl.intel.items()))
  g.g_KeyPressE=0;step(100,e);check(role+' offers a physical read prompt','Read' in g.calls.prompt)
