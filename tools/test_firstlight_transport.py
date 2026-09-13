@@ -67,7 +67,7 @@ for name in ('Meridian M17 Collision Forward','Meridian M17 Collision Cargo',
  assert 'collisionmode = 0' in text,name
 
 transport=(ROOT/'tools/firstlight_transport.py').read_text(errors='replace')
-assert "'eleprof.physics':1" in transport and "'eleprof.phyalways':1" in transport,
+assert ("'eleprof.physics':1" in transport and "'eleprof.phyalways':1" in transport), \
        'collision proxies are no longer authored as persistent physics entities'
 proxy=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_collision_proxy.lua').read_text(errors='replace')
 assert 'Hide(e)' in proxy,'collision proxy no longer hides render geometry'
