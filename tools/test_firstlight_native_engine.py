@@ -17,8 +17,10 @@ def main():
     assert 'g_Time+70' in lua,'practical light should be throttled rather than recalculated every frame'
 
     fx=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_effects.lua').read_text(errors='replace')
-    for token in ('EffectStart','EffectStop','GetPlayerDistance','next_check=g_Time+100'):
+    for token in ('EffectStart','EffectStop','GetPlayerDistance','next_check=g_Time+100','SetEntityAlwaysActive(e,1)'):
         assert token in fx,token
+    for role in ('WRECK_FIRE','WRECK_FIRE_AUX','WRECK_SMOKE','WRECK_SPARKS'):
+        assert role in fx,role
 
     layout=json.loads((ROOT/'Aegis Reach/Design/First Light/layout.json').read_text())
     bylayout={p['name']:p for p in layout}
@@ -39,7 +41,7 @@ def main():
         assert 'collisionmode = 11' in text,filename
 
     print('FIRST LIGHT // NATIVE ENGINE CONTRACT PASS')
-    print('Local-light budget, throttled MAX light API, distance-cull FX and no-collision ambience verified.')
+    print('Local-light budget, always-active long-range wreck FX, distance culling and no-collision ambience verified.')
 
 
 if __name__=='__main__':main()

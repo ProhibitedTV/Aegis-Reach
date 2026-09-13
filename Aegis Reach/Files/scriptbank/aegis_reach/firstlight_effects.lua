@@ -14,10 +14,18 @@ local configs={
  WRECK_SPARKS={kind='spark',opacity=96,speed=240,life=24,color={255,151,62},period=1150,range=3800},
 }
 
+local function long_range_wreck(role)
+ return role=='WRECK_FIRE' or role=='WRECK_FIRE_AUX' or role=='WRECK_SMOKE' or role=='WRECK_SPARKS'
+end
+
 function firstlight_effects_init_name(e,name)
  local role=string.match(name,'FL FX ([%w_]+)')
  states[e]={role=role,active=false,configured=false,next_burst=0,next_check=0}
  CollisionOff(e)
+ -- MAX distributes ordinary entity logic by distance. These four wreck markers are
+ -- intentional long-range landmarks, so keep only their lightweight 10 Hz controller
+ -- alive; the particle emitters themselves are still started/stopped by player range.
+ if SetEntityAlwaysActive and long_range_wreck(role) then SetEntityAlwaysActive(e,1) end
  if EffectStop then EffectStop(e) end
 end
 
