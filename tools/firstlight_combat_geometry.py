@@ -111,13 +111,13 @@ def apply(build):
   placement['combat_role']=('rifle','assault','anchor','flanker')[(index-1)%4]
   moved.append({'group':group,'index':index,'x':x,'z':z,'role':placement['combat_role']})
 
- lightp=r'_markers\\White Light.fpe'
+ lightp=r'_markers\White Light.fpe'
  template=build.T[lightp]
  first_index=len(build.light_locations)+len(build.crystal_sites)+1
  for offset,(x,z,color,radius,encounter) in enumerate(COMBAT_LIGHTS):
   idx=first_index+offset
   build.add(lightp,'FL COMBAT LIGHT '+str(offset+1),x,z,y=build.ground(x,z)+145,
-            kind='combat_light',template=template,script=r'markers\\ConstantLight.lua',
+            kind='combat_light',template=template,script=r'markers\ConstantLight.lua',
             **{'eleprof.light.color':color,'eleprof.light.range':radius,
                'eleprof.light.index':idx,'eleprof.light.fLightHasProbe':0})
   build.placements[-1]['encounter']=encounter
