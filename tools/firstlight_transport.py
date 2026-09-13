@@ -1,14 +1,15 @@
 """M-17 cargo lander wreck; authored roadside crash site with dedicated collision.
 
 The visible hull is intentionally canted and torn. Player collision is provided by
-separate simple box-collision cores so MAX never has to infer traversal from the
-concave wreck shell.
+separate hidden box-collision cores so MAX never has to infer traversal from the
+concave wreck shell or render the proxy geometry as part of the ship.
 """
 import math
 from meridian_fieldkit import ATLAS, NORMAL, SURFACE, quad, strut
 
 SITE=(-1790,-5560,385)
 NAME='Meridian M17 Transport Wreck'
+COLLISION_SCRIPT=r'aegis_reach\firstlight_collision_proxy.lua'
 CRASH_YAW=14
 CRASH_PITCH=-10
 CRASH_ROLL=-8
@@ -186,13 +187,14 @@ def apply(build):
     ]:
         p=build.own(name,fn(build.Mesh),ATLAS,collision=collision);_finish_fpe(build,name);models[name]=p
 
-    # Dedicated box colliders sit inside the visible wreck. Box collision is robust in
-    # MAX and avoids holes from the open/concave render shell.
+    # Hidden proxy volumes sit fully inside the visible wreck. They are intentionally
+    # tighter than the previous boxes so the player does not hit invisible walls beyond
+    # torn plating, while still closing the large phase-through holes in the render shell.
     blockers=[
-        ('Meridian M17 Collision Forward',160,120,240,0,-170,0),
-        ('Meridian M17 Collision Cargo',190,132,260,-2,82,0),
-        ('Meridian M17 Collision Port Engine',82,90,190,-208,76,0),
-        ('Meridian M17 Collision Starboard Root',106,78,128,135,55,0),
+        ('Meridian M17 Collision Forward',144,106,208,0,-174,0),
+        ('Meridian M17 Collision Cargo',164,116,220,-4,72,0),
+        ('Meridian M17 Collision Port Engine',70,78,160,-208,72,0),
+        ('Meridian M17 Collision Starboard Root',86,66,102,132,55,0),
     ]
     for name,w,h,d,dx,dz,dy in blockers:
         p=build.own(name,collision_box(build.Mesh,w,h,d),ATLAS,collision=0)
@@ -206,6 +208,7 @@ def apply(build):
         bx,bz=world_offset(dx,dz)
         build.add(models[name],'M-17 / collision '+name.rsplit(' ',1)[-1].lower(),
                   bx,bz,y=build.ground(bx,bz)+dy,ry=CRASH_YAW,kind='wreck_collision',
+                  script=COLLISION_SCRIPT,
                   **{'eleprof.physics':1,'eleprof.phyalways':1})
 
     # Detached engine and torn panels make the right-side failure readable from the road.
@@ -253,4 +256,5 @@ def apply(build):
                      'eleprof.light.fLightHasProbe':0})
 
     return {'name':'Meridian M-17','site':SITE,'lights':2,'ammo':60,'record':'FLIGHTLOG',
-            'collision_boxes':len(blockers),'detached_engine':True,'crash_yaw':CRASH_YAW}
+            'collision_boxes':len(blockers),'hidden_collision':True,
+            'detached_engine':True,'crash_yaw':CRASH_YAW}
