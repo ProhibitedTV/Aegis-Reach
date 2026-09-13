@@ -2,7 +2,11 @@
 
 The mission remains playable if CineGuru is unavailable: these are presentation
 entities only. Runtime progression lives in the normal FIRST LIGHT director/interact
-scripts and firstlight_cinematic.lua simply requests named cameras when appropriate.
+scripts and firstlight_cinematic.lua requests named cameras when appropriate.
+
+CineGuru camera/controller entities are forced always-active because native MAX may
+otherwise defer their script registration until the player enters a local culling
+radius. Story beats retry registration and are consumed only once a camera rolls.
 """
 import math
 
@@ -35,25 +39,28 @@ def apply(build):
         y,pitch,yaw=_pose(build,x,z,height,tx,tz,target_height)
         build.add(
             MARKER,name,x,z,y=y,ry=yaw,kind='cinematic_camera',script=CAMERA_SCRIPT,
-            **{'rx':pitch,'rz':0,'eleprof.physics':0,'eleprof.phyalways':0}
+            **{'rx':pitch,'rz':0,'eleprof.physics':0,'eleprof.phyalways':1}
         )
         cameras.append({
             'beat':beat,'name':name,'x':x,'y':round(y,2),'z':z,
             'pitch':round(pitch,2),'yaw':round(yaw,2),'seconds':5,
+            'always_active':True,
         })
 
     # A separate invisible mission-side coordinator requests CineGuru by camera name.
-    # Using the same harmless authored marker asset avoids introducing another model.
+    # Keep it always active so the opening request cannot be lost during MAX startup.
     build.add(
         MARKER,'FIRST LIGHT // CINEMATIC',180,-9500,y=100,kind='controller',
         script=CONTROLLER_SCRIPT,
-        **{'eleprof.physics':0,'eleprof.phyalways':0}
+        **{'eleprof.physics':0,'eleprof.phyalways':1}
     )
     return {
         'system':'CineGuru MAX',
         'camera_count':len(cameras),
         'beats':[c['beat'] for c in cameras],
         'cameras':cameras,
+        'always_active':True,
+        'registration_retry':True,
         'fail_open':True,
         'music_owner':'firstlight_score.lua',
     }
