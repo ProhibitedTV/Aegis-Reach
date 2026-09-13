@@ -1,5 +1,5 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- Primitive Vesper biosphere presentation. Ambient only: no combat, damage or nav AI.
+-- Vesper ambient biosphere presentation. Visual only: no damage, combat AI, nav or physics.
 local bio={}
 
 local function distance(e)
@@ -7,64 +7,93 @@ local function distance(e)
   local ok,d=pcall(GetPlayerDistance,e)
   if ok and d then return d end
  end
- return 0
+ return 99999
+end
+local function object_of(e)
+ if not g_Entity or not g_Entity[e] then return nil end
+ return g_Entity[e].obj
 end
 
 function firstlight_biosphere_init_name(e,name)
  local ent=g_Entity and g_Entity[e] or nil
+ local common={x=ent and ent.x or 0,y=ent and ent.y or 0,z=ent and ent.z or 0,next_tick=0,phase=(e%23)*.61}
  if string.find(name,'FL BIO SKITTER',1,true) then
-  bio[e]={kind='skitter',x=ent and ent.x or 0,y=ent and ent.y or 0,z=ent and ent.z or 0,
-          phase=(e%19)*0.71,radius=15+(e%5)*4,speed=.46+(e%4)*.07}
-  if CollisionOff then CollisionOff(e) end
- elseif string.find(name,'FL BIO MIDGES',1,true) then
-  bio[e]={kind='midges',configured=false,active=false,next_check=0}
-  if CollisionOff then CollisionOff(e) end
-  if EffectStop then EffectStop(e) end
+  common.kind='skitter';common.radius=16+(e%5)*3;common.speed=.56+(e%4)*.06;common.lastx=common.x;common.lastz=common.z
+ elseif string.find(name,'FL BIO VEILWING',1,true) then
+  common.kind='veilwing';common.radius=28+(e%4)*5;common.speed=.48+(e%3)*.05
+ elseif string.find(name,'FL BIO SPORES',1,true) then
+  common.kind='spores';common.configured=false;common.active=false
  else
-  bio[e]={kind='static'}
-  if CollisionOff then CollisionOff(e) end
+  common.kind='static'
  end
+ bio[e]=common
+ if CollisionOff then CollisionOff(e) end
+ if common.kind=='spores' and EffectStop then EffectStop(e) end
 end
 
-local function update_midges(e,s)
- if not EffectStart then return end
- if g_Time<s.next_check then return end
- s.next_check=g_Time+140
+local function update_spores(e,s)
+ if g_Time<s.next_tick then return end;s.next_tick=g_Time+180
  if not s.configured then
-  -- Reuse the native ember sprite at tiny scale, but remove its hot/spark behavior.
-  -- At runtime this reads as a sparse cloud of dull airborne organisms/spores.
-  if EffectSetOpacity then EffectSetOpacity(e,24) end
-  if EffectSetSpeed then EffectSetSpeed(e,13) end
-  if EffectSetColor then EffectSetColor(e,132,159,142) end
-  if EffectSetLifespan then EffectSetLifespan(e,115) end
+  -- The old prototype asked ember particles to read as insects. They are now only a
+  -- faint microbial/spore haze behind real mesh fauna, so keep them slow and dim.
+  if EffectSetOpacity then EffectSetOpacity(e,12) end
+  if EffectSetSpeed then EffectSetSpeed(e,6) end
+  if EffectSetColor then EffectSetColor(e,116,146,165) end
+  if EffectSetLifespan then EffectSetLifespan(e,180) end
   if EffectSetBurstMode then EffectSetBurstMode(e,0) end
   s.configured=true
  end
- local d=distance(e)
- local on=fl and fl.started and not fl.won and g_PlayerHealth>0 and d<1700
- if on and not s.active then EffectStart(e);s.active=true
- elseif not on and s.active then EffectStop(e);s.active=false end
+ local on=fl and fl.started and not fl.won and g_PlayerHealth>0 and distance(e)<1550
+ if on and not s.active and EffectStart then EffectStart(e);s.active=true
+ elseif not on and s.active and EffectStop then EffectStop(e);s.active=false end
 end
 
 local function update_skitter(e,s)
- if not PositionObject or not g_Entity or not g_Entity[e] or not g_Entity[e].obj then return end
- if distance(e)>1600 then return end
+ if g_Time<s.next_tick then return end;s.next_tick=g_Time+90
+ local obj=object_of(e);if not obj or not PositionObject or distance(e)>1450 then return end
  local t=g_Time*.001*s.speed+s.phase
- local dx=math.sin(t)*s.radius+math.sin(t*2.31)*s.radius*.18
- local dz=math.cos(t*.87)*s.radius+math.cos(t*1.73)*s.radius*.16
- local lift=math.abs(math.sin(t*3.4))*.45
- PositionObject(g_Entity[e].obj,s.x+dx,s.y+lift,s.z+dz)
+ -- Five seconds of movement followed by a short graze/pause reads as an animal instead
+ -- of a prop sliding on a mathematical loop forever.
+ local cycle=t%8.0;local move=cycle<5.2 and 1 or 0
+ local dx=(math.sin(t)*s.radius+math.sin(t*2.13)*s.radius*.22)*move
+ local dz=(math.cos(t*.83)*s.radius+math.cos(t*1.61)*s.radius*.18)*move
+ local x=s.x+dx;local z=s.z+dz;local y=s.y+(move==1 and math.abs(math.sin(t*5.1))*.28 or 0)
+ PositionObject(obj,x,y,z)
+ if RotateObject then
+  local vx=x-s.lastx;local vz=z-s.lastz
+  if math.abs(vx)+math.abs(vz)>.02 then
+   local yaw=math.deg(math.atan2(vx,vz));RotateObject(obj,0,yaw,0)
+  end
+ end
+ s.lastx=x;s.lastz=z
+end
+
+local function update_veilwing(e,s)
+ if g_Time<s.next_tick then return end;s.next_tick=g_Time+70
+ local obj=object_of(e);if not obj or not PositionObject or distance(e)>1850 then return end
+ local t=g_Time*.001*s.speed+s.phase
+ local x=s.x+math.sin(t*.91)*s.radius+math.sin(t*2.27)*s.radius*.18
+ local z=s.z+math.cos(t*.73)*s.radius*.72+math.cos(t*1.91)*s.radius*.14
+ local y=s.y+math.sin(t*1.43)*7+math.sin(t*3.11)*1.8
+ PositionObject(obj,x,y,z)
+ if RotateObject then
+  local vx=math.cos(t*.91)*s.radius*.91+math.cos(t*2.27)*s.radius*.18*2.27
+  local vz=-math.sin(t*.73)*s.radius*.72*.73-math.sin(t*1.91)*s.radius*.14*1.91
+  local yaw=math.deg(math.atan2(vx,vz));local bank=math.sin(t*.91)*11;local pitch=math.sin(t*1.43)*4
+  RotateObject(obj,pitch,yaw,bank)
+ end
 end
 
 function firstlight_biosphere_main(e)
  local s=bio[e];if not s then return end
- if s.kind=='midges' then update_midges(e,s)
- elseif s.kind=='skitter' then update_skitter(e,s) end
+ if s.kind=='spores' then update_spores(e,s)
+ elseif s.kind=='skitter' then update_skitter(e,s)
+ elseif s.kind=='veilwing' then update_veilwing(e,s) end
 end
 
 function firstlight_biosphere_exit(e)
  local s=bio[e]
- if s and s.kind=='midges' and s.active and EffectStop then EffectStop(e) end
+ if s and s.kind=='spores' and s.active and EffectStop then EffectStop(e) end
  bio[e]=nil
 end
 
