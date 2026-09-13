@@ -71,7 +71,8 @@ assert ("'eleprof.physics':1" in transport and "'eleprof.phyalways':1" in transp
        'collision proxies are no longer authored as persistent physics entities'
 proxy=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_collision_proxy.lua').read_text(errors='replace')
 assert 'Hide(e)' in proxy,'collision proxy no longer hides render geometry'
-assert 'CollisionOff' not in proxy,'collision proxy must never disable physics'
+# Comments document CollisionOff as forbidden; reject an executable call, not the word.
+assert 'CollisionOff(' not in proxy,'collision proxy must never disable physics'
 
 # Main render shell and cosmetic debris intentionally do not contribute concave collision.
 shell=(bank/'Meridian M17 Transport Wreck.fpe').read_text(errors='replace').lower()
