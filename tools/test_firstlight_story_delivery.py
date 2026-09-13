@@ -14,6 +14,13 @@ assert len(LINES)>=20
 m=kestrel_mesh(Mesh);assert m.faces and len(m.verts)==len(m.norm)==len(m.uv)
 for face in m.faces:
  a,b,c=[m.verts[i] for i in face];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)];n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]);assert sum(q*q for q in n)>1e-8
+# Vehicle-art regressions from the first native playthrough: the original 544-vertex
+# blockout had long rail skids that read as stairs and no legible propulsion hardware.
+assert len(m.verts)>=900,('Kestrel detail regressed',len(m.verts))
+source=(ROOT/'tools/firstlight_kestrel.py').read_text(errors='replace')
+for token in ('_aft_nozzle','_down_nozzle',"'aft_nozzles':2","'vtol_nozzles':4","'emissive_plumes':True",'emissiveStrength = 1.35','compact four-point feet'):
+ assert token in source,token
+assert "strut(m,(x,18,-48),(x,18,88)" not in source,'long stair-like landing rails returned'
 assert SHOT_PROFILES['ARRIVAL']['seconds']>=6 and SHOT_PROFILES['ARRIVAL_HANDOFF']['seconds']>=6
 scripts=ROOT/'Aegis Reach/Files/scriptbank/aegis_reach'
 k=(scripts/'firstlight_kestrel.lua').read_text(errors='replace')
@@ -27,4 +34,4 @@ assert 'function fl_dialogue(id)' in d and 'FL VO ' in d and 'PlayNon3DSound' in
 assert 'aegis.kestrel_landed' in i and "aegis.kestrel_depart=true" in i
 assert (ROOT/'Aegis Reach/Design/First Light/DIALOGUE_ELEVENLABS.md').is_file()
 print('FIRST LIGHT // STORY DELIVERY PASS')
-print('Dialogue lines:',len(LINES),'// Kestrel mesh verts:',len(m.verts),'// two-shot insertion + visible extraction vehicle contract verified.')
+print('Dialogue lines:',len(LINES),'// Kestrel mesh verts:',len(m.verts),'// visible main/VTOL propulsion + compact gear + two-shot insertion contract verified.')
