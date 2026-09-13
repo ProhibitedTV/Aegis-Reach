@@ -101,6 +101,7 @@ def main():
         'test_firstlight_combat_geometry.py',
         'test_firstlight_collect.py',
         'test_vesper_sky.py',
+        'test_firstlight_story_effects.py',
     ]
     for name in tests:
         run_test(name)
@@ -144,6 +145,7 @@ def main():
         'firstlight_audit.lua',
         'firstlight_director.lua',
         'firstlight_hud.lua',
+        'firstlight_effects.lua',
         'firstlight_enemy.lua',
         'firstlight_interact.lua',
         'firstlight_qa.lua',

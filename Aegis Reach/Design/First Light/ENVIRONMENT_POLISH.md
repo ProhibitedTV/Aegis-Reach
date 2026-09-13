@@ -4,6 +4,16 @@ Baseline: remote main `0fbb6960c94168367c50c34692d6a2fb084d2e8b`.
 This branch changes the actual First Light map. There is no showroom or separate
 prototype map. It is not qualified for merge until the new native views pass.
 
+## September 13 native sky approval and story effects
+
+The user's native screenshot shows the orbital planet/stars in actual gameplay,
+and the user approved the sky appearance. Preserve that sky/grade. The next pass
+adds six native particle markers and three original small damaged-infrastructure
+props to show evacuation aftermath, isolated civilian power and destroyed records.
+Northstar exhaust and AEGIS discharge follow the mission state. No terrain,
+combat-start, global atmosphere or main-progression edits accompany this layer.
+See ENVIRONMENT_EFFECTS.md for source locations, dependencies and native review.
+
 ## September 12 remote integration and orbital sky
 
 Merged `origin/sol/aaa-combat-director-pass` through `14c6bee` into the environment

@@ -1,6 +1,6 @@
 {
   "map": "Aegis Reach - First Light.fpm",
-  "entities": 235,
+  "entities": 244,
   "enemy_count": 28,
   "lights": 43,
   "assets": [
@@ -55,7 +55,10 @@
     "Aegis Reach\\First Light\\Operations Sign.fpe",
     "Aegis Reach\\First Light\\Core Sign.fpe",
     "Aegis Reach\\First Light\\Extraction Sign Supports.fpe",
-    "Aegis Reach\\First Light\\Extraction Sign.fpe"
+    "Aegis Reach\\First Light\\Extraction Sign.fpe",
+    "Aegis Reach\\First Light\\Meridian Severed Junction.fpe",
+    "Aegis Reach\\First Light\\Meridian Scorched Case.fpe",
+    "_markers\\Particles.fpe"
   ],
   "staged_dependencies": [
     "Booster Pack\\Construction Pack\\CableReel.fpe",
@@ -86,6 +89,7 @@
     "Max Collection\\Rocks\\Rock Boulder.fpe",
     "Max Collection\\Shrubs\\Desert Bush - Form A.fpe",
     "Max Collection\\Weapons\\Compact Assault Rifle Ammo.fpe",
+    "_markers\\Particles.fpe",
     "_markers\\Player Start.fpe",
     "_markers\\White Light.fpe"
   ],
@@ -339,7 +343,7 @@
   ],
   "environment_pass": "single-owner-production-recomposition + tactical-cover-layer",
   "environment_polish": "sheltered-shelf-and-grounded-brineglass",
-  "asset_types": 52,
+  "asset_types": 55,
   "production_combat_geometry": {
     "cover_count": 25,
     "combat_light_count": 8,
@@ -543,5 +547,14 @@
     ],
     "clear_lz_center": true,
     "design_rule": "offset cover triangles with preserved traversal spine"
+  },
+  "story_effects": {
+    "effect_count": 6,
+    "debris_count": 3,
+    "installed_presets": [
+      "camp smoke",
+      "embers2",
+      "smoke_billowy"
+    ]
   }
 }

@@ -12,6 +12,8 @@ import build_first_light as build
 from firstlight_combat_geometry import apply,write_manifest
 
 summary=apply(build)
+from firstlight_story_effects import apply as add_story_effects
+story_effects=add_story_effects(build)
 
 # The baseline module leaves its native payload in memory. Replace only the entity bank
 # after the combat layer mutates `entities`/`bank`; terrain, visuals, cfg and bespoke
@@ -39,6 +41,7 @@ report.update({
  'staged_dependencies':sorted(build.staged),
  'lights':len(build.light_locations)+len(build.crystal_sites)+summary['combat_light_count'],
  'production_combat_geometry':summary,
+ 'story_effects':story_effects,
  'environment_pass':'single-owner-production-recomposition + tactical-cover-layer',
 })
 report_path.write_text(json.dumps(report,indent=2))

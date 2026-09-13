@@ -4,6 +4,14 @@ This candidate is on `codex/vesper-environment-polish`, PR #23. It is not merged
 or native-approved. Start a NEW GAME; saved games can retain old positions/state.
 The registered MAX project currently points to this worktree candidate, not main.
 
+## Latest environmental effects
+
+Six localized effects and three original damaged props now connect the evacuation,
+Warden lockout and erased records to the environment. See ENVIRONMENT_EFFECTS.md
+for exact locations and tuning. Verify the camp fault stops after power, Northstar
+begins venting, and AEGIS discharge stops after cancelling the firing order.
+The sky and existing encounter positions remain unchanged in this effects pass.
+
 ## Latest integration
 
 Remote Sol combat work through `14c6bee` is now merged into this candidate. Enemy
