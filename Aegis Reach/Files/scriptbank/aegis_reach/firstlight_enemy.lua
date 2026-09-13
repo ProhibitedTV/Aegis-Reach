@@ -5,6 +5,7 @@ require 'scriptbank\\aegis_reach\\firstlight_audit'
 require 'scriptbank\\people\\character_attack'
 local soldiers={}
 local squad_clock={}
+local squad_epoch=-1
 
 -- Each four-person cell has a readable battlefield job. The first contact is a rifleman
 -- rather than an instant rusher; pressure then builds through assault, anchor and flank.
@@ -115,6 +116,8 @@ local function stage_gate(e,w)
 end
 
 local function reveal_choreography(e,w)
+ local epoch=fl.born or 0
+ if squad_epoch~=epoch then squad_clock={};squad_epoch=epoch end
  if w.eligible_since==0 then w.eligible_since=g_Time end
  if not squad_clock[w.group] then squad_clock[w.group]=g_Time end
 
@@ -167,7 +170,13 @@ function firstlight_enemy_main(e)
  end
 
  if not w.active then
-  if not ready_to_reveal(e,w) then return end
+  if not ready_to_reveal(e,w) then
+   if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and w.watch_since>0 and (not w.hold_audit_at or g_Time-w.hold_audit_at>1000) then
+    w.hold_audit_at=g_Time
+    firstlight_audit('reveal_held e='..e..' group='..w.group..' role='..w.role..' watched_ms='..math.floor(w.reveal_wait or 0)..' distance='..math.floor(GetPlayerDistance(e)))
+   end
+   return
+  end
   w.active=true
   -- Prime a valid named pose before revealing the character. The stock MAX
   -- character behavior takes over immediately afterward.
