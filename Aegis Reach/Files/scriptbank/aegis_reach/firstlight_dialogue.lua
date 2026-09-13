@@ -24,6 +24,20 @@ local catalog={
  FL01_M17_001={speaker='M-17 PILOT',text='Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.',seconds=5.0},
 }
 local voice_entities={};local last_played={};local runtime={zone='',evac_started=false,evac={}}
+local function split_line(text,limit)
+ if not text or #text<=limit then return text or '','' end
+ local cut=limit
+ while cut>1 and string.sub(text,cut,cut)~=' ' do cut=cut-1 end
+ if cut<=1 then cut=limit end
+ local a=string.sub(text,1,cut-1)
+ local b=string.sub(text,cut+1)
+ if #b>limit then
+  local cut2=limit
+  while cut2>1 and string.sub(b,cut2,cut2)~=' ' do cut2=cut2-1 end
+  if cut2>1 then b=string.sub(b,1,cut2-1)..'...' end
+ end
+ return a,b
+end
 local function entity_name(e)if not GetEntityName then return nil end;local ok,name=pcall(GetEntityName,e);return ok and name or nil end
 local function resolve_voice(id)
  if voice_entities[id] and g_Entity and g_Entity[voice_entities[id]] then return voice_entities[id] end
@@ -34,14 +48,19 @@ local function play_voice(id)if not PlayNon3DSound then return end;local e=resol
 function fl_dialogue(id)
  local line=catalog[id];if not line then return false end;if not aegis then aegis={} end
  aegis.dialogue_current={id=id,speaker=line.speaker,text=line.text,until=g_Time+math.floor(line.seconds*1000)}
- if not aegis.cinematic_active and fl_say then fl_say(line.speaker..': '..line.text,'',line.seconds) end
+ if not aegis.cinematic_active and fl_say then local a,b=split_line(line.text,68);fl_say(line.speaker..': '..a,b,line.seconds) end
  if not last_played[id] or g_Time-last_played[id]>500 then last_played[id]=g_Time;play_voice(id) end
  if fl_log then fl_log('dialogue '..id) end;return true
 end
 function fl_dialogue_draw_cinematic()
  if not aegis or not aegis.dialogue_current then return end;local line=aegis.dialogue_current;if g_Time>(line.until or 0) then return end
- if Panel then Panel(8,79,92,92) end
- if TextCenterOnXColor then TextCenterOnXColor(50,81,1,line.speaker,103,220,230);TextCenterOnXColor(50,86,2,line.text,228,225,209) end
+ local a,b=split_line(line.text,82)
+ if Panel then Panel(8,77,92,b~='' and 94 or 91) end
+ if TextCenterOnXColor then
+  TextCenterOnXColor(50,79,1,line.speaker,103,220,230)
+  TextCenterOnXColor(50,84,2,a,228,225,209)
+  if b~='' then TextCenterOnXColor(50,89,2,b,196,210,218) end
+ end
 end
 local function mission_radio_tick()
  if not fl or not fl.started or fl.won or (aegis and aegis.cinematic_active) then return end

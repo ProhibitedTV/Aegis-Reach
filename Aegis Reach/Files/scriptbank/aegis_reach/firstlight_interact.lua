@@ -37,6 +37,10 @@ function firstlight_interact_main(e)
  if role=='EXTRACT' then
   fl.debrief_pending=true;fl.completed=g_Time;fl.final_time=math.floor((g_Time-fl.born)/1000);fl.intel_count=0;for _ in pairs(fl.intel) do fl.intel_count=fl.intel_count+1 end
   if fl.pressure_peak>=72 then fl.final_pressure_band='CRITICAL' elseif fl.pressure_peak>=42 then fl.final_pressure_band='HIGH' elseif fl.pressure_peak>=16 then fl.final_pressure_band='ELEVATED' else fl.final_pressure_band='LOW' end
+  -- The holdout is over once Seven boards. A negative sentinel keeps the known-good
+  -- director from drawing ETA/holdout UI during the liftoff cinematic while allowing
+  -- the Kestrel vehicle script to continue its departure choreography.
+  fl.evac_start=-1
   if aegis then aegis.kestrel_depart=true end;local queued=fl_request_cinematic and fl_request_cinematic('EXTRACTION');if not queued then fl_finish_extraction() end
   FreezeAI();FreezePlayer();fl_log('MISSION_COMPLETE_PENDING records='..fl.intel_count..' kills='..fl.kills..' seconds='..fl.final_time..' peak_pressure='..math.floor(fl.pressure_peak or 0));return
  end
