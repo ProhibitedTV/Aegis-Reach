@@ -43,7 +43,12 @@ for computer in computers:
    supported=True;break
  assert supported, 'computer is floating or extends beyond its supporting desk: '+computer['name']
 
-assert report.get('environment_pass') in ('single-owner-production-recomposition','single-owner-production-recomposition + tactical-cover-layer'), report.get('environment_pass')
+allowed_environment_passes={
+ 'single-owner-production-recomposition',
+ 'single-owner-production-recomposition + tactical-cover-layer',
+ 'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
+}
+assert report.get('environment_pass') in allowed_environment_passes, report.get('environment_pass')
 
 joined='\n'.join(str(p.get('name',''))+' '+str(p.get('asset','')) for p in placements)
 for banned in (
