@@ -22,6 +22,8 @@ from firstlight_cinematics import apply as add_cinematics
 cinematics=add_cinematics(build)
 from firstlight_biosphere import apply as add_biosphere
 biosphere=add_biosphere(build)
+from firstlight_native_engine_pass import apply as add_native_engine_pass
+native_engine=add_native_engine_pass(build)
 
 # The baseline module leaves its native payload in memory. Replace only the entity bank
 # after the authored layers mutate `entities`/`bank`; terrain, visuals, cfg and bespoke
@@ -53,15 +55,17 @@ report.update({
  'transport_wreck':transport,
  'cinematics':cinematics,
  'biosphere':biosphere,
+ 'native_engine_pass':native_engine,
  'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
 })
 report_path.write_text(json.dumps(report,indent=2))
 write_manifest(build.DESIGN/'combat-geometry.json',summary)
 
-print('FIRST LIGHT // PRODUCTION COMBAT + STORY + BIOSPHERE LAYER')
+print('FIRST LIGHT // PRODUCTION COMBAT + STORY + BIOSPHERE + NATIVE ENGINE LAYER')
 print('Cover pieces:',summary['cover_count'])
 print('Combat backlights:',summary['combat_light_count'])
 print('Repositioned Warden starts:',len(summary['enemy_starts']))
 print('CineGuru story beats:',', '.join(cinematics['beats']))
 print('Vesper life:',biosphere['flora_count'],'flora /',biosphere['skitter_count'],'skitters /',biosphere['midge_cloud_count'],'airborne colonies')
+print('Responsive practical lights:',native_engine['responsive_practical_lights'])
 print('Landing-zone center preserved:',summary['clear_lz_center'])

@@ -23,6 +23,7 @@ SOURCES=(
  ROOT/'tools/firstlight_transport.py',
  ROOT/'tools/firstlight_cinematics.py',
  ROOT/'tools/firstlight_biosphere.py',
+ ROOT/'tools/firstlight_native_engine_pass.py',
  ROOT/'tools/build_first_light_aaa.py',
  ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',
@@ -60,5 +61,6 @@ def main():
  STAMP.parent.mkdir(parents=True,exist_ok=True)
  STAMP.write_text(json.dumps({'source_sha256':signature,'map':str(MAP),'builder':'build_first_light_aaa.py'},indent=2))
  print('FIRST LIGHT // REBUILD COMPLETE')
+
 
 if __name__=='__main__':main()
