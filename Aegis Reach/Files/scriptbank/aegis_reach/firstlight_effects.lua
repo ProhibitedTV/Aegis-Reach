@@ -1,4 +1,4 @@
--- Native MAX particle markers: small, localized environmental consequences.
+-- Native MAX particle markers: localized environmental consequences.
 -- Engine owns emitter allocation/cleanup. No legacy particle allocator or global wind.
 local states={}
 local configs={
@@ -8,8 +8,10 @@ local configs={
  POWER_VENT={kind='smoke',opacity=18,speed=60,life=55,color={171,186,200}},
  ARCHIVE_SMOKE={kind='smoke',opacity=24,speed=38,life=60,color={87,98,110}},
  ARRAY_FAULT={kind='spark',opacity=78,speed=210,life=16,color={112,185,235},period=2200},
- WRECK_FIRE={kind='fire',opacity=72,speed=65,life=65,color={255,208,164},range=3400},
- WRECK_SMOKE={kind='smoke',opacity=34,speed=55,life=95,color={91,98,108},range=4500},
+ WRECK_FIRE={kind='fire',opacity=96,speed=96,life=84,color={255,196,132},range=5200},
+ WRECK_FIRE_AUX={kind='fire',opacity=90,speed=82,life=76,color={255,176,110},range=4500},
+ WRECK_SMOKE={kind='smoke',opacity=54,speed=72,life=135,color={70,77,84},range=6500},
+ WRECK_SPARKS={kind='spark',opacity=96,speed=240,life=24,color={255,151,62},period=1150,range=3800},
 }
 
 function firstlight_effects_init_name(e,name)
@@ -37,6 +39,7 @@ function firstlight_effects_main(e)
   EffectSetLifespan(e,c.life)
   EffectSetBurstMode(e,c.kind=='spark' and 1 or 0)
   if s.role=='CAMP_FAULT' or s.role=='ARRAY_FAULT' then EffectSetLocalRotation(e,0,0,70) end
+  if s.role=='WRECK_SPARKS' then EffectSetLocalRotation(e,-18,12,58) end
   s.configured=true
  end
  -- Hysteresis avoids repeatedly starting/stopping at the edge of an effect area.
@@ -49,10 +52,10 @@ function firstlight_effects_main(e)
  elseif not on and s.active then
   EffectStop(e);s.active=false
  end
- -- Existing MAX 3D audio stays local to the hot engine, below music/dialogue.
+ -- One close 3D burn loop belongs to the primary rupture; secondary FX stay visual.
  if s.role=='WRECK_FIRE' and LoopSound and SetSoundVolume and StopSound then
-  if on and distance<900 then
-   LoopSound(e,0);SetSoundVolume(math.min(48,math.max(0,(900-distance)*.08)))
+  if on and distance<1200 then
+   LoopSound(e,0);SetSoundVolume(math.min(58,math.max(0,(1200-distance)*.065)))
    s.audible=true
   elseif s.audible then StopSound(e,0);s.audible=false end
  end

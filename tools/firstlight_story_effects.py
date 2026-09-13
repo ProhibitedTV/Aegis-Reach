@@ -15,8 +15,12 @@ EFFECTS = [
  ('POWER_VENT','camp smoke',-1650,-540,1242,30,'generator exhaust resumes after Northstar restart'),
  ('ARCHIVE_SMOKE','smoke_billowy',1660,1350,1098,22,'physical records burned outside Operations'),
  ('ARRAY_FAULT','embers2',-450,3253,1620,18,'overloaded firing bus; clears when AEGIS is cancelled'),
- ('WRECK_FIRE','fire_and_smoke',-1583,-5435,470,24,'fuel burns inside M-17 starboard engine'),
- ('WRECK_SMOKE','smoke_billowy',-1710,-5355,523,40,'low aft cargo smoke marks the forced landing'),
+ # M-17 native review pass: two flame bodies, a much larger smoke column and a
+ # separate electrical burst make the wreck read as disabled from the road.
+ ('WRECK_FIRE','fire_and_smoke',-1561,-5487,474,62,'ruptured starboard mount burns hot against the hull'),
+ ('WRECK_FIRE_AUX','fire_and_smoke',-1504,-5549,430,42,'detached engine still burns after separation'),
+ ('WRECK_SMOKE','smoke_billowy',-1608,-5451,520,88,'dense aft smoke column makes the forced landing readable at distance'),
+ ('WRECK_SPARKS','embers2',-1574,-5480,486,28,'intermittent electrical arcing at the torn engine bus'),
 ]
 
 
