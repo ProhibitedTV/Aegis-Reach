@@ -2,7 +2,8 @@
 
 `build_first_light.py` remains the known-good world generator. Importing it performs the
 baseline build. This wrapper then adds combat cover, moves dormant Warden starts onto
-those authored pockets, adds restrained contact backlights, and rewrites the exact same
+those authored pockets, adds restrained contact backlights, authored story effects,
+the M-17 wreck, and sparse CineGuru story cameras before rewriting the exact same
 native MAX archive with navmesh data intentionally absent so MAX regenerates navigation.
 """
 import json
@@ -16,9 +17,11 @@ from firstlight_story_effects import apply as add_story_effects
 story_effects=add_story_effects(build)
 from firstlight_transport import apply as add_transport
 transport=add_transport(build)
+from firstlight_cinematics import apply as add_cinematics
+cinematics=add_cinematics(build)
 
 # The baseline module leaves its native payload in memory. Replace only the entity bank
-# after the combat layer mutates `entities`/`bank`; terrain, visuals, cfg and bespoke
+# after the authored layers mutate `entities`/`bank`; terrain, visuals, cfg and bespoke
 # environment data remain byte-for-byte the baseline composition in this process.
 build.payload['map.ele']=build.write_ele(build.version,build.entities)
 build.payload['map.ent']=build.write_bank(build.bank)
@@ -29,8 +32,8 @@ with zipfile.ZipFile(build.MAP,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as out:
  for name,data in build.payload.items():out.writestr(name,data)
 build.convert(build.MAP)
 
-# Refresh authored manifests after the layer is applied. These are the source-of-truth
-# review artifacts for encounter placement; licensed DLC still remains installation-only.
+# Refresh authored manifests after every production layer is applied. These are the
+# source-of-truth review artifacts; licensed DLC still remains installation-only.
 (build.DESIGN/'layout.json').write_text(json.dumps(build.placements,indent=2))
 report_path=build.DESIGN/'build-report.json'
 try:report=json.loads(report_path.read_text())
@@ -45,13 +48,15 @@ report.update({
  'production_combat_geometry':summary,
  'story_effects':story_effects,
  'transport_wreck':transport,
- 'environment_pass':'single-owner-production-recomposition + tactical-cover-layer',
+ 'cinematics':cinematics,
+ 'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
 })
 report_path.write_text(json.dumps(report,indent=2))
 write_manifest(build.DESIGN/'combat-geometry.json',summary)
 
-print('FIRST LIGHT // PRODUCTION COMBAT LAYER')
+print('FIRST LIGHT // PRODUCTION COMBAT + STORY LAYER')
 print('Cover pieces:',summary['cover_count'])
 print('Combat backlights:',summary['combat_light_count'])
 print('Repositioned Warden starts:',len(summary['enemy_starts']))
+print('CineGuru story beats:',', '.join(cinematics['beats']))
 print('Landing-zone center preserved:',summary['clear_lz_center'])

@@ -130,6 +130,7 @@ function firstlight_interact_main(e)
   elseif fl.pressure_peak>=42 then fl.final_pressure_band='HIGH'
   elseif fl.pressure_peak>=16 then fl.final_pressure_band='ELEVATED'
   else fl.final_pressure_band='LOW' end
+  if fl_request_cinematic then fl_request_cinematic('EXTRACTION') end
   FreezeAI();FreezePlayer();fl_log('MISSION_COMPLETE records='..fl.intel_count..' kills='..fl.kills..' seconds='..fl.final_time..' peak_pressure='..math.floor(fl.pressure_peak or 0))
   return
  end
@@ -138,6 +139,7 @@ function firstlight_interact_main(e)
  if role=='POWER' then
   fl_say('NORTHSTAR ONLINE. Civilian channel restored.','KESTREL: That distress call is coming from Operations. Go east.',10)
  elseif role=='RECORDS' then
+  if fl_request_cinematic then fl_request_cinematic('MIRA_SIGNAL') end
   fl_say('MIRA SEN: We are under Shelter 12. Do not let them fire.','KESTREL: AEGIS is aimed at the shelter. Get to the core. Now.',12)
   fl.discovery_until=g_Time+12000;fl.discovery_track='discovery_choir'
  else

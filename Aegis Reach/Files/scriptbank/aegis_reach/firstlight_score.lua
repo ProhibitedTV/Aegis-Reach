@@ -3,8 +3,8 @@ require 'scriptbank\\aegis_reach\\firstlight_audit'
 --
 -- Persistent native global sounds give FIRST LIGHT stable authored music even when
 -- standalone packaging cannot find an optional master. The combat director supplies
--- intensity while radio arbitration supplies dialogue ducking; spatial identity stays
--- stable so every short firefight does not hard-cut the score.
+-- intensity while radio/cinematic arbitration supplies ducking; spatial identity stays
+-- stable so every short firefight or authored camera beat does not hard-cut the score.
 local music={}
 
 local TRACK_SALT=0
@@ -152,11 +152,13 @@ function firstlight_score_main(e)
  local combat_state=state=="combat" or state=="combat_overcharge" or state=="combat_interference"
  if combat_state then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
 
- -- Radio/story dialogue owns the intelligibility window. Duck the score without
- -- pausing it so lines sit over a continuous bed instead of obvious start/stop edits.
+ -- Dialogue and authored CineGuru beats own intelligibility/presentation windows. Duck
+ -- without pausing so Suno masters remain phase-continuous across gameplay and cameras.
  local speaking=fl and g_Time<(fl.message_until or 0)
- if speaking then desired_volume=math.max(30,desired_volume-14) end
- aegis.music_ducking=speaking and true or false
+ local cinematic=aegis.music_cinematic_duck and true or false
+ local ducking=speaking or cinematic
+ if ducking then desired_volume=math.max(26,desired_volume-(cinematic and 18 or 14)) end
+ aegis.music_ducking=ducking
 
  if desired~=m.target then
   if desired~=m.pending then
@@ -180,13 +182,13 @@ function firstlight_score_main(e)
  end
  m.last_state=state
 
- if m.ducking~=speaking then
-  m.ducking=speaking and true or false
-  audit('music_duck active='..tostring(m.ducking)..' state='..state)
+ if m.ducking~=ducking then
+  m.ducking=ducking
+  audit('music_duck active='..tostring(m.ducking)..' dialogue='..tostring(speaking)..' cinematic='..tostring(cinematic)..' state='..state)
  end
  if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and g_Time-(m.audit_at or 0)>5000 then
   m.audit_at=g_Time
-  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(speaking))
+  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(ducking))
  end
 
  local target_id,fallback=resolved_id(m.target)
@@ -195,8 +197,8 @@ function firstlight_score_main(e)
   audit("music_fallback active=true requested="..track_name(m.target))
  end
 
- -- Crossfade tracks in roughly two seconds; dialogue attenuation responds faster.
- local step=elapsed*(speaking and 0.060 or 0.035)
+ -- Crossfade tracks in roughly two seconds; presentation ducking responds faster.
+ local step=elapsed*(ducking and 0.060 or 0.035)
  local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
  for _,id in ipairs(ids) do
   local goal=(id==target_id) and m.target_volume or 0
