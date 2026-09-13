@@ -1,10 +1,11 @@
-"""Build FIRST LIGHT, then apply the production combat-space layer.
+"""Build FIRST LIGHT, then apply the production gameplay/story/environment layers.
 
 `build_first_light.py` remains the known-good world generator. Importing it performs the
 baseline build. This wrapper then adds combat cover, moves dormant Warden starts onto
 those authored pockets, adds restrained contact backlights, authored story effects,
-the M-17 wreck, and sparse CineGuru story cameras before rewriting the exact same
-native MAX archive with navmesh data intentionally absent so MAX regenerates navigation.
+the M-17 wreck, sparse CineGuru story cameras and the primitive Vesper biosphere before
+rewriting the exact same native MAX archive with navmesh data intentionally absent so
+MAX regenerates navigation.
 """
 import json
 import zipfile
@@ -19,6 +20,8 @@ from firstlight_transport import apply as add_transport
 transport=add_transport(build)
 from firstlight_cinematics import apply as add_cinematics
 cinematics=add_cinematics(build)
+from firstlight_biosphere import apply as add_biosphere
+biosphere=add_biosphere(build)
 
 # The baseline module leaves its native payload in memory. Replace only the entity bank
 # after the authored layers mutate `entities`/`bank`; terrain, visuals, cfg and bespoke
@@ -49,14 +52,16 @@ report.update({
  'story_effects':story_effects,
  'transport_wreck':transport,
  'cinematics':cinematics,
+ 'biosphere':biosphere,
  'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
 })
 report_path.write_text(json.dumps(report,indent=2))
 write_manifest(build.DESIGN/'combat-geometry.json',summary)
 
-print('FIRST LIGHT // PRODUCTION COMBAT + STORY LAYER')
+print('FIRST LIGHT // PRODUCTION COMBAT + STORY + BIOSPHERE LAYER')
 print('Cover pieces:',summary['cover_count'])
 print('Combat backlights:',summary['combat_light_count'])
 print('Repositioned Warden starts:',len(summary['enemy_starts']))
 print('CineGuru story beats:',', '.join(cinematics['beats']))
+print('Vesper life:',biosphere['flora_count'],'flora /',biosphere['skitter_count'],'skitters /',biosphere['midge_cloud_count'],'airborne colonies')
 print('Landing-zone center preserved:',summary['clear_lz_center'])

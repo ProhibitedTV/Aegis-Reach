@@ -22,6 +22,7 @@ SOURCES=(
  ROOT/'tools/firstlight_story_effects.py',
  ROOT/'tools/firstlight_transport.py',
  ROOT/'tools/firstlight_cinematics.py',
+ ROOT/'tools/firstlight_biosphere.py',
  ROOT/'tools/build_first_light_aaa.py',
  ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',
