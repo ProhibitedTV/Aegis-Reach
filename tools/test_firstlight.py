@@ -174,7 +174,8 @@ with zipfile.ZipFile(FILES/'mapbank/Aegis Reach - First Light.fpm') as z:
  for ent in es:
   script=ent['101:eleprof.aimain_s'];assert (FILES/'scriptbank'/script).is_file() or (INSTALL/'scriptbank'/script).is_file(),script
   for k,val in ent.items():
-   if 'soundset' in k and isinstance(val,str) and val.lower().endswith(('.wav','.ogg')):assert (FILES/val).is_file() or (FILES/'audiobank'/val).is_file(),val
+   if 'soundset' in k and isinstance(val,str) and val.lower().endswith(('.wav','.ogg')):
+    assert (FILES/val).is_file() or (FILES/'audiobank'/val).is_file() or (INSTALL/val).is_file() or (INSTALL/'audiobank'/val).is_file(),val
  check('MAX encrypted map CRC, entity roundtrip and all script/audio/asset references',any('FIRST LIGHT // DIRECTOR' == e['101:eleprof.name_s'] for e in es))
 from storyboard import load
 check('Storyboard points to First Light without a machine-specific path',load().Nodes[7].level_name==b'mapbank\\Aegis Reach - First Light.fpm' and not load().customprojectfolder)
