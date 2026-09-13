@@ -177,8 +177,11 @@ with zipfile.ZipFile(FILES/'mapbank/Aegis Reach - First Light.fpm') as z:
    if 'soundset' in k and isinstance(val,str) and val.lower().endswith(('.wav','.ogg')):
     assert (FILES/val).is_file() or (FILES/'audiobank'/val).is_file() or (INSTALL/val).is_file() or (INSTALL/'audiobank'/val).is_file(),val
  check('MAX encrypted map CRC, entity roundtrip and all script/audio/asset references',any('FIRST LIGHT // DIRECTOR' == e['101:eleprof.name_s'] for e in es))
-from storyboard import load
-check('Storyboard points to First Light without a machine-specific path',load().Nodes[7].level_name==b'mapbank\\Aegis Reach - First Light.fpm' and not load().customprojectfolder)
+from storyboard import FIRST_LIGHT_LEVEL,load
+story=load()
+portable=[n for n in story.Nodes if n.used and n.level_name==FIRST_LIGHT_LEVEL]
+aliases=[n.level_name for n in story.Nodes if n.used and b'Aegis Reach - First Light.fpm' in n.level_name and n.level_name!=FIRST_LIGHT_LEVEL]
+check('Storyboard contains one portable First Light mapbank reference',len(portable)==1 and not aliases)
 report=dict(checks=checks,mesh_count=modelchecks,entity_count=len(es),native_combat_playtest=False)
 (ROOT/'Aegis Reach/Design/First Light/validation.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))
