@@ -4,6 +4,20 @@ This candidate is on `codex/vesper-environment-polish`, PR #23. It is not merged
 or native-approved. Start a NEW GAME; saved games can retain old positions/state.
 The registered MAX project currently points to this worktree candidate, not main.
 
+## Latest integration
+
+Remote Sol combat work through `14c6bee` is now merged into this candidate. Enemy
+starts, cover, tactical pacing, objective feedback and score ducking therefore
+need a complete playthrough. The earlier facility-only position-preservation note
+is not a claim about this integrated version. Use `COLLECT FIRST LIGHT QA.cmd`
+after a run for the incoming encounter-tuning report.
+
+The original `vesper_orbital` sky replaces sunset. Check west/northwest for the
+planet, scan every horizon join, and inspect shadow readability and water
+reflections. Light shafts and procedural clouds are disabled. Sky packaging:
+`tools/build_vesper_sky.py`; source/settings: `Sky/README.md` and the atmosphere
+block in `tools/build_first_light.py`.
+
 ## Load and verify
 
 Close an existing MAX session normally before launching the revised project.

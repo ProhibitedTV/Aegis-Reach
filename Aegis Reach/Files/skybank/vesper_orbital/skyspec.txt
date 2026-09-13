@@ -1,0 +1,4 @@
+; Original Vesper orbital sky
+SunRotationX = 82
+SunRotationY = 280
+SunRotationZ = 0

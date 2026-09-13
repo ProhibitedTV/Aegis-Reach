@@ -22,6 +22,8 @@ SOURCES=(
  ROOT/'tools/build_first_light_aaa.py',
  ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',
+ ROOT/'tools/build_vesper_sky.py',
+ ROOT/'Aegis Reach/Design/First Light/Sky/vesper-orbital-panorama.png',
 )
 
 
@@ -47,6 +49,7 @@ def main():
  if not needed:
   print('FIRST LIGHT // BUILD CURRENT',signature[:16])
   return
+ subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_vesper_sky.py')],cwd=ROOT,check=True)
  print('FIRST LIGHT // REBUILD REQUIRED')
  print('Source signature:',signature[:16])
  subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_first_light_aaa.py')],cwd=ROOT,check=True)

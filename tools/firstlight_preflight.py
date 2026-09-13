@@ -100,6 +100,7 @@ def main():
         'test_firstlight_asset_cache.py',
         'test_firstlight_combat_geometry.py',
         'test_firstlight_collect.py',
+        'test_vesper_sky.py',
     ]
     for name in tests:
         run_test(name)

@@ -1,8 +1,8 @@
 {
   "map": "Aegis Reach - First Light.fpm",
-  "entities": 202,
+  "entities": 235,
   "enemy_count": 28,
-  "lights": 35,
+  "lights": 43,
   "assets": [
     "Aegis Reach\\First Light\\Meridian Field Lab.fpe",
     "Aegis Reach\\First Light\\Camp 12 Utility Spine.fpe",
@@ -308,32 +308,240 @@
     "FogB#": 80,
     "FogA#": 0.45,
     "Exposure": 0.84,
-    "SunIntensity": 1.65,
+    "SunIntensity": 1.35,
     "SunRed": 255,
-    "SunGreen": 211,
-    "SunBlue": 163,
-    "SunAngleX": 78,
-    "SunAngleY": 315,
+    "SunGreen": 219,
+    "SunBlue": 186,
+    "SunAngleX": 82,
+    "SunAngleY": 280,
     "SunAngleZ": 0,
     "Simulate24Hours": 0,
     "AmbienceRed#": 70,
     "AmbienceGeen#": 84,
     "AmbienceBlue#": 108,
     "EnvProbeBrightness": 0.75,
-    "sky$": "sunset",
+    "sky$": "vesper_orbital",
     "AutoExposure": 0,
     "DeSaturate": 1,
     "BloomStrength": 0.08,
     "BloomThreshold": 1.5,
     "LensFlare": 0,
-    "SkyCloudCoverage": 0.5,
-    "SkyCloudiness": 0.45
+    "LightShafts": 0,
+    "lightraymode": 0,
+    "SkyCloudCoverage": 0,
+    "SkyCloudiness": 0,
+    "SkyCloudSpeed": 0
   },
   "crystal_clusters": 12,
   "brineglass_materials": [
     "vesper_brineglass_energy.png",
     "vesper_brineglass_resonant.png"
   ],
-  "environment_pass": "single-owner-production-recomposition",
-  "environment_polish": "sheltered-shelf-and-grounded-brineglass"
+  "environment_pass": "single-owner-production-recomposition + tactical-cover-layer",
+  "environment_polish": "sheltered-shelf-and-grounded-brineglass",
+  "asset_types": 52,
+  "production_combat_geometry": {
+    "cover_count": 25,
+    "combat_light_count": 8,
+    "enemy_starts": [
+      {
+        "group": 1,
+        "index": 1,
+        "x": -760,
+        "z": -5440,
+        "role": "rifle"
+      },
+      {
+        "group": 1,
+        "index": 2,
+        "x": 500,
+        "z": -5070,
+        "role": "assault"
+      },
+      {
+        "group": 1,
+        "index": 3,
+        "x": -160,
+        "z": -4680,
+        "role": "anchor"
+      },
+      {
+        "group": 2,
+        "index": 1,
+        "x": -900,
+        "z": -2700,
+        "role": "rifle"
+      },
+      {
+        "group": 2,
+        "index": 2,
+        "x": 600,
+        "z": -2460,
+        "role": "assault"
+      },
+      {
+        "group": 2,
+        "index": 3,
+        "x": 1370,
+        "z": -2200,
+        "role": "anchor"
+      },
+      {
+        "group": 3,
+        "index": 1,
+        "x": -2050,
+        "z": -1180,
+        "role": "rifle"
+      },
+      {
+        "group": 3,
+        "index": 2,
+        "x": -940,
+        "z": -610,
+        "role": "assault"
+      },
+      {
+        "group": 3,
+        "index": 3,
+        "x": -2180,
+        "z": -260,
+        "role": "anchor"
+      },
+      {
+        "group": 3,
+        "index": 4,
+        "x": -760,
+        "z": 80,
+        "role": "flanker"
+      },
+      {
+        "group": 4,
+        "index": 1,
+        "x": 470,
+        "z": 300,
+        "role": "rifle"
+      },
+      {
+        "group": 4,
+        "index": 2,
+        "x": 1600,
+        "z": 470,
+        "role": "assault"
+      },
+      {
+        "group": 4,
+        "index": 3,
+        "x": 1850,
+        "z": 1100,
+        "role": "anchor"
+      },
+      {
+        "group": 4,
+        "index": 4,
+        "x": 760,
+        "z": 1160,
+        "role": "flanker"
+      },
+      {
+        "group": 5,
+        "index": 1,
+        "x": -700,
+        "z": 2800,
+        "role": "rifle"
+      },
+      {
+        "group": 5,
+        "index": 2,
+        "x": 620,
+        "z": 2880,
+        "role": "assault"
+      },
+      {
+        "group": 5,
+        "index": 3,
+        "x": -980,
+        "z": 3330,
+        "role": "anchor"
+      },
+      {
+        "group": 5,
+        "index": 4,
+        "x": 940,
+        "z": 3440,
+        "role": "flanker"
+      },
+      {
+        "group": 6,
+        "index": 1,
+        "x": -2820,
+        "z": 1900,
+        "role": "rifle"
+      },
+      {
+        "group": 6,
+        "index": 2,
+        "x": -3060,
+        "z": 1320,
+        "role": "assault"
+      },
+      {
+        "group": 6,
+        "index": 3,
+        "x": -3020,
+        "z": 560,
+        "role": "anchor"
+      },
+      {
+        "group": 6,
+        "index": 4,
+        "x": -2710,
+        "z": -180,
+        "role": "flanker"
+      },
+      {
+        "group": 7,
+        "index": 1,
+        "x": 2050,
+        "z": -2550,
+        "role": "rifle"
+      },
+      {
+        "group": 7,
+        "index": 2,
+        "x": 1780,
+        "z": -2180,
+        "role": "assault"
+      },
+      {
+        "group": 7,
+        "index": 3,
+        "x": -3270,
+        "z": -1100,
+        "role": "anchor"
+      },
+      {
+        "group": 7,
+        "index": 4,
+        "x": -3050,
+        "z": -760,
+        "role": "flanker"
+      },
+      {
+        "group": 7,
+        "index": 5,
+        "x": 2060,
+        "z": -2110,
+        "role": "rifle"
+      },
+      {
+        "group": 7,
+        "index": 6,
+        "x": -3190,
+        "z": -1300,
+        "role": "assault"
+      }
+    ],
+    "clear_lz_center": true,
+    "design_rule": "offset cover triangles with preserved traversal spine"
+  }
 }

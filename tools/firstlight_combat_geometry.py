@@ -36,7 +36,7 @@ COVER=[
  # Operations // keep the workplace readable; use light cover around its perimeter.
  (MILITARY+'Concrete Barrier 01.fpe',470,360,8,88,'operations','south approach'),
  (MILITARY+'Wooden Crate 01a.fpe',780,1160,-12,86,'operations','west flank'),
- (MILITARY+'Concrete Barrier 01.fpe',2140,1310,88,88,'operations','east anchor'),
+ (MILITARY+'Concrete Barrier 01.fpe',2140,900,88,88,'operations','east anchor'),
 
  # AEGIS // stronger military retrofit against the alien excavation silhouette.
  (MILITARY+'Hesco Barrier 01.fpe',-640,2860,4,90,'aegis','west rifle pocket'),

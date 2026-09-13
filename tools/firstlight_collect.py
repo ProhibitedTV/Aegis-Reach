@@ -294,7 +294,7 @@ def main():
     print('Lua errors:', len(evidence['lua_errors']))
     print('Music evidence:', len(evidence['music_init']) + len(evidence['music_states']))
     print('Enemy activations:', tuning['activation_count'])
-    print('Squads cleared:', len(tuning['squads_cleared'])),'/ 7')
+    print('Squads cleared:', len(tuning['squads_cleared']),'/ 7')
     print('Peak pressure:', tuning['peak_pressure'])
     print('Max contacts sampled:', tuning['max_contacts_sampled'])
     print('Visibility-held entities:',len(tuning['held_reveal_entities']),'max hold',tuning['max_reveal_hold_ms'],'ms')

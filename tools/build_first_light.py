@@ -433,11 +433,11 @@ visual,_=patch_visuals(payload['visuals.ini']);visual='\r\n'.join(line for line 
 # Native sun RGB uses 0..255 (MAX divides by 255); full color is DeSaturate=1.
 # Keep the horizon subordinate to the shelf and practical lights.
 atmosphere={'FogNearest#':6200,'FogDistance#':19500,'FogR#':48,'FogG#':62,'FogB#':80,'FogA#':0.45,
- 'Exposure':0.84,'SunIntensity':1.65,'SunRed':255,'SunGreen':211,'SunBlue':163,
- 'SunAngleX':78,'SunAngleY':315,'SunAngleZ':0,'Simulate24Hours':0,
+ 'Exposure':0.84,'SunIntensity':1.35,'SunRed':255,'SunGreen':219,'SunBlue':186,
+ 'SunAngleX':82,'SunAngleY':280,'SunAngleZ':0,'Simulate24Hours':0,
  'AmbienceRed#':70,'AmbienceGeen#':84,'AmbienceBlue#':108,'EnvProbeBrightness':0.75,
- 'sky$':'sunset','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
- 'LensFlare':0,'SkyCloudCoverage':0.5,'SkyCloudiness':0.45}
+ 'sky$':'vesper_orbital','AutoExposure':0,'DeSaturate':1,'BloomStrength':0.08,'BloomThreshold':1.5,
+ 'LensFlare':0,'LightShafts':0,'lightraymode':0,'SkyCloudCoverage':0,'SkyCloudiness':0,'SkyCloudSpeed':0}
 water={'WaterEnable':1,'Waterheight':WATER_LEVEL,'Waterred':13,'Watergreen':37,'Waterblue':43,
  'WaterWaveAmplitude':1.5,'WaterChoppyScale':0,'WaterWindDependency':0,'WaterSpeed1':.018,
  'WaterReflection':.3,'WaterSparkleCol':.25}

@@ -4,6 +4,30 @@ Baseline: remote main `0fbb6960c94168367c50c34692d6a2fb084d2e8b`.
 This branch changes the actual First Light map. There is no showroom or separate
 prototype map. It is not qualified for merge until the new native views pass.
 
+## September 12 remote integration and orbital sky
+
+Merged `origin/sol/aaa-combat-director-pass` through `14c6bee` into the environment
+candidate (merge `084bb4c`). This brings adaptive reveal pacing, tactical roles,
+objective feedback, score ducking, encounter cover and native-run collection.
+Conflict resolution keeps the Meridian facilities, original-art freshness, the
+field HUD and the optional GATELOG/GRIDLOG interactions. Incoming Operations
+cover moves outside the new crew module; incoming Earth road-closure boards use
+existing concrete barriers. The combined test covers wave delay followed by squad
+cadence, retaining the actual choreography instead of bypassing it to pass a test. The
+incoming collector also had an unmatched parenthesis; that is repaired and its
+nine telemetry checks now run as part of preflight.
+
+This integration deliberately changes enemy starts and adds combat cover/backlights;
+the previous facility-only statements about unchanged combat positions apply to
+that earlier pass, not this merged build. Native navigation/combat testing remains
+required. Main is not advanced merely because the branches merged cleanly.
+
+The orbital sky is original project art: crescent planet, stars, faint galactic
+band and a thin twilight horizon. The MAX cubemap, retained source and reproducible
+converter are committed. Broad light shafts are disabled, procedural clouds are
+removed and sun intensity is moderated. See `Sky/README.md` for format, settings,
+provenance and review directions. The sky projection preview is not game evidence.
+
 ## September 12 facility completion candidate
 
 The latest user-supplied native view shows an oversized Gate 07 sign, intrusive
