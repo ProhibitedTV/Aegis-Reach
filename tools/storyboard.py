@@ -20,10 +20,22 @@ def definition(name):
  cls=type(name,(C.Structure,),{'_fields_':fields});types[name]=cls;return cls
 Node=definition('StoryboardNodesStruct');Story=definition('StoryboardStruct')
 PROJECT=ROOT/'Aegis Reach/Files/projectbank/Aegis Reach/project203.dat'
+FIRST_LIGHT_LEVEL=b'mapbank\\Aegis Reach - First Light.fpm'
 def load():
  data=PROJECT.read_bytes()
  assert len(data)==C.sizeof(Story),(len(data),C.sizeof(Story))
  s=Story.from_buffer_copy(data);assert s.sig==b'Storyboard' and s.iStoryboardVersion==203
+ # MAX is free to reorder storyboard nodes when a project is resaved. Older tests
+ # assumed FIRST LIGHT always occupied slot 7, which made a portable/valid storyboard
+ # fail simply because the node moved. Keep the inspector's canonical view stable only
+ # when the exact relative FIRST LIGHT path is already present somewhere in the file.
+ if s.Nodes[7].level_name!=FIRST_LIGHT_LEVEL:
+  for i,n in enumerate(s.Nodes):
+   if n.used and n.level_name==FIRST_LIGHT_LEVEL:
+    tmp=Node.from_buffer_copy(bytes(s.Nodes[7]))
+    s.Nodes[7]=n
+    s.Nodes[i]=tmp
+    break
  return s
 if __name__=='__main__':
  s=load();print('Native storyboard:',s.gamename,'size',C.sizeof(s),'custom folder',s.customprojectfolder)
