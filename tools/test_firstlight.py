@@ -43,7 +43,9 @@ function SetEntityEmissiveStrength(...) end
 function GetPlayerDistance(e) local p=g_Entity[e];return math.sqrt((p.x-g_PlayerPosX)^2+(p.y-g_PlayerPosY)^2+(p.z-g_PlayerPosZ)^2) end
 package.preload['scriptbank\\\\people\\\\character_attack']=function()
  function character_attack_init_file(...) end
- function character_attack_properties(...) end
+ function character_attack_properties(e,followapath,canretreat,retreatrange,standground,randomflankmode,flanktarget,alerted,allowheadshot,combattime,canhearsound,hearingrange,starteranimation,startanimation)
+  calls['flank'..e]=flanktarget;calls['stand'..e]=standground;calls['retreat'..e]=retreatrange;calls['alerted'..e]=alerted
+ end
  function character_attack_main(e) ai_ticks=ai_ticks+1 end
  return true
 end
@@ -103,12 +105,25 @@ check('Shield recharges after contact breaks',g.fl.shield>0 and g.fl.armour==70)
 entity(8,0,-2350);g.firstlight_interact_init_name(8,'FL MED');pos(0,-2350);g.g_KeyPressE=1;step(100,8)
 check('Field repair restores armour',g.fl.armour==100)
 entity(9,0,-2350);g.firstlight_interact_init_name(9,'FL INTEL1');step(100,9);check('Field records are collectible',g.fl.intel.INTEL1)
+# Enemy wrapper contracts: stock MAX tactics, hidden reserves and visibility-safe reveals.
 entity(40,0,-2350,100);g.firstlight_enemy_init_name(40,'FL ENEMY 7 1');g.firstlight_enemy_main(40)
 check('Reserve remains hidden before evacuation',g.calls.hidden40)
 g.fl.stage=4;g.fl.evac_start=g.g_Time;g.firstlight_enemy_main(40);check('Reinforcements respect their arrival delay',g.calls.hidden40)
 g.g_Time+=4100;g.firstlight_enemy_main(40);check('Reinforcement activates through native combat wrapper',not g.calls.hidden40 and g.ai_ticks>0)
+check('Extraction rifleman maps to stock Use Cover tactic',g.calls.flank40==4 and g.calls.alerted40==1)
 before=g.ai_ticks;g.g_Entity[40].health=0;g.firstlight_enemy_main(40)
 check('Native death lifecycle continues after zero health',g.ai_ticks>before)
+# A regular squad staging point centered in view should stay concealed until the player turns away.
+g.firstlight_director_init(1);g.firstlight_director_main(1);g.g_Time=g.fl.born+23000;pos(0,-6000);g.g_PlayerAngY=0
+entity(41,0,-5000,100);g.firstlight_enemy_init_name(41,'FL ENEMY 1 1');g.firstlight_enemy_main(41)
+g.g_Time+=500;g.firstlight_enemy_main(41)
+check('Regular squad reveal waits while staging point is centered in view',g.calls.hidden41)
+g.g_PlayerAngY=180;g.g_Time+=100;g.firstlight_enemy_main(41)
+check('Turning away releases a visibility-safe regular reveal',not g.calls.hidden41)
+entity(42,200,-5000,100);g.firstlight_enemy_init_name(42,'FL ENEMY 1 4');g.firstlight_enemy_main(42)
+check('Flanker maps to stock Wide Flank tactic',g.calls.flank42==3 and g.calls.stand42==0)
+entity(43,-200,-5000,100);g.firstlight_enemy_init_name(43,'FL ENEMY 1 3');g.firstlight_enemy_main(43)
+check('Anchor maps to Stay Back and Stand Ground',g.calls.flank43==1 and g.calls.stand43==1)
 # Native assets and encrypted archive match exactly what the engine will load.
 modelchecks=0;dll=C.CDLL(str(INSTALL.parent/'assimp.dll'));dll.aiImportFile.argtypes=[C.c_char_p,C.c_uint];dll.aiImportFile.restype=C.c_void_p;dll.aiReleaseImport.argtypes=[C.c_void_p]
 for p in (FILES/'entitybank/Aegis Reach/First Light').glob('*.x'):
