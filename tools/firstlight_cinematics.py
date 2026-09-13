@@ -14,9 +14,18 @@ CAMERA_SCRIPT=r'Cine Guru MAX\cg_cinematic_camera.lua'
 CONTROLLER_SCRIPT=r'aegis_reach\firstlight_cinematic.lua'
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 
+SHOT_PROFILES={
+    'ARRIVAL':dict(seconds=9.5,focal_start=54,focal_end=82),
+    'MIRA_SIGNAL':dict(seconds=5.0,focal_start=70,focal_end=82),
+    'AEGIS_REVEAL':dict(seconds=6.0,focal_start=58,focal_end=88),
+    'EXTRACTION':dict(seconds=5.0,focal_start=66,focal_end=82),
+}
+
 SHOTS=(
     # beat, entity name, camera x/z, height above terrain, target x/z, target height
-    ('ARRIVAL','FL CG ARRIVAL',-360,-8820,340,-2050,-7250,95),
+    # ARRIVAL sits behind the insertion point and looks down the dead service corridor
+    # toward Camp 12. The runtime slowly widens its focal length during the briefing.
+    ('ARRIVAL','FL CG ARRIVAL',-160,-9060,460,-2050,-7200,120),
     ('MIRA_SIGNAL','FL CG MIRA SIGNAL',820,650,205,1420,1050,85),
     ('AEGIS_REVEAL','FL CG AEGIS REVEAL',-1060,2070,335,0,3200,175),
     ('EXTRACTION','FL CG EXTRACTION',-820,-3020,300,0,-2350,80),
@@ -37,13 +46,16 @@ def apply(build):
     cameras=[]
     for beat,name,x,z,height,tx,tz,target_height in SHOTS:
         y,pitch,yaw=_pose(build,x,z,height,tx,tz,target_height)
+        profile=SHOT_PROFILES[beat]
         build.add(
             MARKER,name,x,z,y=y,ry=yaw,kind='cinematic_camera',script=CAMERA_SCRIPT,
             **{'rx':pitch,'rz':0,'eleprof.physics':0,'eleprof.phyalways':1}
         )
         cameras.append({
             'beat':beat,'name':name,'x':x,'y':round(y,2),'z':z,
-            'pitch':round(pitch,2),'yaw':round(yaw,2),'seconds':5,
+            'pitch':round(pitch,2),'yaw':round(yaw,2),
+            'seconds':profile['seconds'],
+            'focal_start':profile['focal_start'],'focal_end':profile['focal_end'],
             'always_active':True,
         })
 
@@ -59,6 +71,12 @@ def apply(build):
         'camera_count':len(cameras),
         'beats':[c['beat'] for c in cameras],
         'cameras':cameras,
+        'opening':{
+            'purpose':'recover 42 missing colonists and investigate Mira Sen last burst',
+            'warden_clue':'Gate 07 transponder crossed after communications failed',
+            'first_action':'Restore Northstar and recover the evacuation packet',
+            'seconds':SHOT_PROFILES['ARRIVAL']['seconds'],
+        },
         'always_active':True,
         'registration_retry':True,
         'fail_open':True,
