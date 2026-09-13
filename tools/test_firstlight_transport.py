@@ -5,7 +5,7 @@ from max_archive import PASSWORD
 from environment_pass import Mesh
 from firstlight_transport import (
     hull,recorder,detached_engine,torn_panel,collision_box,
-    SITE,CRASH_YAW,world_offset
+    SITE,CRASH_YAW,world_offset,COLLISION_SCRIPT
 )
 from firstlight_story_effects import EFFECTS
 from firstlight_world import ground,road_sample,ROUTE
@@ -48,18 +48,24 @@ assert 'M-17 / detached starboard engine' in byname
 assert 'M-17 / torn hull panel 1' in byname and 'M-17 / torn hull panel 2' in byname
 assert 'M-17 / ejected cargo' in byname
 
-# Native-review regression: visual shell does not own collision. Four robust box
-# colliders live inside it, so open hull surfaces cannot become phase-through holes.
+# Native-review regression: the render shell does not own collision. Four tighter box
+# colliders live inside it and are hidden every native frame by a dedicated script, so
+# proxy atlas geometry can never protrude through the authored wreck again.
 colliders=[name for name in byname if name.startswith('M-17 / collision ')]
 assert len(colliders)==4,colliders
 for name in colliders:
  e=byname[name]
  assert e['101:eleprof.physics']==1 and e['101:eleprof.phyalways']==1
+ assert e['101:eleprof.aimain_s']==COLLISION_SCRIPT,(name,e['101:eleprof.aimain_s'])
 bank=ROOT/'Aegis Reach/Files/entitybank/Aegis Reach/First Light'
 for name in ('Meridian M17 Collision Forward','Meridian M17 Collision Cargo',
              'Meridian M17 Collision Port Engine','Meridian M17 Collision Starboard Root'):
  text=(bank/(name+'.fpe')).read_text(errors='replace').lower()
  assert 'collisionmode = 0' in text,name
+
+proxy=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_collision_proxy.lua').read_text(errors='replace')
+assert 'Hide(e)' in proxy,'collision proxy no longer hides render geometry'
+assert 'CollisionOff' not in proxy,'collision proxy must never disable physics'
 
 # Main render shell and cosmetic debris intentionally do not contribute concave collision.
 shell=(bank/'Meridian M17 Transport Wreck.fpe').read_text(errors='replace').lower()
@@ -72,5 +78,5 @@ assert fx['WRECK_SMOKE'][1]>=80 and 'WRECK_SPARKS' in fx
 for name in ('M-17 / ruptured cargo','M-17 / ejected cargo','FL FLIGHTLOG'):
  e=byname[name];assert abs(e['101:y']-ground(e['101:x'],e['101:z']))<.5
 
-print('M-17 PASS: canted wreck geometry, box-collision cores, detached engine, debris trail, layered fire/smoke, flight record and supplies.')
+print('M-17 PASS: canted wreck geometry, hidden box-collision cores, detached engine, debris trail, layered fire/smoke, flight record and supplies.')
 print('Native MAX collision feel, particle scale and final wreck readability still require player review.')
