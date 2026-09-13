@@ -1,111 +1,50 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- Mission 01 physical interactions; objectives have distinct consequences.
 local items={}
-local records={
- INTEL1={'EVACUATION ROSTER: 42 aboard. M. Sen unaccounted for.','Someone has crossed out the departure time and written: WAIT FOR MIRA.'},
- INTEL2={'SURVEY NOTE: The black ribs continue below the old waterline.','MIRA SEN: It answers the calibration tone. This is not a mineral deposit.'},
- INTEL3={'WARDEN ORDER: Seal Shelter 12. Retask AEGIS. Erase the survey.','KESTREL: They were never defending the relay. They were burying the evidence.'}
-}
-local fieldnotes={
- GATELOG={'GATE 07 / INSPECTION LOG: Civilian freight ordered back to camp.','KESTREL: The Wardens sealed the road after the evacuation. Northstar holds the local override.'},
- GRIDLOG={'NORTHSTAR / MAINTENANCE: Generators intact. Civilian bus isolated remotely.','TECHNICIAN: Yard terminal can restore the bus. Do not disconnect the shelter feed.'},
- FLIGHTLOG={'M-17 / CARGO: Air filters. Medical packs. Security ammunition. Colony resupply, inbound.','PILOT: Landing clearance revoked. Gate 07 refuses our distress call. Putting her down in the tide channel.'}
-}
-local requirements={POWER=1,RECORDS=2,CORE=3,EXTRACT=4}
-local labels={POWER='Restore power',RECORDS='Recover manifest',CORE='Cancel firing order',EXTRACT='Board Kestrel'}
+local records={INTEL1={'EVACUATION ROSTER: 42 aboard. M. Sen unaccounted for.','Someone has crossed out the departure time and written: WAIT FOR MIRA.'},INTEL2={'SURVEY NOTE: The black ribs continue below the old waterline.','MIRA SEN: It answers the calibration tone. This is not a mineral deposit.'},INTEL3={'WARDEN ORDER: Seal Shelter 12. Retask AEGIS. Erase the survey.','KESTREL: They were never defending the relay. They were burying the evidence.'}}
+local fieldnotes={GATELOG={'GATE 07 / INSPECTION LOG: Civilian freight ordered back to camp.','KESTREL: The Wardens sealed the road after the evacuation. Northstar holds the local override.'},GRIDLOG={'NORTHSTAR / MAINTENANCE: Generators intact. Civilian bus isolated remotely.','TECHNICIAN: Yard terminal can restore the bus. Do not disconnect the shelter feed.'},FLIGHTLOG={'M-17 / CARGO: Air filters. Medical packs. Security ammunition. Colony resupply, inbound.','PILOT: Landing clearance revoked. Gate 07 refuses our distress call. Putting her down in the tide channel.'}}
+local requirements={POWER=1,RECORDS=2,CORE=3,EXTRACT=4};local labels={POWER='Restore power',RECORDS='Recover manifest',CORE='Cancel firing order',EXTRACT='Board Kestrel'}
 local visual={locked={75,88,96,5},ready={50,210,230,28},holding={110,235,245,42},blocked={239,153,96,34},waiting={185,132,76,18},complete={92,218,132,18},intel={150,112,230,18}}
-
-local function story(id,a,b,seconds)
- if fl_dialogue and fl_dialogue(id) then return end
- if fl_say then fl_say(a,b,seconds) end
-end
-local function set_visual(e,item,state)
- if item.visual_state==state then return end;item.visual_state=state
- local v=visual[state];if not v then return end
- if SetEntityEmissiveColor then SetEntityEmissiveColor(e,v[1],v[2],v[3]) end
- if SetEntityEmissiveStrength then SetEntityEmissiveStrength(e,v[4]) end
-end
+local function story(id,a,b,seconds)if fl_dialogue and fl_dialogue(id) then return end;if fl_say then fl_say(a,b,seconds) end end
+local function kestrel_ready()return (aegis and aegis.kestrel_landed) or (fl and (fl.evac_elapsed or 0)>=60000) end
+local function set_visual(e,item,state)if item.visual_state==state then return end;item.visual_state=state;local v=visual[state];if not v then return end;if SetEntityEmissiveColor then SetEntityEmissiveColor(e,v[1],v[2],v[3]) end;if SetEntityEmissiveStrength then SetEntityEmissiveStrength(e,v[4]) end end
 local function hold_meter(ms)local pct=math.min(100,math.floor(ms/30));local width=10;local fill=math.floor(pct*width/100+0.5);return '['..string.rep('|',fill)..string.rep('.',width-fill)..'] '..pct..'%' end
-
-function firstlight_interact_init_name(e,name)
- items[e]={role=string.match(name,'FL (%w+)'),hold=0,last=0,used=false,visual_state='',blocked_bark=-20000}
+function fl_finish_extraction()
+ if not fl or not fl.debrief_pending then return end
+ fl.debrief_pending=false;fl.won=true;fl.completed=g_Time
+ if fl_log then fl_log('extraction_cinematic_complete') end
 end
-
+function firstlight_interact_init_name(e,name)items[e]={role=string.match(name,'FL (%w+)'),hold=0,last=0,used=false,visual_state='',blocked_bark=-20000} end
 function firstlight_interact_main(e)
- if not fl or not fl.started or fl.won or g_PlayerHealth<=0 then return end
- local item=items[e];if not item then return end
- local dt=item.last>0 and math.min(150,math.max(0,g_Time-item.last)) or 0;item.last=g_Time
- local role=item.role;if item.used then return end
- local radius=role=='EXTRACT' and 360 or 210;local near=GetPlayerDistance(e)<=radius
-
+ if not fl or not fl.started or fl.won or g_PlayerHealth<=0 then return end;local item=items[e];if not item then return end
+ local dt=item.last>0 and math.min(150,math.max(0,g_Time-item.last)) or 0;item.last=g_Time;local role=item.role;if item.used then return end;local radius=role=='EXTRACT' and 360 or 210;local near=GetPlayerDistance(e)<=radius
  if fieldnotes[role] then
-  if GetPlayerDistance(e)>110 then return end
-  local note_label=role=='GATELOG' and 'inspection log' or role=='FLIGHTLOG' and 'M-17 flight recorder' or 'maintenance record'
-  Prompt('E // Read '..note_label)
-  if g_KeyPressE==1 then
-   item.used=true;local note=fieldnotes[role]
-   if role=='FLIGHTLOG' then story('FL01_M17_001',note[1],note[2],8) else fl_say(note[1],note[2],13) end
-   fl.discovery_until=g_Time+10000;fl.discovery_track='discovery_human';fl_log('fieldnote '..role)
-  end
-  return
+  if GetPlayerDistance(e)>110 then return end;local note_label=role=='GATELOG' and 'inspection log' or role=='FLIGHTLOG' and 'M-17 flight recorder' or 'maintenance record';Prompt('E // Read '..note_label)
+  if g_KeyPressE==1 then item.used=true;local note=fieldnotes[role];if role=='FLIGHTLOG' then story('FL01_M17_001',note[1],note[2],8) else fl_say(note[1],note[2],13) end;fl.discovery_until=g_Time+10000;fl.discovery_track='discovery_human';fl_log('fieldnote '..role) end;return
  end
- if records[role] then
-  set_visual(e,item,'intel');if not near then return end;Prompt('E // Read field record')
-  if g_KeyPressE==1 then
-   item.used=true;fl.intel[role]=true;local r=records[role];set_visual(e,item,'complete');fl_say(r[1],r[2],13)
-   fl.discovery_until=g_Time+12000;fl.discovery_track=role=='INTEL2' and 'discovery_choir' or 'discovery_human';fl_log('intel '..role)
-  end
-  return
- end
- if role=='MED' then
-  set_visual(e,item,fl.armour<100 and 'ready' or 'locked');if not near then return end
-  Prompt(fl.armour<100 and 'E // Field repair: restore armour' or 'ARMOUR NOMINAL')
-  if g_KeyPressE==1 and fl.armour<100 then
-   item.used=true;fl.armour=100;fl.armour_warned=false;fl.last_health=math.floor(fl.armour+fl.shield);SetPlayerHealth(fl.last_health)
-   fl_say('SUIT: Field repair complete. Armour restored.','Shield regenerates when you break contact.',5);Hide(e);CollisionOff(e)
-  end
-  return
- end
-
+ if records[role] then set_visual(e,item,'intel');if not near then return end;Prompt('E // Read field record');if g_KeyPressE==1 then item.used=true;fl.intel[role]=true;local r=records[role];set_visual(e,item,'complete');fl_say(r[1],r[2],13);fl.discovery_until=g_Time+12000;fl.discovery_track=role=='INTEL2' and 'discovery_choir' or 'discovery_human';fl_log('intel '..role) end;return end
+ if role=='MED' then set_visual(e,item,fl.armour<100 and 'ready' or 'locked');if not near then return end;Prompt(fl.armour<100 and 'E // Field repair: restore armour' or 'ARMOUR NOMINAL');if g_KeyPressE==1 and fl.armour<100 then item.used=true;fl.armour=100;fl.armour_warned=false;fl.last_health=math.floor(fl.armour+fl.shield);SetPlayerHealth(fl.last_health);fl_say('SUIT: Field repair complete. Armour restored.','Shield regenerates when you break contact.',5);Hide(e);CollisionOff(e) end;return end
  local required=requirements[role]
  if fl.stage>required then set_visual(e,item,'complete');if near then Prompt('SYSTEM RESTORED') end;return end
  if fl.stage<required then set_visual(e,item,'locked');if near then Prompt('Complete the current objective first') end;return end
- if role=='EXTRACT' and not (aegis and aegis.kestrel_landed) then set_visual(e,item,'waiting') else set_visual(e,item,'ready') end
+ if role=='EXTRACT' and not kestrel_ready() then set_visual(e,item,'waiting') else set_visual(e,item,'ready') end
  if not near then item.hold=0;return end
-
  if role=='EXTRACT' then
-  if not (aegis and aegis.kestrel_landed) then Prompt('Hold the landing zone until Kestrel is physically down');return end
+  if not kestrel_ready() then Prompt('Hold the landing zone until Kestrel is physically down');return end
   if fl_hostiles(0,-2350,1500)>0 then set_visual(e,item,'blocked');Prompt('Clear nearby Wardens before boarding');return end
- elseif fl_hostiles(g_Entity[e].x,g_Entity[e].z,680)>0 then
-  set_visual(e,item,'blocked');Prompt('Clear the immediate area before operating this terminal');item.hold=0
-  if g_Time-item.blocked_bark>12000 then item.blocked_bark=g_Time;fl_bark('SUIT: TERMINAL ACCESS DENIED.','Hostile weapons signatures inside the security perimeter.',4) end
-  return
- end
-
- if g_KeyPressE==1 then item.hold=item.hold+dt;set_visual(e,item,'holding') else item.hold=0;set_visual(e,item,'ready') end
- Prompt('Hold E // '..labels[role]..' '..hold_meter(item.hold));if item.hold<3000 then return end
+ elseif fl_hostiles(g_Entity[e].x,g_Entity[e].z,680)>0 then set_visual(e,item,'blocked');Prompt('Clear the immediate area before operating this terminal');item.hold=0;if g_Time-item.blocked_bark>12000 then item.blocked_bark=g_Time;fl_bark('SUIT: TERMINAL ACCESS DENIED.','Hostile weapons signatures inside the security perimeter.',4) end;return end
+ if g_KeyPressE==1 then item.hold=item.hold+dt;set_visual(e,item,'holding') else item.hold=0;set_visual(e,item,'ready') end;Prompt('Hold E // '..labels[role]..' '..hold_meter(item.hold));if item.hold<3000 then return end
  item.used=true;set_visual(e,item,'complete');PlaySound(e,0)
-
  if role=='EXTRACT' then
-  fl.won=true;fl.completed=g_Time;fl.final_time=math.floor((g_Time-fl.born)/1000);fl.intel_count=0
-  for _ in pairs(fl.intel) do fl.intel_count=fl.intel_count+1 end
+  fl.debrief_pending=true;fl.completed=g_Time;fl.final_time=math.floor((g_Time-fl.born)/1000);fl.intel_count=0;for _ in pairs(fl.intel) do fl.intel_count=fl.intel_count+1 end
   if fl.pressure_peak>=72 then fl.final_pressure_band='CRITICAL' elseif fl.pressure_peak>=42 then fl.final_pressure_band='HIGH' elseif fl.pressure_peak>=16 then fl.final_pressure_band='ELEVATED' else fl.final_pressure_band='LOW' end
-  if aegis then aegis.kestrel_depart=true end
-  if fl_request_cinematic then fl_request_cinematic('EXTRACTION') end
-  FreezeAI();FreezePlayer();fl_log('MISSION_COMPLETE records='..fl.intel_count..' kills='..fl.kills..' seconds='..fl.final_time..' peak_pressure='..math.floor(fl.pressure_peak or 0));return
+  if aegis then aegis.kestrel_depart=true end;local queued=fl_request_cinematic and fl_request_cinematic('EXTRACTION');if not queued then fl_finish_extraction() end
+  FreezeAI();FreezePlayer();fl_log('MISSION_COMPLETE_PENDING records='..fl.intel_count..' kills='..fl.kills..' seconds='..fl.final_time..' peak_pressure='..math.floor(fl.pressure_peak or 0));return
  end
-
  fl.stage=fl.stage+1
- if role=='POWER' then
-  story('FL01_KES_008','NORTHSTAR ONLINE. Civilian channel restored.','KESTREL: That distress call is coming from Operations. Go east.',8)
- elseif role=='RECORDS' then
-  if fl_request_cinematic then fl_request_cinematic('MIRA_SIGNAL') else story('FL01_MIR_001','MIRA SEN: We are under Shelter 12.','Do not let them fire.',8) end
-  fl.discovery_until=g_Time+12000;fl.discovery_track='discovery_choir'
- else
-  story('FL01_KES_011','FIRING ORDER CANCELLED. Civilian shelter removed from target list.','KESTREL: West service road back to LZ Zero-Seven. I am coming in.',8);fl.last_hit=g_Time-8000
- end
+ if role=='POWER' then fl_say('NORTHSTAR ONLINE. Civilian channel restored.','KESTREL: That distress call is coming from Operations. Go east.',10)
+ elseif role=='RECORDS' then if fl_request_cinematic then fl_request_cinematic('MIRA_SIGNAL') else story('FL01_MIR_001','MIRA SEN: We are under Shelter 12.','Do not let them fire.',8) end;fl.discovery_until=g_Time+12000;fl.discovery_track='discovery_choir'
+ else story('FL01_KES_011','FIRING ORDER CANCELLED. Civilian shelter removed from target list.','KESTREL: West service road back to LZ Zero-Seven. I am coming in.',8);fl.last_hit=g_Time-8000 end
  if PlayNon3DSound then PlayNon3DSound(e,1) end;fl_log('objective '..role..' stage='..fl.stage)
 end
-
 firstlight_interact_init_name=firstlight_guard('firstlight_interact_init_name',firstlight_interact_init_name)
 firstlight_interact_main=firstlight_guard('firstlight_interact_main',firstlight_interact_main)

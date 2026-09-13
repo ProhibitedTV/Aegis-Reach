@@ -23,65 +23,44 @@ local catalog={
  FL01_KES_017={speaker='KESTREL',text='Lifting. Shelter Twelve is alive. Mira is still transmitting.',seconds=4.0},
  FL01_M17_001={speaker='M-17 PILOT',text='Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.',seconds=5.0},
 }
-local voice_entities={}
-local last_played={}
-
-local function entity_name(e)
- if not GetEntityName then return nil end
- local ok,name=pcall(GetEntityName,e)
- return ok and name or nil
-end
-
+local voice_entities={};local last_played={};local runtime={zone='',evac_started=false,evac={}}
+local function entity_name(e)if not GetEntityName then return nil end;local ok,name=pcall(GetEntityName,e);return ok and name or nil end
 local function resolve_voice(id)
  if voice_entities[id] and g_Entity and g_Entity[voice_entities[id]] then return voice_entities[id] end
- if not g_Entity then return nil end
- local wanted='FL VO '..id
- for e,_ in pairs(g_Entity) do
-  if entity_name(e)==wanted then voice_entities[id]=e;return e end
- end
- return nil
+ if not g_Entity then return nil end;local wanted='FL VO '..id
+ for e,_ in pairs(g_Entity) do if entity_name(e)==wanted then voice_entities[id]=e;return e end end;return nil
 end
-
-local function play_voice(id)
- if not PlayNon3DSound then return end
- local e=resolve_voice(id)
- if e then pcall(PlayNon3DSound,e,0) end
-end
-
+local function play_voice(id)if not PlayNon3DSound then return end;local e=resolve_voice(id);if e then pcall(PlayNon3DSound,e,0) end end
 function fl_dialogue(id)
- local line=catalog[id]
- if not line then return false end
- if not aegis then aegis={} end
+ local line=catalog[id];if not line then return false end;if not aegis then aegis={} end
  aegis.dialogue_current={id=id,speaker=line.speaker,text=line.text,until=g_Time+math.floor(line.seconds*1000)}
- if not aegis.cinematic_active and fl_say then
-  fl_say(line.speaker..': '..line.text,'',line.seconds)
- end
- if not last_played[id] or g_Time-last_played[id]>500 then
-  last_played[id]=g_Time;play_voice(id)
- end
- if fl_log then fl_log('dialogue '..id) end
- return true
+ if not aegis.cinematic_active and fl_say then fl_say(line.speaker..': '..line.text,'',line.seconds) end
+ if not last_played[id] or g_Time-last_played[id]>500 then last_played[id]=g_Time;play_voice(id) end
+ if fl_log then fl_log('dialogue '..id) end;return true
 end
-
 function fl_dialogue_draw_cinematic()
- if not aegis or not aegis.dialogue_current then return end
- local line=aegis.dialogue_current
- if g_Time>(line.until or 0) then return end
+ if not aegis or not aegis.dialogue_current then return end;local line=aegis.dialogue_current;if g_Time>(line.until or 0) then return end
  if Panel then Panel(8,79,92,92) end
- if TextCenterOnXColor then
-  TextCenterOnXColor(50,81,1,line.speaker,103,220,230)
-  TextCenterOnXColor(50,86,2,line.text,228,225,209)
+ if TextCenterOnXColor then TextCenterOnXColor(50,81,1,line.speaker,103,220,230);TextCenterOnXColor(50,86,2,line.text,228,225,209) end
+end
+local function mission_radio_tick()
+ if not fl or not fl.started or fl.won or (aegis and aegis.cinematic_active) then return end
+ if fl.zone~=runtime.zone then
+  runtime.zone=fl.zone
+  if fl.zone=='SURVEY CAMP 12' then fl_dialogue('FL01_KES_006')
+  elseif fl.zone=='GATE 07' then fl_dialogue('FL01_KES_007')
+  elseif fl.zone=='NORTHSTAR POWER' then fl_dialogue('FL01_KES_008') end
+ end
+ if fl.evac_start and fl.evac_start>0 then
+  if not runtime.evac_started then runtime.evac_started=true;fl_dialogue('FL01_KES_012') end
+  local t=fl.evac_elapsed or 0
+  if t>=20000 and not runtime.evac[1] then runtime.evac[1]=true;fl_dialogue('FL01_SUIT_001') end
+  if t>=38000 and not runtime.evac[2] then runtime.evac[2]=true;fl_dialogue('FL01_KES_013') end
+  if t>=52000 and not runtime.evac[3] then runtime.evac[3]=true;fl_dialogue('FL01_KES_014') end
+  if t>=60000 and not runtime.evac[4] then runtime.evac[4]=true;if aegis then aegis.kestrel_landed=true end;fl_dialogue('FL01_KES_015') end
  end
 end
-
-function firstlight_dialogue_init(e)
- Hide(e);CollisionOff(e)
- if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
-end
-
-function firstlight_dialogue_main(e)
- -- Intentionally empty. This entity only guarantees the global dialogue catalog loads.
-end
-
+function firstlight_dialogue_init(e)runtime={zone='',evac_started=false,evac={}};Hide(e);CollisionOff(e);if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end end
+function firstlight_dialogue_main(e)mission_radio_tick() end
 firstlight_dialogue_init=firstlight_guard('firstlight_dialogue_init',firstlight_dialogue_init)
 firstlight_dialogue_main=firstlight_guard('firstlight_dialogue_main',firstlight_dialogue_main)
