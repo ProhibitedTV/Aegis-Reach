@@ -49,5 +49,6 @@ print('Cover pieces:',summary['cover_count']);print('Combat backlights:',summary
 print('CineGuru story beats:',', '.join(cinematics['beats']))
 print('Kestrel:',kestrel['vehicle_entities'],'visible vehicle entities // landing at',kestrel['touchdown_ms']//1000,'s')
 print('Dialogue:',dialogue['line_count'],'scripted lines /',dialogue['audio_bound_count'],'audio files currently bound')
-print('Vesper life:',biosphere['flora_count'],'flora /',biosphere['skitter_count'],'skitters /',biosphere['midge_cloud_count'],'airborne colonies')
+print('Vesper life:',biosphere['flora_count'],'flora /',biosphere['skitter_count'],'skitters /',biosphere['veilwing_count'],'veilwings /',biosphere['midge_cloud_count'],'microscopic colonies')
+print('Legacy Earth shrubs retired:',biosphere['legacy_stock_shrubs_retired'])
 print('Responsive practical lights:',native_engine['responsive_practical_lights']);print('Landing-zone center preserved:',summary['clear_lz_center'])
