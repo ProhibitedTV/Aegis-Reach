@@ -46,7 +46,12 @@ Camp 12 adds one meaningful prop (15 total); the court/road remain open.
 ## Native review
 
 The user-approved September 13 sky remains unchanged. This is an effects candidate,
-not native-approved particle art. Current native desktop capture/input is disabled.
+not native-approved particle art. The native control runtime now loads and finds
+MAX, but screenshot capture fails with `SetIsBorderRequired: 0x80004002` on both
+the initial attempt and a fresh window lookup. Candidate cbcc078 was launched
+normally (PID 25388); no blind input was sent. The full preflight passed. Comparing
+the encrypted map contents confirmed all 235 existing entity records, terrain and
+sky payloads are unchanged; only nine new entities and their bank entries differ.
 Tests can verify marker serialization, dependencies, native-ground contact, stage
 transitions and rate limits; they cannot judge plume size, opacity or spark motion.
 
