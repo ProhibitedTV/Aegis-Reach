@@ -18,6 +18,8 @@ STAMP=ROOT/'.local-review/firstlight-build-signature.json'
 SOURCES=(
  ROOT/'tools/firstlight_world.py',
  ROOT/'tools/build_first_light.py',
+ ROOT/'tools/firstlight_combat_geometry.py',
+ ROOT/'tools/build_first_light_aaa.py',
  ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',
 )
@@ -47,9 +49,9 @@ def main():
   return
  print('FIRST LIGHT // REBUILD REQUIRED')
  print('Source signature:',signature[:16])
- subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_first_light.py')],cwd=ROOT,check=True)
+ subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_first_light_aaa.py')],cwd=ROOT,check=True)
  STAMP.parent.mkdir(parents=True,exist_ok=True)
- STAMP.write_text(json.dumps({'source_sha256':signature,'map':str(MAP)},indent=2))
+ STAMP.write_text(json.dumps({'source_sha256':signature,'map':str(MAP),'builder':'build_first_light_aaa.py'},indent=2))
  print('FIRST LIGHT // REBUILD COMPLETE')
 
 if __name__=='__main__':main()

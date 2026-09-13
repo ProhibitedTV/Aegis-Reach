@@ -16,6 +16,13 @@ TARGET=Path(os.environ['USERPROFILE'])/'Documents/GameGuruApps/GameGuruMAX/Files
 REG=TARGET/'projectbank/Aegis Reach';DESIGN=GAME/'Design/First Light'
 MAP=FILES/'mapbank/Aegis Reach - First Light.fpm'
 TRACKS=('salt_moon_drift.wav','moon_outpost_drift.wav','orbital_catacomb.wav')
+RUNTIME_LOGS=(
+ TARGET/'first-light-diagnostics.log',
+ TARGET/'first-light-runtime.log',
+ TARGET/'aegis-native-runtime.log',
+ GAME/'Guru-Game.log',
+ INSTALL.parent/'Guru-Game.log',
+)
 
 
 def run_tool(name):
@@ -49,7 +56,15 @@ def file_sha256(path):
  return h.hexdigest()
 
 
-def launch_manifest(qa,pid):
+def runtime_log_offsets():
+ offsets={}
+ for path in RUNTIME_LOGS:
+  try:offsets[str(path)]=path.stat().st_size
+  except OSError:offsets[str(path)]=0
+ return offsets
+
+
+def launch_manifest(qa,pid,log_offsets):
  tracks={}
  for name in TRACKS:
   path=FILES/'audiobank/aegis_reach/music'/name
@@ -66,6 +81,7 @@ def launch_manifest(qa,pid):
   'map_sha256':file_sha256(MAP) if MAP.is_file() else None,
   'tracks':tracks,
   'original_art':json.loads((ROOT/'.local-review/firstlight-asset-cache.json').read_text()),
+  'log_offsets':log_offsets,
   'collect_after_run':'python tools\\firstlight_collect.py',
  }
 
@@ -108,15 +124,19 @@ def launch(qa=False):
  env=os.environ.copy()
  env.pop('AEGIS_FIRSTLIGHT_QA',None)
  if qa:env['AEGIS_FIRSTLIGHT_QA']='1'
+ # Snapshot append-only logs before MAX starts. The collector uses these offsets so
+ # a new run can never inherit an old Lua error, QA warning or activation event.
+ log_offsets=runtime_log_offsets()
  # Native MAX parser consumes the remainder of the command line as the project name.
  cmd='"'+str(INSTALL.parent/'GameGuruMAX.exe')+'" project='+('1' if qa else '0')+'Aegis Reach'
  p=subprocess.Popen(cmd,cwd=INSTALL.parent,env=env)
- manifest=launch_manifest(qa,p.pid)
+ manifest=launch_manifest(qa,p.pid,log_offsets)
  (DESIGN/'last-launch.json').write_text(json.dumps(manifest,indent=2))
  print('GameGuru MAX launched:',p.pid,'OBSERVATIONAL QA' if qa else 'NORMAL PLAY')
  if qa:print('QA mode records evidence only: no teleporting, forced input, healing, or enemy kills.')
  print('Git head:',manifest['git_head'][:12])
  print('Runtime map:',manifest['map_sha256'][:16] if manifest['map_sha256'] else 'missing')
+ print('Log baselines captured:',len(log_offsets))
  print('After exiting MAX: python tools\\firstlight_collect.py')
 
 
