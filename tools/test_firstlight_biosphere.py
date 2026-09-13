@@ -18,10 +18,9 @@ def validate_mesh(fn):
         u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
         n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
         assert sum(k*k for k in n)>1e-8,'degenerate biosphere triangle'
-    # Centered struts at y=0 intentionally bury a very small root/foot thickness in
-    # native terrain. Reject genuinely displaced meshes, not a couple of inches of
-    # grounding that prevents scrub and skitter feet from visually hovering.
-    assert min(v[1] for v in m.verts)>=-4.0,'biosphere mesh is buried too deeply below authored root plane'
+    # Centered struts at y=0 intentionally bury less than one MAX inch of root/foot
+    # thickness in terrain. That prevents hovering while still rejecting displaced art.
+    assert min(v[1] for v in m.verts)>=-1.0,'biosphere mesh is buried too deeply below authored root plane'
 
 
 for fn in (salt_scrub,brine_reed,skitter):validate_mesh(fn)
