@@ -5,6 +5,7 @@ from environment_pass import Mesh
 from firstlight_dialogue import LINES
 from firstlight_kestrel import kestrel_mesh,STATES,LENGTH_IN,SPAN_IN,LANDED_CONTACT_Y
 from firstlight_cinematics import SHOT_PROFILES
+from python_runtime import ensure_max_lua_runtime
 
 ids=[x['id'] for x in LINES];files=[x['filename'] for x in LINES]
 assert len(ids)==len(set(ids)) and len(files)==len(set(files))
@@ -52,9 +53,65 @@ assert 'fl.evac_elapsed' in k and 'aegis.kestrel_landed=true' in k and 'aegis.ke
 assert "aegis.cinematic_request='ARRIVAL_HANDOFF'" in c and "FL01_KES_001" in c and "FL01_KES_017" in c
 assert 'function fl_dialogue(id)' in d and 'FL VO ' in d and 'PlayNon3DSound' in d
 assert 'aegis.kestrel_landed' in i and "aegis.kestrel_depart=true" in i
+
+# Execute the real Kestrel Lua in the vendored MAX-compatible runtime. This catches
+# native syntax/runtime regressions and verifies that the six authored entities swap
+# flight -> flare -> landed -> flare -> flight at the expected extraction phases.
+LuaRuntime=ensure_max_lua_runtime(__file__)
+lua=LuaRuntime(unpack_returned_tuples=True)
+lua.execute('FIRSTLIGHT_TEST=true')
+lua.execute((scripts/'firstlight_audit.lua').read_text(errors='replace'))
+lua.execute(r'''
+shown={};poses={};g_Entity={}
+for e=1,6 do g_Entity[e]={obj=e,x=0,y=496,z=-2350} end
+function Hide(e) shown[e]=false end
+function Show(e) shown[e]=true end
+function CollisionOff(e) end
+function SetEntityAlwaysActive(e,v) end
+function PositionObject(obj,x,y,z) poses[obj]={x=x,y=y,z=z} end
+function RotateObject(obj,rx,ry,rz) end
+fl={started=true,born=0,evac_start=1,evac_elapsed=0}
+aegis={}
+g_Time=0
+''')
+lua.execute('\n'.join(line for line in k.splitlines() if not line.startswith("require ")))
+lua.execute(r'''
+firstlight_kestrel_init_name(1,'FL KESTREL INSERTION FLIGHT')
+firstlight_kestrel_init_name(2,'FL KESTREL INSERTION FLARE')
+firstlight_kestrel_init_name(3,'FL KESTREL INSERTION LANDED')
+firstlight_kestrel_init_name(4,'FL KESTREL EXTRACTION FLIGHT')
+firstlight_kestrel_init_name(5,'FL KESTREL EXTRACTION FLARE')
+firstlight_kestrel_init_name(6,'FL KESTREL EXTRACTION LANDED')
+
+fl.evac_elapsed=40000;g_Time=40000
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[4]==true and shown[5]==false and shown[6]==false)
+
+fl.evac_elapsed=55000;g_Time=55000
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[4]==false and shown[5]==true and shown[6]==false)
+
+fl.evac_elapsed=60000;g_Time=60000
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[4]==false and shown[5]==false and shown[6]==true)
+assert(aegis.kestrel_landed==true)
+
+aegis.kestrel_depart=true;g_Time=100000
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[6]==true and aegis.kestrel_landed==false)
+
+g_Time=101500
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[4]==false and shown[5]==true and shown[6]==false)
+
+g_Time=104000
+for e=4,6 do firstlight_kestrel_main(e) end
+assert(shown[4]==true and shown[5]==false and shown[6]==false)
+''')
+
 assert (ROOT/'Aegis Reach/Design/First Light/DIALOGUE_ELEVENLABS.md').is_file()
 assert (ROOT/'Aegis Reach/Design/First Light/KESTREL_DESIGN.md').is_file()
 print('FIRST LIGHT // STORY DELIVERY PASS')
 print('Dialogue lines:',len(LINES),'// Broadwing Kestrel states:',
       ', '.join(f'{s}:{len(meshes[s].verts)}v' for s in STATES),
-      '// lifting-body + VTOL conversion + grounded rear-ramp contract verified.')
+      '// lifting-body + VTOL conversion + grounded rear-ramp + MAX-Lua state-swap contract verified.')
