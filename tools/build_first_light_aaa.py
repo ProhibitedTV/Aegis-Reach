@@ -12,6 +12,8 @@ from firstlight_transport import apply as add_transport
 transport=add_transport(build)
 from firstlight_kestrel import apply as add_kestrel
 kestrel=add_kestrel(build)
+from firstlight_kestrel_boarding import apply as add_kestrel_boarding
+kestrel_boarding=add_kestrel_boarding(build)
 from firstlight_dialogue import apply as add_dialogue
 dialogue=add_dialogue(build)
 from firstlight_cinematics import apply as add_cinematics
@@ -38,7 +40,7 @@ report.update({
  'staged_dependencies':sorted(build.staged),
  'lights':len(build.light_locations)+len(build.crystal_sites)+summary['combat_light_count']+transport['lights'],
  'production_combat_geometry':summary,'story_effects':story_effects,'transport_wreck':transport,
- 'kestrel':kestrel,'dialogue':dialogue,'cinematics':cinematics,'biosphere':biosphere,
+ 'kestrel':kestrel,'kestrel_boarding':kestrel_boarding,'dialogue':dialogue,'cinematics':cinematics,'biosphere':biosphere,
  'native_engine_pass':native_engine,
  'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
 })
@@ -48,6 +50,7 @@ print('FIRST LIGHT // PRODUCTION COMBAT + STORY + VEHICLE + BIOSPHERE + NATIVE E
 print('Cover pieces:',summary['cover_count']);print('Combat backlights:',summary['combat_light_count']);print('Repositioned Warden starts:',len(summary['enemy_starts']))
 print('CineGuru story beats:',', '.join(cinematics['beats']))
 print('Kestrel:',kestrel['vehicle_entities'],'visible vehicle entities // landing at',kestrel['touchdown_ms']//1000,'s')
+print('Kestrel boarding:',kestrel_boarding['proxy_entities'],'landed-only polygon collision proxy')
 print('Dialogue:',dialogue['line_count'],'scripted lines /',dialogue['audio_bound_count'],'audio files currently bound')
 print('Vesper life:',biosphere['flora_count'],'flora /',biosphere['skitter_count'],'skitters /',biosphere['veilwing_count'],'veilwings /',biosphere['midge_cloud_count'],'microscopic colonies')
 print('Legacy Earth shrubs retired:',biosphere['legacy_stock_shrubs_retired'])
