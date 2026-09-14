@@ -23,6 +23,7 @@ SOURCES=(
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_kestrel_boarding.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_dialogue.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cinematic.lua',
+ ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_rig.lua',
  *MATERIAL_SOURCES,
 )
 
