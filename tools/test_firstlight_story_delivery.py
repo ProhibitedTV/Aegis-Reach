@@ -47,7 +47,7 @@ k=(scripts/'firstlight_kestrel.lua').read_text(errors='replace')
 c=(scripts/'firstlight_cinematic.lua').read_text(errors='replace')
 d=(scripts/'firstlight_dialogue.lua').read_text(errors='replace')
 i=(scripts/'firstlight_interact.lua').read_text(errors='replace')
-for token in ("variant_from_name","'flight','convert','flare','landed'","show_state(e,s,'convert')",
+for token in ("variant_from_name","string.find(name,'CONVERT',1,true)","show_state(e,s,'convert')",
               "show_state(e,s,'flare')","show_state(e,s,'landed')","ms<1100","ms<2700","ms<4000",
               "elapsed<47000","elapsed<53000","elapsed<60000"):
  assert token in k,token
