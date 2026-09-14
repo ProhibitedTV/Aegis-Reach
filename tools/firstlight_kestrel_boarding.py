@@ -18,14 +18,14 @@ def boarding_collision_mesh(Mesh):
     m.box(0,38,338,124,4,116,7)
 
     # Closed four-inch ramp slab, matching the visual landed-state ramp exactly.
-    top=[(-62,42,398),(-72,8,526),(72,8,526),(62,42,398)]
-    bottom=[(-62,38,398),(62,38,398),(72,4,526),(-72,4,526)]
-    quad(m,top,7)
-    quad(m,bottom,2)
-    quad(m,[top[0],bottom[3],bottom[0],top[3]],2)
-    quad(m,[top[1],top[2],bottom[2],bottom[3]],2)
-    quad(m,[top[3],bottom[0],bottom[1],top[2]],2)
-    quad(m,[top[0],top[1],bottom[2],bottom[1]],2)
+    a=(-62,42,398);b=(-72,8,526);c=(72,8,526);d=(62,42,398)
+    aa=(-62,38,398);bb=(-72,4,526);cc=(72,4,526);dd=(62,38,398)
+    quad(m,[a,b,c,d],7)       # walking face
+    quad(m,[aa,dd,cc,bb],2)   # underside
+    quad(m,[a,aa,bb,b],2)     # port edge
+    quad(m,[b,bb,cc,c],2)     # terrain tip
+    quad(m,[d,c,cc,dd],2)     # starboard edge
+    quad(m,[a,d,dd,aa],2)     # hinge edge
     return m
 
 
