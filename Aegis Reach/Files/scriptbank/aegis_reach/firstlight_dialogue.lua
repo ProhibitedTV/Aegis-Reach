@@ -36,14 +36,28 @@ end
 local function entity_name(e)if not GetEntityName then return nil end;local ok,name=pcall(GetEntityName,e);return ok and name or nil end
 local function resolve_voice(id)
  if voice_entities[id] and g_Entity and g_Entity[voice_entities[id]] then return voice_entities[id] end
- if not g_Entity then return nil end;local wanted='FL VO '..id
- for e,_ in pairs(g_Entity) do if entity_name(e)==wanted then voice_entities[id]=e;return e end end;return nil
+ if not g_Entity then return nil end
+ local wanted='FL VO '..id
+ -- MAX can expose g_Entity as an engine-backed sparse table; pairs() has already
+ -- proven unreliable for the Kestrel lookup. Use the same deterministic numeric scan
+ -- here so bound voice markers cannot silently disappear from dialogue playback.
+ for e=1,4096 do
+  if g_Entity[e] and entity_name(e)==wanted then voice_entities[id]=e;return e end
+ end
+ return nil
 end
 local function play_voice(id)
  if active_voice and StopSound then StopSound(active_voice,0) end
  active_voice=nil
  if not PlayNon3DSound then return end
- local e=resolve_voice(id);if e then pcall(PlayNon3DSound,e,0);active_voice=e end
+ local e=resolve_voice(id)
+ if e then
+  local ok=pcall(PlayNon3DSound,e,0)
+  if ok then active_voice=e end
+  if fl_log then fl_log('voice '..id..' entity='..tostring(e)..' played='..tostring(ok)) end
+ elseif fl_log then
+  fl_log('voice '..id..' marker_missing')
+ end
 end
 function fl_dialogue_busy()
  return aegis and aegis.dialogue_current and g_Time<(aegis.dialogue_current.expires_at or 0)
@@ -73,7 +87,6 @@ function fl_dialogue_draw_cinematic()
 end
 local function mission_radio_tick()
  if not fl or not fl.started or fl.won or (aegis and (aegis.cinematic_active or aegis.cinematic_request)) then return end
- -- Zone calls wait for a full sentence, including a field record or mission update.
  if fl_dialogue_busy() or g_Time<(fl.message_until or 0) then return end
  if fl.zone~=runtime.zone then
   runtime.zone=fl.zone

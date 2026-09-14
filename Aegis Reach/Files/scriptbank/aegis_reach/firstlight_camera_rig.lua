@@ -1,8 +1,8 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- Diegetic opening-camera rig for FIRST LIGHT.
--- Ship-mounted feeds inherit the live Kestrel transform. Fixed Meridian security
--- cameras remain at their authored world positions. Every active source gets a small
--- telemetry label so the cut reads as a feed switch instead of an invisible film edit.
+-- Legacy diegetic opening-camera rig retained as a compatibility marker.
+-- The HUD-native hard-replacement opener now owns camera 0 directly. This script may
+-- still position any legacy authoring camera objects that exist in old maps, but it
+-- must never draw a second telemetry overlay while the native opener is active.
 local rig={ship_obj=nil,cameras={}}
 
 local mounts={
@@ -88,14 +88,15 @@ local function position_mount(beat,m,shipx,shipy,shipz,rx,ry,rz)
 end
 
 local function draw_feed_label()
+ if not aegis or aegis.opening_native_active then return end
  local beat=active_beat();local label=beat and feeds[beat] or nil
- if not label or not aegis or not aegis.cinematic_active then return end
+ if not label or not aegis.cinematic_active then return end
  if Panel then Panel(2,2,31,9) end
  if TextCenterOnXColor then
   TextCenterOnXColor(16.5,3.0,1,label,103,220,230)
   TextCenterOnXColor(16.5,6.1,1,'MERIDIAN INSERTION // REC',144,165,178)
  end
- if aegis then aegis.camera_feed_label=label end
+ aegis.camera_feed_label=label
 end
 
 function firstlight_camera_rig_init(e)
