@@ -15,7 +15,9 @@ lua=LuaRuntime(unpack_returned_tuples=True)
 lua.execute(r'''
 function firstlight_guard(n,f) return f end
 g_Time=1000
-aegis={cinematic_active=true,cinematic_beat='ARRIVAL_NOSE'}
+-- Start on a world-fixed feed so rigid mount geometry can be verified without
+-- intentional active-feed vibration perturbing the local offset.
+aegis={cinematic_active=true,cinematic_beat='ARRIVAL_PERIM'}
 g_Entity={};names={};objpose={};campos={};camrot={};texts={}
 function GetEntityName(e) return names[e] end
 function Hide(e) end
@@ -65,7 +67,14 @@ assert(math.abs(camrot[214].rz-ship.rz*.12)<0.01,'ISR roll stabilization regress
 for _,obj in ipairs({222,223,224}) do assert(campos[obj]~=nil) end
 assert(math.abs(campos[222].x-campos[223].x)<0.001 and math.abs(campos[223].x-campos[224].x)<0.001)
 
-local oldx,oldz=nose.x,nose.z
+-- When the nose feed is actually live, a tiny deterministic mechanical vibration
+-- is expected. It may perturb the radius slightly, but must stay tightly bounded.
+aegis.cinematic_beat='ARRIVAL_NOSE';g_Time=1100;firstlight_camera_rig_main(99)
+local vibrating_nose=campos[211]
+local vd=math.sqrt((vibrating_nose.x-ship.x)^2+(vibrating_nose.y-ship.y)^2+(vibrating_nose.z-ship.z)^2)
+assert(math.abs(vd-expected)<0.35,'nose vibration escaped mount envelope')
+
+local oldx,oldz=vibrating_nose.x,vibrating_nose.z
 ship.x=1100;ship.y=700;ship.z=-8500;ship.rx=-4;ship.ry=128;ship.rz=-9
 g_Time=1500;aegis.cinematic_beat='ARRIVAL_STBD';firstlight_camera_rig_main(99)
 assert(aegis.kestrel_camera_rig_ready==true)
@@ -77,4 +86,4 @@ local rendered='';for _,v in pairs(texts) do rendered=rendered..' '..v end
 assert(string.find(rendered,'KSTL%-02 STBD SHOULDER'),'active feed telemetry label missing')
 ''')
 print('FIRST LIGHT // DIEGETIC CAMERA RIG PASS')
-print('11 Kestrel-mounted feeds follow the live airframe; 6 infrastructure cameras remain world-fixed; feed telemetry renders.')
+print('11 Kestrel-mounted feeds follow the live airframe; 6 infrastructure cameras remain world-fixed; active-feed vibration stays bounded; telemetry renders.')
