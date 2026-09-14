@@ -1,8 +1,8 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- Broadwing Kestrel choreography. Six visual entities share one mission-safe controller:
--- insertion/extraction x flight/flare/landed. Mission state stays authoritative elsewhere.
--- Motion is procedural so the ship carries inertia and VTOL weight even though the
--- current airframe still uses discrete visual mesh swaps for its hardware states.
+-- Broadwing Kestrel choreography. Eight visual entities share one mission-safe controller:
+-- insertion/extraction x flight/convert/flare/landed. Mission state stays authoritative elsewhere.
+-- Motion is procedural so the ship carries inertia and VTOL weight while the authored
+-- conversion mesh bridges cruise hardware and full powered-lift configuration.
 local ships={}
 
 local function smooth(t)
@@ -30,7 +30,13 @@ end
 local function variant_from_name(name)
  if string.find(name,'LANDED',1,true) then return 'landed' end
  if string.find(name,'FLARE',1,true) then return 'flare' end
+ if string.find(name,'CONVERT',1,true) then return 'convert' end
  return 'flight'
+end
+local function staged(raw,a,b,first,middle,last)
+ if raw<a then return first end
+ if raw<b then return middle end
+ return last
 end
 
 -- Deterministic low-amplitude VTOL movement. This is intentionally subtle: the
@@ -71,10 +77,10 @@ local function insertion(e,s)
   if s.intro_start==0 then s.intro_start=aegis.cinematic_started_at or g_Time end
   local elapsed=g_Time-s.intro_start
   -- Recorded VO gives the approach room to breathe: the ship crosses and descends for
-  -- ~15.5 s, converts near the pad, then holds through the end of the 18 s shot.
+  -- ~15.5 s, starts conversion before the pad, then establishes full lift for the hold.
   local raw=elapsed/math.max(1000,(aegis.cinematic_duration_ms or 18000)-2300)
   local t=smooth(raw)
-  show_state(e,s,raw<0.78 and 'flight' or 'flare')
+  show_state(e,s,staged(raw,0.58,0.78,'flight','convert','flare'))
 
   -- The approach carries a shallow coordinated bank and deceleration pitch instead
   -- of sliding a rigid model down a spline. Both return to neutral before touchdown.
@@ -99,7 +105,7 @@ local function insertion(e,s)
   else
    local raw=(elapsed-hold)/6200
    local t=smooth(raw)
-   show_state(e,s,raw<0.28 and 'flare' or 'flight')
+   show_state(e,s,staged(raw,0.18,0.50,'flare','convert','flight'))
    local lift=smooth(clamp01(raw/0.32))
    local cruise=smooth(clamp01((raw-0.24)/0.76))
    local turn=math.sin(clamp01(t)*math.pi)
@@ -132,31 +138,42 @@ local function departure(e,s)
   -- visible ramp never disagree under the player's feet.
   show_state(e,s,'landed')
   pose(e,s.x,s.y,s.z,0,180,0)
- elseif ms<3300 then
-  -- Vertical clearance on the lift system with gear still out. Lateral/yaw correction
-  -- fades as the ship gains a safe cushion above the LZ.
-  local t=smooth((ms-1100)/2200)
+ elseif ms<2700 then
+  -- Vertical clearance begins on full lift with the gear still fully deployed.
+  local t=smooth((ms-1100)/1600)
   local correction=math.max(0,1-t)*0.60
   local dx,dy,dz,dp,dyaw,dr=hover_motion(ms,correction)
   show_state(e,s,'flare')
   pose(e,s.x+dx,
-       lerp(s.y,s.y+360,t)+dy,
-       lerp(s.z,s.z-80,t)+dz,
-       lerp(0,-2,t)+dp,
-       lerp(180,174,t)+dyaw,
-       lerp(0,-1.6,t)+dr)
+       lerp(s.y,s.y+270,t)+dy,
+       lerp(s.z,s.z-55,t)+dz,
+       lerp(0,-1.5,t)+dp,
+       lerp(180,176,t)+dyaw,
+       lerp(0,-1.0,t)+dr)
+ elseif ms<4000 then
+  -- Above the LZ, unload vertical thrust while the gear and lift doors visibly retract.
+  local t=smooth((ms-2700)/1300)
+  local correction=math.max(0,1-t)*0.35
+  local dx,dy,dz,dp,dyaw,dr=hover_motion(ms,correction)
+  show_state(e,s,'convert')
+  pose(e,lerp(s.x,s.x-90,t)+dx,
+       lerp(s.y+270,s.y+430,t)+dy,
+       lerp(s.z-55,s.z-140,t)+dz,
+       lerp(-1.5,-2.8,t)+dp,
+       lerp(176,169,t)+dyaw,
+       lerp(-1.0,1.5,t)+dr)
  else
-  -- Once clear of the pad, stow the VTOL/gear hardware and accelerate away. A
-  -- coordinated bank and nose-down attitude arrive progressively with forward speed.
-  local t=smooth((ms-3300)/4700)
+  -- Once conversion is complete, accelerate away on cruise thrust with a coordinated
+  -- bank and nose-down attitude arriving progressively with forward speed.
+  local t=smooth((ms-4000)/4000)
   local turn=math.sin(clamp01(t)*math.pi)
   show_state(e,s,'flight')
-  pose(e,lerp(s.x,s.x-2050,t),
-       lerp(s.y+360,s.y+1320,t),
-       lerp(s.z-80,s.z-2550,t),
-       lerp(-2,-7,t)-turn*1.4,
-       lerp(174,142,t)-turn*1.2,
-       lerp(-1.6,8,t)+turn*3.0)
+  pose(e,lerp(s.x-90,s.x-2050,t),
+       lerp(s.y+430,s.y+1320,t),
+       lerp(s.z-140,s.z-2550,t),
+       lerp(-2.8,-7,t)-turn*1.4,
+       lerp(169,142,t)-turn*1.2,
+       lerp(1.5,8,t)+turn*3.0)
   if ms>=8000 then set_visible(e,s,false) end
  end
 end
@@ -167,34 +184,47 @@ local function extraction(e,s)
  local elapsed=fl.evac_elapsed or 0
  if elapsed<36000 then set_visible(e,s,false);return end
 
- if elapsed<50000 then
-  -- Long oblique approach: clean airframe, cruise thrust, no dangling landing gear.
-  -- Bank follows the turn and unloads as the ship reaches the conversion gate.
-  local raw=(elapsed-36000)/14000
+ if elapsed<47000 then
+  -- Long oblique approach: clean airframe and cruise thrust. Bank follows the turn
+  -- and unloads before the conversion gate instead of disappearing on a mesh pop.
+  local raw=(elapsed-36000)/11000
   local t=smooth(raw)
   local turn=math.sin(clamp01(t)*math.pi)
   show_state(e,s,'flight')
-  pose(e,lerp(s.x+3400,s.x+780,t),
-       lerp(s.y+1480,s.y+470,t),
-       lerp(s.z-3350,s.z-730,t),
-       lerp(-4,0,t)+turn*1.2,
-       lerp(228,192,t)-turn*1.5,
-       lerp(-6,0,t)-turn*3.2)
- elseif elapsed<60000 then
-  -- Convert to lift around the CG, slow forward motion first, then settle mostly vertically.
-  local raw=(elapsed-50000)/10000
+  pose(e,lerp(s.x+3400,s.x+1050,t),
+       lerp(s.y+1480,s.y+590,t),
+       lerp(s.z-3350,s.z-980,t),
+       lerp(-4,-0.4,t)+turn*1.2,
+       lerp(228,198,t)-turn*1.5,
+       lerp(-6,-0.8,t)-turn*3.2)
+ elseif elapsed<53000 then
+  -- Mechanical conversion has its own authored silhouette: lift doors crack open and
+  -- the landing gear is only part-way down while cruise thrust still carries the ship.
+  local raw=(elapsed-47000)/6000
   local t=smooth(raw)
-  local horizontal=smooth(math.min(1,(elapsed-50000)/5200))
+  local correction=math.sin(clamp01(t)*math.pi)*0.24
+  local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,correction)
+  show_state(e,s,'convert')
+  pose(e,lerp(s.x+1050,s.x+440,t)+dx,
+       lerp(s.y+590,s.y+300,t)+dy,
+       lerp(s.z-980,s.z-410,t)+dz,
+       lerp(-0.4,-1.2,t)+dp,
+       lerp(198,187,t)+dyaw,
+       lerp(-0.8,-1.1,t)+dr)
+ elseif elapsed<60000 then
+  -- Full powered-lift flare: forward motion bleeds away, then the craft settles mostly vertically.
+  local raw=(elapsed-53000)/7000
+  local t=smooth(raw)
   local damping=math.max(0,1-t)*0.75
   local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,damping)
   local flare=math.sin(clamp01(t)*math.pi)
   show_state(e,s,'flare')
-  pose(e,lerp(s.x+780,s.x,horizontal)+dx,
-       lerp(s.y+470,s.y,t)+dy,
-       lerp(s.z-730,s.z,horizontal)+dz,
-       -flare*1.6+dp,
-       lerp(192,180,horizontal)+dyaw,
-       -flare*1.3+dr)
+  pose(e,lerp(s.x+440,s.x,t)+dx,
+       lerp(s.y+300,s.y,t)+dy,
+       lerp(s.z-410,s.z,t)+dz,
+       lerp(-1.2,0,t)-flare*1.6+dp,
+       lerp(187,180,t)+dyaw,
+       lerp(-1.1,0,t)-flare*1.3+dr)
  else
   -- Once the ramp/collision state is live, do not add hover noise: visible geometry,
   -- the boarding collision proxy and interaction radius must remain perfectly aligned.
