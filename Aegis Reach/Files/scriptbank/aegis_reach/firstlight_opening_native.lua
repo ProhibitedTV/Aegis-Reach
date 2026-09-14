@@ -99,11 +99,9 @@ local function tracked_ship_target(s)
 end
 local function world_pose(s)
  local x,z=s.x,s.z;local y=ground(x,z)+s.h;local tx,ty,tz,shiproll
- if s.trackship then
-  tx,ty,tz,shiproll=tracked_ship_target(s)
- end
+ if s.trackship then tx,ty,tz,shiproll=tracked_ship_target(s) end
  if not tx then
-  tx,tz=s.tx,s.tz;ty=ground(tx,tz)+s.th;shiproll=0
+  tx=s.tx or x;tz=s.tz or (z+100);ty=ground(tx,tz)+(s.th or 80);shiproll=0
  end
  local rx,ry,rz=look_angles(x,y,z,tx,ty,tz,(shiproll or 0)*(s.roll or 0));return x,y,z,rx,ry,rz
 end
