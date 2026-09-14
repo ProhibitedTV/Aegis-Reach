@@ -40,6 +40,8 @@ for line in LINES[:4]:
   assert (wav.getnchannels(),wav.getsampwidth(),wav.getframerate())==(1,2,44100)
   assert duration<line['seconds']<duration+.16,'caption timing does not follow PCM duration'
 for beat,events in TIMELINES.items():
+ if not events:
+  continue
  for (ms,a),(nxt,b) in zip(events,events[1:]):
   assert ms+by[a]['seconds']*1000<nxt,(beat,'overlapping dialogue',a,b)
  last_ms,last_id=events[-1]
@@ -68,15 +70,15 @@ function CG_IsCamera(e) return cg[e]~=nil end
 function CG_ActivateCamera(e) if cg[e] then active_cam=e;cg[e].state='rolling';return true end end
 ''')
 lua.execute((scripts/'firstlight_cinematic.lua').read_text())
-g.g_Entity[40]=lua.table_from({'name':'FL CG ARRIVAL'})
+g.g_Entity[40]=lua.table_from({'name':'FL CG ARRIVAL WIDE'})
 g.cg[40]=lua.table_from({'state':'ready','data':lua.table()})
 g.aegis=lua.table();g.fl.born=g.g_Time-1000
 g.firstlight_cinematic_init(41)
 for _ in range(4):g.g_Time+=300;g.firstlight_cinematic_main(41)
-assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL'
+assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_WIDE'
 g.active_cam=None;g.g_Time+=900;g.firstlight_cinematic_main(41)
 assert not g.aegis.cinematic_active and not g.aegis.cinematic_request
-assert g.aegis.insertion_complete,'skipping arrival launches another forced shot'
+assert g.aegis.insertion_complete,'skipping an opening edit launches the remaining forced shots'
 # Missing Mira camera still delivers the urgent shelter warning.
 g.fl.stage=3;assert g.fl_request_cinematic('MIRA_SIGNAL')
 g.g_Time+=300;g.firstlight_cinematic_main(41)
@@ -138,4 +140,4 @@ for face in m.faces:
  u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
  n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
  assert sum(x*x for x in n)>1e-8
-print('PRESENTATION RUNTIME PASS: full readable subtitles, non-overlapping schedules, voice lifecycle and grounded continuous fauna.')
+print('PRESENTATION RUNTIME PASS: full readable subtitles, multi-shot opening skip/fail-open, voice lifecycle and grounded continuous fauna.')
