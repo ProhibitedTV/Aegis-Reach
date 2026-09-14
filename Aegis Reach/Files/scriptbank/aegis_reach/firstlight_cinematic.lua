@@ -2,7 +2,9 @@ require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- FIRST LIGHT narrative camera coordinator. CineGuru owns presentation; mission fails open.
 local cine={}
 local cameras={ARRIVAL='FL CG ARRIVAL',ARRIVAL_HANDOFF='FL CG ARRIVAL HANDOFF',MIRA_SIGNAL='FL CG MIRA SIGNAL',AEGIS_REVEAL='FL CG AEGIS REVEAL',EXTRACTION='FL CG EXTRACTION'}
-local profiles={ARRIVAL={seconds=6.5,fade=.45,fls=58,fle=76},ARRIVAL_HANDOFF={seconds=6.2,fade=.35,fls=64,fle=84},MIRA_SIGNAL={seconds=5.2,fade=.25,fls=70,fle=84},AEGIS_REVEAL={seconds=6.3,fade=.35,fls=58,fle=90},EXTRACTION={seconds=6.0,fade=.35,fls=62,fle=82}}
+-- Opening timings are keyed to the first recorded Kestrel performances. The fifth
+-- opening line is still provisional until its final master arrives.
+local profiles={ARRIVAL={seconds=18.0,fade=.45,fls=58,fle=76},ARRIVAL_HANDOFF={seconds=25.0,fade=.35,fls=64,fle=84},MIRA_SIGNAL={seconds=5.2,fade=.25,fls=70,fle=84},AEGIS_REVEAL={seconds=6.3,fade=.35,fls=58,fle=90},EXTRACTION={seconds=6.0,fade=.35,fls=62,fle=82}}
 local RETRY_MS=250;local STARTUP_GRACE_MS=7000
 local function log(m)if fl_log then fl_log('cinematic '..m) end end
 local function entity_name(e)if not e or not GetEntityName then return nil end;local ok,n=pcall(GetEntityName,e);if ok then return n end end
@@ -18,17 +20,17 @@ local function configure_camera(beat,id)
 end
 local function say(id,a,b,seconds)if fl_dialogue and fl_dialogue(id) then return end;if fl_say then fl_say(a,b,seconds) end end
 local function opening_fallback(reason)
- if cine.opening_fallback then return end;cine.opening_fallback=true;log('opening fallback reason='..tostring(reason));say('FL01_KES_004','KESTREL: Meridian Shelf missed two check-ins. Forty-two colonists are unaccounted for.','Restore Northstar. Recover the evacuation packet. Find our people.',8);if fl then fl.objective_pulse_until=g_Time+3500 end
+ if cine.opening_fallback then return end;cine.opening_fallback=true;log('opening fallback reason='..tostring(reason));say('FL01_KES_004','KESTREL: Meridian Shelf missed two check-ins. Forty-two colonists are unaccounted for.','Restore Northstar. Recover the evacuation packet. Find our people.',12);if fl then fl.objective_pulse_until=g_Time+3500 end
 end
 local function mark_line(key,id,a,b,seconds) cine.lines=cine.lines or {};if cine.lines[key] then return end;cine.lines[key]=true;say(id,a,b,seconds) end
 local function update_story_timeline(beat,elapsed)
  if beat=='ARRIVAL' then
-  if elapsed>=250 then mark_line('arr1','FL01_KES_001','KESTREL: Vanguard Seven, we are crossing Meridian Shelf.','Meridian Control missed two scheduled check-ins.',4.2) end
-  if elapsed>=3250 then mark_line('arr2','FL01_KES_002','KESTREL: Forty-two colonists were due off-world six hours ago.','No beacon. No traffic. No automated distress call.',4.6) end
+  if elapsed>=250 then mark_line('arr1','FL01_KES_001','KESTREL: Vanguard Seven, we are crossing Meridian Shelf.','Meridian Control missed two scheduled check-ins.',7.9) end
+  if elapsed>=8500 then mark_line('arr2','FL01_KES_002','KESTREL: Forty-two colonists were due off-world six hours ago.','No beacon. No traffic. No automated distress call.',9.1) end
  elseif beat=='ARRIVAL_HANDOFF' then
-  if elapsed>=200 then mark_line('arr3','FL01_KES_003','KESTREL: Mira Sen forced one burst through Northstar before the relay died.','"Array waking." That is all we got.',4.8) end
-  if elapsed>=2950 then mark_line('arr4','FL01_KES_004','KESTREL: A Warden transponder crossed Gate Zero-Seven nine minutes later.','I am putting you down short. Restore Northstar and find our people.',5.4) end
-  if elapsed>=5200 then mark_line('arr5','FL01_KES_005','KESTREL: You are down.','I will stay high and dark until you call for extraction.',3.6) end
+  if elapsed>=200 then mark_line('arr3','FL01_KES_003','KESTREL: Mira Sen forced one burst through Northstar before the relay died.','"Array waking." That is all we got.',8.5) end
+  if elapsed>=9100 then mark_line('arr4','FL01_KES_004','KESTREL: A Warden transponder crossed Gate Zero-Seven nine minutes later.','I am putting you down short. Restore Northstar and find our people.',11.6) end
+  if elapsed>=21000 then mark_line('arr5','FL01_KES_005','KESTREL: You are down.','I will stay high and dark until you call for extraction.',3.6) end
  elseif beat=='MIRA_SIGNAL' then
   if elapsed>=250 then mark_line('mir1','FL01_MIR_001','MIRA SEN: Seven... Shelter Twelve. We are below the array.','Do not let them fire.',4.8) end
   if elapsed>=3100 then mark_line('mir2','FL01_KES_009','KESTREL: Copy. AEGIS is targeting the shelter.','Get to the core.',3.8) end

@@ -3,10 +3,10 @@ from pathlib import Path
 import json
 DIALOGUE_SCRIPT=r'aegis_reach\firstlight_dialogue.lua';VOICE_SCRIPT=r'aegis_reach\firstlight_voice_marker.lua';MARKER=r'Aegis Reach\Supply Crate.fpe';AUDIO_REL=Path('aegis_reach/dialogue')
 LINES=(
- dict(id='FL01_KES_001',speaker='KESTREL',filename='fl01_kestrel_001.wav',seconds=4.2,direction='controlled insertion briefing; professional, low urgency',text='Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.'),
- dict(id='FL01_KES_002',speaker='KESTREL',filename='fl01_kestrel_002.wav',seconds=4.6,direction='human stakes; restrained concern',text='Forty-two colonists were due off-world six hours ago. No beacon, no traffic, no automated distress call.'),
- dict(id='FL01_KES_003',speaker='KESTREL',filename='fl01_kestrel_003.wav',seconds=4.8,direction='recount corrupted evidence; measured',text="Mira Sen forced one burst through Northstar before the relay died: 'array waking.' That is all we got."),
- dict(id='FL01_KES_004',speaker='KESTREL',filename='fl01_kestrel_004.wav',seconds=5.4,direction='mission order; decisive',text='A Warden transponder crossed Gate Zero-Seven nine minutes later. I am putting you down short. Restore Northstar and find our people.'),
+ dict(id='FL01_KES_001',speaker='KESTREL',filename='fl01_kestrel_001.wav',seconds=7.9,direction='controlled insertion briefing; professional, low urgency',text='Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.'),
+ dict(id='FL01_KES_002',speaker='KESTREL',filename='fl01_kestrel_002.wav',seconds=9.1,direction='human stakes; restrained concern',text='Forty-two colonists were due off-world six hours ago. No beacon, no traffic, no automated distress call.'),
+ dict(id='FL01_KES_003',speaker='KESTREL',filename='fl01_kestrel_003.wav',seconds=8.5,direction='recount corrupted evidence; measured',text="Mira Sen forced one burst through Northstar before the relay died: 'array waking.' That is all we got."),
+ dict(id='FL01_KES_004',speaker='KESTREL',filename='fl01_kestrel_004.wav',seconds=11.6,direction='mission order; decisive',text='A Warden transponder crossed Gate Zero-Seven nine minutes later. I am putting you down short. Restore Northstar and find our people.'),
  dict(id='FL01_KES_005',speaker='KESTREL',filename='fl01_kestrel_005.wav',seconds=3.6,direction='touchdown handoff; calm confidence',text='You are down. I will stay high and dark until you call for extraction.'),
  dict(id='FL01_KES_006',speaker='KESTREL',filename='fl01_kestrel_006.wav',seconds=3.5,direction='quiet observation at abandoned camp',text='Camp Twelve. No movement. The evacuation board is still powered.'),
  dict(id='FL01_KES_007',speaker='KESTREL',filename='fl01_kestrel_007.wav',seconds=4.0,direction='suspicion sharpening',text='Gate Zero-Seven. Warden barricades. Somebody wanted the colony sealed in.'),

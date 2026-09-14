@@ -1,8 +1,8 @@
 """CineGuru story cameras for FIRST LIGHT.
 
-The opening is now a two-shot insertion sequence built around the visible Kestrel:
-(1) arrival/descent and (2) mission handoff as the ship departs. Mid-mission story
-beats remain sparse and gameplay owns the extraction approach itself.
+The opening is a two-shot insertion sequence built around the visible Kestrel.
+The opening shot lengths now follow the recorded Kestrel performances rather than
+forcing the VO into the original placeholder timing.
 """
 import math
 
@@ -11,8 +11,8 @@ CONTROLLER_SCRIPT=r'aegis_reach\firstlight_cinematic.lua'
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 
 SHOT_PROFILES={
-    'ARRIVAL':dict(seconds=6.5,focal_start=58,focal_end=76),
-    'ARRIVAL_HANDOFF':dict(seconds=6.2,focal_start=64,focal_end=84),
+    'ARRIVAL':dict(seconds=18.0,focal_start=58,focal_end=76),
+    'ARRIVAL_HANDOFF':dict(seconds=25.0,focal_start=64,focal_end=84),
     'MIRA_SIGNAL':dict(seconds=5.2,focal_start=70,focal_end=84),
     'AEGIS_REVEAL':dict(seconds=6.3,focal_start=58,focal_end=90),
     'EXTRACTION':dict(seconds=6.0,focal_start=62,focal_end=82),

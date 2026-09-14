@@ -41,23 +41,32 @@ local function insertion(e,s)
  local beat=aegis and aegis.cinematic_beat or nil
  if beat=='ARRIVAL' then
   if s.intro_start==0 then s.intro_start=g_Time end
-  local raw=(g_Time-s.intro_start)/6200
+  local elapsed=g_Time-s.intro_start
+  -- Recorded VO gives the approach room to breathe: the ship crosses and descends for
+  -- ~15.5 s, converts near the pad, then holds through the end of the 18 s shot.
+  local raw=elapsed/15500
   local t=smooth(raw)
-  -- Clean lifting-body flight transitions to the VTOL/gear configuration only near
-  -- the handoff point. This is a visual state swap, not a gameplay-state change.
-  show_state(e,s,raw<0.72 and 'flight' or 'flare')
+  show_state(e,s,raw<0.78 and 'flight' or 'flare')
   pose(e,lerp(s.x-1250,s.x,t),lerp(s.y+720,s.y,t),lerp(s.z-1450,s.z,t),
        lerp(-6,0,t),lerp(148,180,t),lerp(5,0,t))
  elseif beat=='ARRIVAL_HANDOFF' then
   if s.handoff_start==0 then s.handoff_start=g_Time end
-  local raw=(g_Time-s.handoff_start)/6200
-  local t=smooth(raw)
-  show_state(e,s,raw<0.20 and 'flare' or 'flight')
-  pose(e,lerp(s.x,s.x+2050,t),lerp(s.y,s.y+1080,t),lerp(s.z,s.z-2050,t),
-       lerp(0,-5,t),lerp(180,218,t),lerp(0,-7,t))
- elseif s.handoff_start>0 and g_Time-s.handoff_start>6500 then
+  local elapsed=g_Time-s.handoff_start
+  if elapsed<18500 then
+   -- Kestrel stays settled while the evidence/order dialogue plays. This prevents
+   -- the aircraft from flying away long before the pilot finishes the briefing.
+   show_state(e,s,'flare')
+   pose(e,s.x,s.y,s.z,0,180,0)
+  else
+   local raw=(elapsed-18500)/6200
+   local t=smooth(raw)
+   show_state(e,s,raw<0.28 and 'flare' or 'flight')
+   pose(e,lerp(s.x,s.x+2050,t),lerp(s.y,s.y+1080,t),lerp(s.z,s.z-2050,t),
+        lerp(0,-5,t),lerp(180,218,t),lerp(0,-7,t))
+  end
+ elseif s.handoff_start>0 and g_Time-s.handoff_start>25500 then
   set_visible(e,s,false)
- elseif g_Time-(fl.born or g_Time)>16000 then
+ elseif g_Time-(fl.born or g_Time)>50000 then
   -- Fail-open opening path: never leave any Kestrel state parked forever.
   set_visible(e,s,false)
  else

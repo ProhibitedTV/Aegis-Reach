@@ -1,10 +1,10 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- Stable mission dialogue catalog. Text always works; ElevenLabs WAVs are optional.
 local catalog={
- FL01_KES_001={speaker='KESTREL',text='Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.',seconds=4.2},
- FL01_KES_002={speaker='KESTREL',text='Forty-two colonists were due off-world six hours ago. No beacon, no traffic, no automated distress call.',seconds=4.6},
- FL01_KES_003={speaker='KESTREL',text="Mira Sen forced one burst through Northstar before the relay died: 'array waking.' That is all we got.",seconds=4.8},
- FL01_KES_004={speaker='KESTREL',text='A Warden transponder crossed Gate Zero-Seven nine minutes later. I am putting you down short. Restore Northstar and find our people.',seconds=5.4},
+ FL01_KES_001={speaker='KESTREL',text='Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.',seconds=7.9},
+ FL01_KES_002={speaker='KESTREL',text='Forty-two colonists were due off-world six hours ago. No beacon, no traffic, no automated distress call.',seconds=9.1},
+ FL01_KES_003={speaker='KESTREL',text="Mira Sen forced one burst through Northstar before the relay died: 'array waking.' That is all we got.",seconds=8.5},
+ FL01_KES_004={speaker='KESTREL',text='A Warden transponder crossed Gate Zero-Seven nine minutes later. I am putting you down short. Restore Northstar and find our people.',seconds=11.6},
  FL01_KES_005={speaker='KESTREL',text='You are down. I will stay high and dark until you call for extraction.',seconds=3.6},
  FL01_KES_006={speaker='KESTREL',text='Camp Twelve. No movement. The evacuation board is still powered.',seconds=3.5},
  FL01_KES_007={speaker='KESTREL',text='Gate Zero-Seven. Warden barricades. Somebody wanted the colony sealed in.',seconds=4.0},
