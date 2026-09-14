@@ -18,6 +18,13 @@ Aegis Reach/Files/entitybank/Booster Pack/
 Aegis Reach/Files/entitybank/Industrial Collection/
 Aegis Reach/Files/entitybank/Max Collection/Rocks/
 Aegis Reach/Files/entitybank/Cyberpunk Streets Booster Pack/
+Aegis Reach/Files/entitybank/Arctic Collection/
+
+# Native MAX/editor runtime state. These are machine/session outputs, not source.
+Aegis Reach/Files/editors/gridedit/cfg.cfg
+Aegis Reach/Files/levelbank/testmap/
+Aegis Reach/Files/savegames/
+Aegis Reach/Guru-Game.log
 
 # Native review artifacts and engine output
 .local-review/
