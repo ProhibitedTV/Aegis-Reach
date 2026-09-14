@@ -48,18 +48,21 @@ def apply(build):
     first_link=max(1000,max_link+32)
     link_ids=[first_link+i for i in range(len(entities))]
 
-    # Clean the ten relationship slots, assign a unique native object-link ID to each
-    # camera, then connect each camera to its immediate neighbors. CineGuru walks away
-    # from the camera it came from, so the bidirectional graph resolves deterministically
-    # into PERIM -> ... -> DEPART while remaining visible/editable in MAX.
+    # Clean only fields that are actually serialized by the installed/public MAX
+    # entity schema. MAX exposes Relationships, RelationshipsType and
+    # RelationshipsData; there is no RelationshipsDataUser array in map.ele.
+    # Requiring an invented field made the production rebuild fail before the
+    # cinematic/title-screen layers could be written.
     for entity,link_id in zip(entities,link_ids):
         _set(build,entity,'eleprof.iObjectLinkID',link_id)
         for slot in range(10):
             _set(build,entity,f'eleprof.iObjectRelationships[{slot}]',0)
             _set(build,entity,f'eleprof.iObjectRelationshipsType[{slot}]',0)
             _set(build,entity,f'eleprof.iObjectRelationshipsData[{slot}]',0)
-            _set(build,entity,f'eleprof.iObjectRelationshipsDataUser[{slot}]',0)
 
+    # Connect each camera to its immediate neighbors. CineGuru walks away from the
+    # camera it came from, so the bidirectional graph resolves deterministically into
+    # PERIM -> ... -> DEPART while remaining visible/editable in MAX.
     for i,entity in enumerate(entities):
         neighbors=[]
         if i>0:neighbors.append(link_ids[i-1])
