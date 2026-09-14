@@ -1,7 +1,6 @@
 """Fast regression checks for the First Light material-polish pipeline."""
 from pathlib import Path
-import numpy as np
-from PIL import Image
+from PIL import Image,ImageStat
 from firstlight_material_polish import _compose_tiles,_normal_from_albedo,_surface_from_albedo,_replace_field,_source_image
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,7 +12,8 @@ def main():
     for kind in ('kestrel_hull','kestrel_interior','meridian','m17','flora','brineglass'):
         im=_source_image(SOURCE,kind)
         assert min(im.size)>=256,(kind,im.size)
-        assert np.asarray(im.resize((64,64))).std()>12,(kind,'source lacks detail')
+        std=max(ImageStat.Stat(im.resize((64,64)).convert('RGB')).stddev)
+        assert std>12,(kind,'source lacks detail',std)
     tile=Image.new('RGB',(32,32),(72,96,124))
     atlas=_compose_tiles([tile]*8)
     assert atlas.size==(256,32)
