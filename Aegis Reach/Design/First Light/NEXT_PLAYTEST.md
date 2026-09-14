@@ -1,8 +1,9 @@
-# First Light: facility candidate handoff
+# First Light: Kestrel VO integration candidate
 
-This candidate is on `codex/vesper-environment-polish`, PR #23. It is not merged
-or native-approved. Start a NEW GAME; saved games can retain old positions/state.
-The registered MAX project currently points to this worktree candidate, not main.
+Start a NEW GAME on `codex/kestrel-vo-integration`, based on remote main `5789387`.
+Read [PRESENTATION_INTEGRATION.md](PRESENTATION_INTEGRATION.md) for the current
+changes, supplied voice coverage and native review checklist. This candidate is
+not yet native-approved. Older sections below describe earlier passes.
 
 ## Latest environmental effects
 

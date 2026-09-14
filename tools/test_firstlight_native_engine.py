@@ -36,7 +36,12 @@ def main():
         assert script==PRACTICAL_LIGHT_SCRIPT.lower(),(name,script)
 
     bank=ROOT/'Aegis Reach/Files/entitybank/Aegis Reach/First Light'
-    for filename in ('Vesper Salt Scrub.fpe','Vesper Brine Reed.fpe','Vesper Crust Skitter.fpe','Meridian M17 Transport Wreck.fpe','Meridian M17 Detached Engine.fpe'):
+    for filename in ('Vesper Glass Fan.fpe','Vesper Brine Cup.fpe','Vesper Salt Lace.fpe',
+                     'Vesper Crust Skitter.fpe','Vesper Veilwing.fpe',
+                     'Meridian M17 Transport Wreck.fpe','Meridian M17 Detached Engine.fpe',
+                     'Vanguard Kestrel Dropship - Flight.fpe',
+                     'Vanguard Kestrel Dropship - VTOL Flare.fpe',
+                     'Vanguard Kestrel Dropship - Landed Ramp.fpe'):
         text=(bank/filename).read_text(errors='replace').lower()
         assert 'collisionmode = 11' in text,filename
 

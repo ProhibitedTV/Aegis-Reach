@@ -140,12 +140,12 @@ def _aft_nozzle(m,x,y,z,outer=42,depth=44,plume=True):
         a=i*math.tau/seg;co,si=math.cos(a),math.sin(a)
         front.append((x+co*outer*.84,y+si*outer*.84,z-depth))
         rim.append((x+co*outer,y+si*outer,z))
-        inner.append((x+co*outer*.57,y+si*outer*.57,z+7))
+        inner.append((x+co*outer*.57,y+si*outer*.57,z-depth*.48))
     for i in range(seg):
         j=(i+1)%seg
         quad(m,[front[i],front[j],rim[j],rim[i]],2)
         quad(m,[rim[i],rim[j],inner[j],inner[i]],7)
-        _tri(m,(x,y,z+8),inner[j],inner[i],6)
+        _tri(m,(x,y,z-depth*.58),inner[i],inner[j],6)
     if plume:
         hot=[(x+(p[0]-x)*.74,y+(p[1]-y)*.74,z+10) for p in inner]
         tail=[]
@@ -201,20 +201,44 @@ def _lift_bays(m,state):
 
 def _cargo(m,state):
     """Rear roll-on aperture sized as a compact squad/cargo vestibule."""
+    # A pressure frame joins the hull to the aperture in every state. No open
+    # corners around a rectangular door and no ramp exiting through the belly.
+    outer=[(-82,34,398),(82,34,398),(100,50,398),(100,130,398),
+           (82,150,398),(-82,150,398),(-100,130,398),(-100,50,398)]
+    inner=[(-62,42,398),(62,42,398),(66,46,398),(66,126,398),
+           (62,130,398),(-62,130,398),(-66,126,398),(-66,46,398)]
+    for i in range(8):
+        j=(i+1)%8
+        quad(m,[outer[i],outer[j],inner[j],inner[i]],2)
     if state!='landed':
-        m.box(0,42,397,126,88,8,1)
-        m.box(0,79,392,94,50,5,4)
+        _cap(m,inner,1)
+        m.box(0,78,400,91,24,3,4)
+        for x in (-56,56):m.box(x,67,400,6,28,5,2)
         return
-    # aperture frame, dark vestibule and ramp. Threshold and ramp tip avoid terrain clipping.
-    for x in (-70,70):m.box(x,38,394,12,94,18,2)
-    m.box(0,126,394,152,13,18,2)
-    # short anti-slip cargo floor inside the tail
-    quad(m,[(-62,39,286),(62,39,286),(62,39,405),(-62,39,405)],7)
-    quad(m,[(-61,122,294),(-61,122,397),(61,122,397),(61,122,294)],7)
-    # ramp from 39-inch threshold to Y=4 contact point
-    quad(m,[(-62,39,404),(62,39,404),(72,4,526),(-72,4,526)],7)
-    quad(m,[(-72,1,526),(72,1,526),(62,35,404),(-62,35,404)],2)
-    for x in (-68,68):strut(m,(x,37,404),(x,5,524),5,2)
+    # 3 m camera-safe boarding vestibule; closed bulkhead hides the remaining shell.
+    m.box(0,37,338,132,5,120,7)
+    m.box(0,42,279,132,88,5,2)
+    for x in (-68,68):m.box(x,42,340,4,88,116,7)
+    m.box(0,130,340,136,4,116,2)
+    for x in (-48,48):
+        m.box(x,42,330,5,16,64,2)
+        m.box(x,58,330,25,5,64,7)
+        m.box(x*1.20,63,330,5,29,64,7)
+        m.box(x,127,340,3,2,80,6)
+    m.box(0,88,284,32,20,4,5)
+    # Nonslip ramp, side beams, hinge pins and paired actuators. The outer tip and
+    # landing feet share Y=4; the walking face sits above the structural underside.
+    quad(m,[(-62,42,398),(-72,8,526),(72,8,526),(62,42,398)],7)
+    quad(m,[(-62,38,398),(62,38,398),(72,4,526),(-72,4,526)],2)
+    for side in (-1,1):
+        x=side*66
+        quad(m,[(side*62,42,398),(side*72,8,526),(side*72,4,526),(side*62,38,398)],2)
+        m.box(x,39,400,8,9,18,2)
+        strut(m,(side*72,112,396),(side*75,25,470),4,2)
+        strut(m,(side*75,25,470),(side*78,17,497),2,4)
+    for z in (425,451,477,503):
+        y=42-(z-398)*34/128+.15
+        quad(m,[(-62,y,z-1),(-62,y-34*2/128,z+1),(62,y-34*2/128,z+1),(62,y,z-1)],4)
 
 
 def _tails(m):
@@ -251,7 +275,9 @@ def kestrel_mesh(Mesh,state='flight'):
     sections=[
         _ring(-400,12,20,94),_ring(-350,48,62,95),_ring(-292,78,91,97),
         _ring(-205,112,110,99),_ring(-85,145,120,100),_ring(65,154,124,100),
-        _ring(210,142,116,101),_ring(330,105,101,101),_ring(398,77,88,101)]
+        _ring(210,142,116,101),_ring(330,112,120,98),
+        [(-82,34,398),(82,34,398),(100,50,398),(100,130,398),
+         (82,150,398),(-82,150,398),(-100,130,398),(-100,50,398)]]
     for a,b in zip(sections,sections[1:]):_skin(m,a,b)
     _cap(m,sections[0],1,reverse=True)
     # Rear center is intentionally handled by the cargo-state builder.

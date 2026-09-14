@@ -57,7 +57,7 @@ the final descent is primarily vertical. At 60 seconds it swaps to the ramp-open
 landed state and sets `aegis.kestrel_landed=true`.
 
 Departure deliberately runs in the opposite order: the landed state holds briefly
-while the ramp closes, flare lifts the ship vertically clear of the pad, and clean
+for boarding, then the sealed flare mesh lifts the ship vertically clear of the pad, and clean
 flight takes over for the accelerating departure. `aegis.kestrel_landed` is cleared
 as soon as departure begins.
 
@@ -69,9 +69,10 @@ large moving physics body.
 
 The flare gear foot plane is authored at local Y=4. Extraction state entities are
 placed at `ground - 4`, so the foot pads meet terrain at touchdown instead of
-hovering above it. The landed ramp has a thin underside that can bury a few inches
-below the terrain; this is intentional and non-colliding so the visible upper ramp
-meets the surface cleanly.
+hovering above it. The landed ramp underside shares that Y=4 contact plane. The visible upper tip
+sits four inches above it. The vestibule floor and the ramp hinge both meet at
+Y=42. A sealed interior bulkhead hides the unused hull volume; the open rear
+sightline and upward ramp normals are regression-tested.
 
 ## Generated materials
 
@@ -102,3 +103,11 @@ still confirm:
 
 If one of those fails, fix the authored geometry/choreography rather than weakening
 the regression contract.
+
+## Supplied research and VO integration
+
+The user-supplied Kestrel Dropship Design Research for FIRST LIGHT informed the
+boarding aperture, cabin volume, hinge/actuator details, recessed exhaust and
+flight-state presentation. The source remains an original mesh; no reference
+vehicle geometry or markings are reused. See PRESENTATION_INTEGRATION.md for
+implemented changes and the remaining animation, collision, LOD and effects work.

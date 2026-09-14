@@ -29,6 +29,7 @@ def load_combat_geometry_manifest():
 def main():
  if not MAP.is_file():raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: missing map {MAP}')
  tests=['test_firstlight_lua_compat.py','test_firstlight.py','test_firstlight_composition.py','test_firstlight_approach.py','test_meridian_fieldkit.py','test_meridian_materials.py','test_firstlight_asset_cache.py','test_firstlight_combat_geometry.py','test_firstlight_collect.py','test_vesper_sky.py','test_firstlight_story_effects.py','test_firstlight_transport.py','test_firstlight_biosphere.py','test_firstlight_cinematics.py','test_firstlight_story_delivery.py','test_firstlight_native_engine.py','test_max_asset_library_audit.py']
+ tests.append('test_firstlight_presentation_runtime.py')
  for name in tests:run_test(name)
  combat,layout,combat_cover,combat_lights,authored_enemies=load_combat_geometry_manifest()
  cine=[p for p in layout if p.get('kind')=='cinematic_camera'];controllers=[p for p in layout if p.get('name')=='FIRST LIGHT // CINEMATIC'];vehicles=[p for p in layout if p.get('kind')=='vehicle'];dialogue_audio=[p for p in layout if p.get('kind')=='dialogue_audio']

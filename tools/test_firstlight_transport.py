@@ -5,7 +5,7 @@ from max_archive import PASSWORD
 from environment_pass import Mesh
 from firstlight_transport import (
     hull,recorder,detached_engine,torn_panel,collision_box,
-    SITE,CRASH_YAW,world_offset,COLLISION_SCRIPT
+    SITE,CRASH_YAW,world_offset,COLLISION_SCRIPT,_rotate_point
 )
 from firstlight_story_effects import EFFECTS
 from firstlight_world import ground,road_sample,ROUTE
@@ -82,8 +82,17 @@ fx={role:(preset,scale) for role,preset,xx,zz,yy,scale,story in EFFECTS}
 assert fx['WRECK_FIRE'][1]>=60 and fx['WRECK_FIRE_AUX'][1]>=40
 assert fx['WRECK_SMOKE'][1]>=80 and 'WRECK_SPARKS' in fx
 
-for name in ('M-17 / ruptured cargo','M-17 / ejected cargo','FL FLIGHTLOG'):
- e=byname[name];assert abs(e['101:y']-ground(e['101:x'],e['101:z']))<.5
+from firstlight_story_effects import scorched_case
+for name,fn in [('M-17 / ruptured cargo',scorched_case),('M-17 / ejected cargo',scorched_case),
+                ('M-17 / detached starboard engine',detached_engine),
+                ('M-17 / torn hull panel 1',torn_panel),('M-17 / torn hull panel 2',torn_panel)]:
+ e=byname[name];a=math.radians(e['101:ry']);co,si=math.cos(a),math.sin(a)
+ scale=(100+e['305:scalex'])/100;clearances=[]
+ for p in fn(Mesh).verts:
+  xx,yy,zz=_rotate_point(p,e['101:rx'],e['101:rz']);xx*=scale;yy*=scale;zz*=scale
+  wx=e['101:x']+xx*co+zz*si;wz=e['101:z']-xx*si+zz*co
+  clearances.append(e['101:y']+yy-ground(wx,wz))
+ assert abs(min(clearances))<.5,(name,'no terrain contact',min(clearances))
 
 print('M-17 PASS: canted wreck geometry, hidden box-collision cores, detached engine, debris trail, layered fire/smoke, flight record and supplies.')
 print('Native MAX collision feel, particle scale and final wreck readability still require player review.')

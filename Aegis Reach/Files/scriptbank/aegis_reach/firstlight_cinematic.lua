@@ -2,9 +2,7 @@ require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- FIRST LIGHT narrative camera coordinator. CineGuru owns presentation; mission fails open.
 local cine={}
 local cameras={ARRIVAL='FL CG ARRIVAL',ARRIVAL_HANDOFF='FL CG ARRIVAL HANDOFF',MIRA_SIGNAL='FL CG MIRA SIGNAL',AEGIS_REVEAL='FL CG AEGIS REVEAL',EXTRACTION='FL CG EXTRACTION'}
--- Opening timings are keyed to the first recorded Kestrel performances. The fifth
--- opening line is still provisional until its final master arrives.
-local profiles={ARRIVAL={seconds=18.0,fade=.45,fls=58,fle=76},ARRIVAL_HANDOFF={seconds=25.0,fade=.35,fls=64,fle=84},MIRA_SIGNAL={seconds=5.2,fade=.25,fls=70,fle=84},AEGIS_REVEAL={seconds=6.3,fade=.35,fls=58,fle=90},EXTRACTION={seconds=6.0,fade=.35,fls=62,fle=82}}
+local profiles={ARRIVAL={seconds=18.53,fade=.35,fls=58,fle=76},ARRIVAL_HANDOFF={seconds=25.61,fade=.35,fls=64,fle=84},MIRA_SIGNAL={seconds=9.95,fade=.35,fls=70,fle=84},AEGIS_REVEAL={seconds=10.75,fade=.35,fls=58,fle=90},EXTRACTION={seconds=7.75,fade=.35,fls=62,fle=82}}
 local RETRY_MS=250;local STARTUP_GRACE_MS=7000
 local function log(m)if fl_log then fl_log('cinematic '..m) end end
 local function entity_name(e)if not e or not GetEntityName then return nil end;local ok,n=pcall(GetEntityName,e);if ok then return n end end
@@ -20,33 +18,35 @@ local function configure_camera(beat,id)
 end
 local function say(id,a,b,seconds)if fl_dialogue and fl_dialogue(id) then return end;if fl_say then fl_say(a,b,seconds) end end
 local function opening_fallback(reason)
- if cine.opening_fallback then return end;cine.opening_fallback=true;log('opening fallback reason='..tostring(reason));say('FL01_KES_004','KESTREL: Meridian Shelf missed two check-ins. Forty-two colonists are unaccounted for.','Restore Northstar. Recover the evacuation packet. Find our people.',12);if fl then fl.objective_pulse_until=g_Time+3500 end
+ if cine.opening_fallback then return end;cine.opening_fallback=true;log('opening fallback reason='..tostring(reason));say('FL01_KES_004','KESTREL: Meridian Shelf missed two check-ins. Forty-two colonists are unaccounted for.','Restore Northstar. Recover the evacuation packet. Find our people.',8);if fl then fl.objective_pulse_until=g_Time+3500 end
 end
 local function mark_line(key,id,a,b,seconds) cine.lines=cine.lines or {};if cine.lines[key] then return end;cine.lines[key]=true;say(id,a,b,seconds) end
 local function update_story_timeline(beat,elapsed)
- if beat=='ARRIVAL' then
-  if elapsed>=250 then mark_line('arr1','FL01_KES_001','KESTREL: Vanguard Seven, we are crossing Meridian Shelf.','Meridian Control missed two scheduled check-ins.',7.9) end
-  if elapsed>=8500 then mark_line('arr2','FL01_KES_002','KESTREL: Forty-two colonists were due off-world six hours ago.','No beacon. No traffic. No automated distress call.',9.1) end
- elseif beat=='ARRIVAL_HANDOFF' then
-  if elapsed>=200 then mark_line('arr3','FL01_KES_003','KESTREL: Mira Sen forced one burst through Northstar before the relay died.','"Array waking." That is all we got.',8.5) end
-  if elapsed>=9100 then mark_line('arr4','FL01_KES_004','KESTREL: A Warden transponder crossed Gate Zero-Seven nine minutes later.','I am putting you down short. Restore Northstar and find our people.',11.6) end
-  if elapsed>=21000 then mark_line('arr5','FL01_KES_005','KESTREL: You are down.','I will stay high and dark until you call for extraction.',3.6) end
- elseif beat=='MIRA_SIGNAL' then
-  if elapsed>=250 then mark_line('mir1','FL01_MIR_001','MIRA SEN: Seven... Shelter Twelve. We are below the array.','Do not let them fire.',4.8) end
-  if elapsed>=3100 then mark_line('mir2','FL01_KES_009','KESTREL: Copy. AEGIS is targeting the shelter.','Get to the core.',3.8) end
- elseif beat=='AEGIS_REVEAL' then
-  if elapsed>=300 then mark_line('aeg1','FL01_MIR_002','MIRA SEN: It is not a foundation. The black ribs continue below the old waterline.','It answers the calibration tone.',5.5) end
-  if elapsed>=4200 then mark_line('aeg2','FL01_KES_010','KESTREL: Whatever it is, save the people first.','Kill the firing order.',3.9) end
- elseif beat=='EXTRACTION' then
-  if elapsed>=250 then mark_line('ext1','FL01_KES_016','KESTREL: Seven, you are on.','Strap in.',2.4) end
-  if elapsed>=2850 then mark_line('ext2','FL01_KES_017','KESTREL: Lifting. Shelter Twelve is alive.','Mira is still transmitting.',4.0) end
+ if beat=="ARRIVAL" then
+  if elapsed>=350 then mark_line("FL01_KES_001","FL01_KES_001","KESTREL: Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.","",7.987) end
+  if elapsed>=8687 then mark_line("FL01_KES_002","FL01_KES_002","KESTREL: Forty-two colonists were due off-world six hours ago. No beacon, no traffic, no automated distress call.","",9.189) end
+ elseif beat=="ARRIVAL_HANDOFF" then
+  if elapsed>=350 then mark_line("FL01_KES_003","FL01_KES_003","KESTREL: Mira Sen forced one burst through Northstar before the relay died: 'array waking.' That is all we got.","",8.64) end
+  if elapsed>=9340 then mark_line("FL01_KES_004","FL01_KES_004","KESTREL: A Warden transponder crossed Gate Zero-Seven nine minutes later. I am putting you down short. Restore Northstar and find our people.","",11.67) end
+  if elapsed>=21360 then mark_line("FL01_KES_005","FL01_KES_005","KESTREL: You are down. I will stay high and dark until you call for extraction.","",3.6) end
+ elseif beat=="MIRA_SIGNAL" then
+  if elapsed>=350 then mark_line("FL01_MIR_001","FL01_MIR_001","MIRA SEN: Seven... Shelter Twelve. We are below the array. Do not let them fire.","",4.8) end
+  if elapsed>=5500 then mark_line("FL01_KES_009","FL01_KES_009","KESTREL: Copy. AEGIS is targeting the shelter. Get to the core.","",3.8) end
+ elseif beat=="AEGIS_REVEAL" then
+  if elapsed>=350 then mark_line("FL01_MIR_002","FL01_MIR_002","MIRA SEN: It is not a foundation. The black ribs continue below the old waterline. It answers the calibration tone.","",5.5) end
+  if elapsed>=6200 then mark_line("FL01_KES_010","FL01_KES_010","KESTREL: Whatever it is, save the people first. Kill the firing order.","",3.9) end
+ elseif beat=="EXTRACTION" then
+  if elapsed>=350 then mark_line("FL01_KES_016","FL01_KES_016","KESTREL: Seven, you are on. Strap in.","",2.4) end
+  if elapsed>=3100 then mark_line("FL01_KES_017","FL01_KES_017","KESTREL: Lifting. Shelter Twelve is alive. Mira is still transmitting.","",4.0) end
  end
  if fl_dialogue_draw_cinematic then fl_dialogue_draw_cinematic() end
 end
-local function finish_opening_handoff()if fl then fl.objective_pulse_until=g_Time+3500 end end
+local function finish_opening_handoff()if aegis then aegis.insertion_complete=true end;if fl then fl.objective_pulse_until=g_Time+3500 end end
 local function clear_pending(reason,failed)
  local beat=cine.pending;if not beat then return end;log('pending finish beat='..beat..' reason='..tostring(reason));if failed then cine.failed[beat]=true end
- if failed and (beat=='ARRIVAL' or beat=='ARRIVAL_HANDOFF') then opening_fallback(reason) end
+ if failed and (beat=='ARRIVAL' or beat=='ARRIVAL_HANDOFF') then opening_fallback(reason);finish_opening_handoff() end
+ if failed and beat=='MIRA_SIGNAL' then say('FL01_MIR_001','MIRA SEN: Shelter Twelve. We are below the array.','Do not let them fire.',8) end
+ if failed and beat=='AEGIS_REVEAL' then say('FL01_MIR_002','MIRA SEN: The black ribs continue below the old waterline.','It answers the calibration tone.',8) end
  if failed and beat=='EXTRACTION' and fl_finish_extraction then fl_finish_extraction() end
  cine.pending=nil;cine.pending_camera=nil;cine.pending_started=0;cine.last_activation=0
  if aegis then aegis.cinematic_request=nil;aegis.cinematic_active=false;aegis.cinematic_beat=nil;aegis.music_cinematic_duck=false end
@@ -54,9 +54,10 @@ local function clear_pending(reason,failed)
  if cine.queued then local q=cine.queued;cine.queued=nil;if aegis then aegis.cinematic_request=q end end
 end
 local function finish_active(reason)
- if not cine.active then return end;local beat=cine.active;log('finish beat='..beat..' reason='..tostring(reason));cine.active=nil;cine.active_camera=nil;cine.active_started=0
+ if not cine.active then return end;local beat=cine.active;if reason=='timeout' and CG_GetCamera and cine.active_camera then local ok,cam=pcall(CG_GetCamera,cine.active_camera);if ok and cam then cam.state='abort' end end;local skipped=reason=='aborted';if skipped and fl_dialogue_cancel then fl_dialogue_cancel() end;log('finish beat='..beat..' reason='..tostring(reason));cine.active=nil;cine.active_camera=nil;cine.active_started=0
  if aegis then aegis.cinematic_active=false;aegis.cinematic_beat=nil;aegis.music_cinematic_duck=false end
- if beat=='ARRIVAL' and not cine.failed.ARRIVAL_HANDOFF then if aegis then aegis.cinematic_request='ARRIVAL_HANDOFF' end
+ if skipped and beat=='ARRIVAL' then cine.seen.ARRIVAL_HANDOFF=true;finish_opening_handoff()
+ elseif beat=='ARRIVAL' and not cine.failed.ARRIVAL_HANDOFF then if aegis then aegis.cinematic_request='ARRIVAL_HANDOFF' end
  elseif beat=='ARRIVAL_HANDOFF' then finish_opening_handoff()
  elseif beat=='EXTRACTION' and fl_finish_extraction then fl_finish_extraction() end
  if cine.queued then local q=cine.queued;cine.queued=nil;if aegis then aegis.cinematic_request=q end end
@@ -74,7 +75,7 @@ local function activate_pending()
 end
 local function confirm_pending()
  local beat=cine.pending;if not beat then return false end;local current=active_camera()
- if current and camera_matches(beat,current) then configure_camera(beat,current);cine.active=beat;cine.active_camera=current;cine.active_started=g_Time;cine.lines={};cine.seen[beat]=true;cine.pending=nil;cine.pending_camera=nil;cine.pending_started=0;cine.last_activation=0;aegis.cinematic_request=nil;aegis.cinematic_active=true;aegis.cinematic_beat=beat;aegis.music_cinematic_duck=true;if fl then fl.message_until=0;fl.zone_until=0 end;log('start beat='..beat..' camera='..cameras[beat]..' entity='..tostring(current));return true end
+ if current and camera_matches(beat,current) then configure_camera(beat,current);cine.active=beat;cine.active_camera=current;cine.active_started=g_Time;cine.lines={};cine.seen[beat]=true;cine.pending=nil;cine.pending_camera=nil;cine.pending_started=0;cine.last_activation=0;aegis.cinematic_request=nil;aegis.cinematic_active=true;aegis.cinematic_beat=beat;aegis.cinematic_started_at=g_Time;aegis.cinematic_duration_ms=math.floor(profiles[beat].seconds*1000);aegis.music_cinematic_duck=true;if fl then fl.message_until=0;fl.zone_until=0 end;log('start beat='..beat..' camera='..cameras[beat]..' entity='..tostring(current));return true end
  return false
 end
 local function begin_pending(beat)cine.pending=beat;cine.pending_camera=nil;cine.pending_started=g_Time;cine.last_activation=-RETRY_MS;aegis.music_cinematic_duck=false;log('pending beat='..beat..' camera='..cameras[beat]) end
@@ -84,7 +85,7 @@ function firstlight_cinematic_main(e)
  if not fl or not fl.started or not aegis then return end
  if not cine.seen.ARRIVAL and not cine.failed.ARRIVAL and not cine.active and not cine.pending and not aegis.cinematic_request and g_Time-(fl.born or g_Time)>350 then fl_request_cinematic('ARRIVAL') end
  if fl.stage==3 and not cine.seen.AEGIS_REVEAL and not cine.failed.AEGIS_REVEAL and not fl.in_contact and fl_distance and fl_distance(0,3200)<1350 then fl_request_cinematic('AEGIS_REVEAL') end
- if cine.active then local elapsed=g_Time-cine.active_started;update_story_timeline(cine.active,elapsed);if elapsed>active_timeout_ms(cine.active) then finish_active('timeout');return end;if elapsed>650 then local current=active_camera();if not current or (cine.active_camera and current~=cine.active_camera) then finish_active('complete_or_abort') end end;return end
+ if cine.active then local elapsed=g_Time-cine.active_started;update_story_timeline(cine.active,elapsed);if elapsed>active_timeout_ms(cine.active) then finish_active('timeout');return end;if elapsed>650 then local current=active_camera();if not current or (cine.active_camera and current~=cine.active_camera) then finish_active(elapsed<profiles[cine.active].seconds*1000-450 and 'aborted' or 'complete') end end;return end
  if cine.pending then if confirm_pending() then return end;if g_Time-cine.pending_started>STARTUP_GRACE_MS then clear_pending('start_timeout',true);return end;if g_Time-cine.last_activation>=RETRY_MS then activate_pending() end;return end
  local request=aegis.cinematic_request;if request and cameras[request] and not cine.seen[request] and not cine.failed[request] then begin_pending(request) end
 end

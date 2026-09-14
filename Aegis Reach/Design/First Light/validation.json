@@ -46,9 +46,9 @@
     "All new architectural and sign meshes import in installed Assimp",
     "All native terrain layers use installed landscape materials, no placeholder",
     "MAX encrypted map CRC, entity roundtrip and all script/audio/asset references",
-    "Storyboard points to First Light without a machine-specific path"
+    "Storyboard contains one portable First Light mapbank reference"
   ],
-  "mesh_count": 35,
-  "entity_count": 244,
+  "mesh_count": 51,
+  "entity_count": 316,
   "native_combat_playtest": false
 }

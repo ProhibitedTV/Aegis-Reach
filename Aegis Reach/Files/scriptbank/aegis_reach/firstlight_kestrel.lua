@@ -33,38 +33,40 @@ function firstlight_kestrel_init_name(e,name)
  ships[e]={role=role,variant=variant_from_name(name),x=ent.x or 0,y=ent.y or 0,z=ent.z or 0,
            visible=false,intro_start=0,handoff_start=0,depart_start=0}
  Hide(e);CollisionOff(e)
+ if aegis then if role=='insertion' then aegis.insertion_complete=false else aegis.kestrel_landed=false end end
  if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
 end
 
 local function insertion(e,s)
- if not fl or not fl.started then set_visible(e,s,false);return end
+ if not fl or not fl.started or (aegis and aegis.insertion_complete) then set_visible(e,s,false);return end
  local beat=aegis and aegis.cinematic_beat or nil
  if beat=='ARRIVAL' then
-  if s.intro_start==0 then s.intro_start=g_Time end
+  if s.intro_start==0 then s.intro_start=aegis.cinematic_started_at or g_Time end
   local elapsed=g_Time-s.intro_start
   -- Recorded VO gives the approach room to breathe: the ship crosses and descends for
   -- ~15.5 s, converts near the pad, then holds through the end of the 18 s shot.
-  local raw=elapsed/15500
+  local raw=elapsed/math.max(1000,(aegis.cinematic_duration_ms or 18000)-2300)
   local t=smooth(raw)
   show_state(e,s,raw<0.78 and 'flight' or 'flare')
   pose(e,lerp(s.x-1250,s.x,t),lerp(s.y+720,s.y,t),lerp(s.z-1450,s.z,t),
        lerp(-6,0,t),lerp(148,180,t),lerp(5,0,t))
  elseif beat=='ARRIVAL_HANDOFF' then
-  if s.handoff_start==0 then s.handoff_start=g_Time end
+  if s.handoff_start==0 then s.handoff_start=aegis.cinematic_started_at or g_Time end
   local elapsed=g_Time-s.handoff_start
-  if elapsed<18500 then
+  local hold=math.max(0,(aegis.cinematic_duration_ms or 25000)-6500)
+  if elapsed<hold then
    -- Kestrel stays settled while the evidence/order dialogue plays. This prevents
    -- the aircraft from flying away long before the pilot finishes the briefing.
    show_state(e,s,'flare')
    pose(e,s.x,s.y,s.z,0,180,0)
   else
-   local raw=(elapsed-18500)/6200
+   local raw=(elapsed-hold)/6200
    local t=smooth(raw)
    show_state(e,s,raw<0.28 and 'flare' or 'flight')
    pose(e,lerp(s.x,s.x+2050,t),lerp(s.y,s.y+1080,t),lerp(s.z,s.z-2050,t),
         lerp(0,-5,t),lerp(180,218,t),lerp(0,-7,t))
   end
- elseif s.handoff_start>0 and g_Time-s.handoff_start>25500 then
+ elseif s.handoff_start>0 then
   set_visible(e,s,false)
  elseif g_Time-(fl.born or g_Time)>50000 then
   -- Fail-open opening path: never leave any Kestrel state parked forever.
@@ -75,11 +77,13 @@ local function insertion(e,s)
 end
 
 local function departure(e,s)
- if s.depart_start==0 then s.depart_start=g_Time end
- local ms=g_Time-s.depart_start
+ if not aegis.cinematic_active or aegis.cinematic_beat~='EXTRACTION' then return end
+ if s.depart_start==0 then s.depart_start=aegis.cinematic_started_at or g_Time end
+ -- Keep the researched staged choreography inside the actual boarding shot.
+ local ms=(g_Time-s.depart_start)*8000/math.max(1000,(aegis.cinematic_duration_ms or 8300)-300)
  if aegis then aegis.kestrel_landed=false end
  if ms<1100 then
-  -- Ramp closes / ship takes the weight before thrust comes up.
+  -- Boarding pause; the sealed flare state follows before vertical clearance.
   show_state(e,s,'landed')
   pose(e,s.x,s.y,s.z,0,180,0)
  elseif ms<3300 then

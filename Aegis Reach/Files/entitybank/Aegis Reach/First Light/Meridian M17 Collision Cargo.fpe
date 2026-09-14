@@ -1,0 +1,17 @@
+desc = Meridian M17 Collision Cargo
+model = Meridian M17 Collision Cargo.x
+scale = 100
+textured = meridian_fieldkit.png
+baseColorMap = meridian_fieldkit.png
+effect = effectbank\reloaded\apbr_basic.fx
+collisionmode = 0
+defaultstatic = 1
+strength = 0
+materialindex = 2
+roughnessStrength = 0.82
+metalnessStrength = 0.22
+aimain = no_behavior_selected.lua
+normalMap = meridian_fieldkit_normal.png
+normalStrength = 0.55
+surfaceMap = meridian_fieldkit_surface.png
+reflectance = 0.04

@@ -8,13 +8,13 @@ Meridian Shelf has missed two scheduled check-ins. Forty-two colonists are unacc
 
 Kestrel and Seven are therefore conducting an emergency recovery/investigation mission. The first practical goal is to restore Northstar so the evacuation packet can be recovered and the missing colonists located. The opening should imply danger and contradiction without explaining the Choir or revealing why the Wardens are interested in AEGIS.
 
-## 9.5-second beat
+## Recorded opening: about 44 seconds
 
 1. **Human stakes** — high establishing view over the dead Meridian service corridor toward Camp 12. Kestrel states that Meridian missed two check-ins: forty-two colonists, no beacon, no traffic.
 2. **Mystery** — Mira Sen's corrupted final burst is presented as recovered signal text: "...Northstar offline... array waking..." The source is Operations; the rest is lost.
 3. **Threat + action** — Kestrel notes that a Warden transponder crossed Gate 07 nine minutes after the burst. Seven's order is simple: restore Northstar, recover the evacuation packet, find the missing people.
 
-The Suno score remains continuous and is ducked under the cinematic rather than stopped. The camera starts relatively tight and widens across the shot so the world opens up as the scale of the problem becomes clear.
+ARRIVAL lasts 18.53 seconds and ARRIVAL_HANDOFF lasts 25.61 seconds. The first four lines use the supplied WAV performances; the fifth remains text-only. Camera timing comes from the dialogue catalog and measured audio lengths. Space skips the entire opening. The Suno score remains continuous and ducks under the cinematic.
 
 ## Gameplay handoff
 

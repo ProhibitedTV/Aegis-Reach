@@ -22,12 +22,18 @@ def digest_sources():
  # Voice files are optional but adding one must force a rebuild so it gets bound to a marker.
  voice=GAME/'Files/audiobank/aegis_reach/dialogue'
  if voice.is_dir():
-  for path in sorted(voice.glob('*.wav')):h.update(path.name.encode());h.update(b'\0');h.update(str(path.stat().st_size).encode());h.update(b'\0')
+  for path in sorted(voice.glob('*.wav')):h.update(path.name.encode());h.update(b'\0');h.update(path.read_bytes());h.update(b'\0')
  return h.hexdigest()
 def current_stamp():
  try:return json.loads(STAMP.read_text())
  except Exception:return {}
 def main():
+ # Generated catalog/timelines are build inputs too. Normalize them before hashing,
+ # so a successful build does not immediately report itself stale on the next launch.
+ from firstlight_dialogue import sync_catalog
+ from firstlight_cinematics import sync_coordinator
+ sync_catalog(GAME/'Files/scriptbank/aegis_reach/firstlight_dialogue.lua')
+ sync_coordinator(GAME/'Files/scriptbank/aegis_reach/firstlight_cinematic.lua')
  signature=digest_sources();prior=current_stamp();needed=(not MAP.is_file()) or prior.get('source_sha256')!=signature
  if not needed:print('FIRST LIGHT // BUILD CURRENT',signature[:16]);return
  subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_vesper_sky.py')],cwd=ROOT,check=True)

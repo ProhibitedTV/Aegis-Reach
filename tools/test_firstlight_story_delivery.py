@@ -97,7 +97,7 @@ for e=4,6 do firstlight_kestrel_main(e) end
 assert(shown[4]==false and shown[5]==false and shown[6]==true)
 assert(aegis.kestrel_landed==true)
 
-aegis.kestrel_depart=true;g_Time=100000
+aegis.kestrel_depart=true;aegis.cinematic_active=true;aegis.cinematic_beat='EXTRACTION';aegis.cinematic_started_at=100000;aegis.cinematic_duration_ms=8300;g_Time=100000
 for e=4,6 do firstlight_kestrel_main(e) end
 assert(shown[6]==true and aegis.kestrel_landed==false)
 

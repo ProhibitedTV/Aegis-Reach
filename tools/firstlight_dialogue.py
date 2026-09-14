@@ -1,6 +1,6 @@
 """Stable FIRST LIGHT dialogue IDs plus optional ElevenLabs audio binding."""
 from pathlib import Path
-import json
+import json,re,wave,math
 DIALOGUE_SCRIPT=r'aegis_reach\firstlight_dialogue.lua';VOICE_SCRIPT=r'aegis_reach\firstlight_voice_marker.lua';MARKER=r'Aegis Reach\Supply Crate.fpe';AUDIO_REL=Path('aegis_reach/dialogue')
 LINES=(
  dict(id='FL01_KES_001',speaker='KESTREL',filename='fl01_kestrel_001.wav',seconds=7.9,direction='controlled insertion briefing; professional, low urgency',text='Vanguard Seven, we are crossing Meridian Shelf. Meridian Control missed two scheduled check-ins.'),
@@ -23,9 +23,33 @@ LINES=(
  dict(id='FL01_KES_015',speaker='KESTREL',filename='fl01_kestrel_015.wav',seconds=3.2,direction='landed under fire; command voice',text='Kestrel is down. Clear the pad and get aboard.'),
  dict(id='FL01_KES_016',speaker='KESTREL',filename='fl01_kestrel_016.wav',seconds=2.4,direction='boarding acknowledgement',text='Seven, you are on. Strap in.'),
  dict(id='FL01_KES_017',speaker='KESTREL',filename='fl01_kestrel_017.wav',seconds=4.0,direction='liftoff; controlled relief with unresolved tension',text='Lifting. Shelter Twelve is alive. Mira is still transmitting.'),
- dict(id='FL01_M17_001',speaker='M-17 PILOT',filename='fl01_m17_pilot_001.wav',seconds=5.0,direction='recorded cockpit distress; clipped, under stress',text='Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.'),
+ dict(id='FL01_M17_001',speaker='M-17 PILOT',filename='fl01_m17_pilot_001.wav',seconds=6.0,direction='recorded cockpit distress; clipped, under stress',text='Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.'),
 )
+
+# Actual PCM performances own timing. Leave a short tail for subtitle readability;
+# absent recordings retain their authored text-only duration.
+AUDIO_ROOT=Path(__file__).resolve().parent.parent/'Aegis Reach/Files/audiobank'/AUDIO_REL
+for line in LINES:
+ line['voice']=({'KESTREL':'Female - Kestrel','MIRA SEN':'Female - Mira Sen','SUIT':'Synthetic / androgynous - SUIT','M-17 PILOT':'Male - M-17 Pilot'})[line['speaker']]
+ wav=AUDIO_ROOT/line['filename']
+ if wav.is_file():
+  with wave.open(str(wav)) as audio:
+   if audio.getcomptype()!='NONE' or audio.getsampwidth()!=2:
+    raise ValueError(f'{wav.name}: MAX dialogue requires uncompressed 16-bit PCM')
+   line['audio_seconds']=round(audio.getnframes()/audio.getframerate(),6)
+  line['seconds']=math.ceil((line['audio_seconds']+.15)*1000)/1000
+def sync_catalog(script):
+ # Keep spoken text, subtitle text and export manifest under one authoring owner.
+ entries=[]
+ for line in LINES:
+  entries.append(' '+line['id']+'={speaker='+json.dumps(line['speaker'])+',text='+json.dumps(line['text'])+',seconds='+str(line['seconds'])+'},')
+ replacement='local catalog={\n'+'\n'.join(entries)+'\n}\nlocal voice_entities'
+ source,n=re.subn(r'local catalog=\{.*?\n\}\nlocal voice_entities',lambda _:replacement,script.read_text(),count=1,flags=re.S)
+ assert n==1,'dialogue catalog boundary missing'
+ script.write_text(source)
+
 def apply(build):
+ sync_catalog(build.FILES/'scriptbank/aegis_reach/firstlight_dialogue.lua')
  audio_root=build.FILES/'audiobank'/AUDIO_REL;audio_root.mkdir(parents=True,exist_ok=True)
  build.add(MARKER,'FIRST LIGHT // DIALOGUE',260,-9500,y=-3000,scale=1,kind='controller',script=DIALOGUE_SCRIPT,**{'eleprof.physics':0,'eleprof.phyalways':1})
  bound=[]

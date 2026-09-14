@@ -37,4 +37,4 @@ Missing files do **not** break the mission; subtitles remain authoritative until
 | FL01_KES_017 | fl01_kestrel_017.wav | Kestrel | controlled relief, unresolved tension | Lifting. Shelter Twelve is alive. Mira is still transmitting. |
 | FL01_M17_001 | fl01_m17_pilot_001.wav | M-17 Pilot | cockpit distress recording | Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel. |
 
-When the final WAVs are supplied, we should measure their real durations and retime CineGuru cuts/subtitle windows to the actual performances instead of stretching the audio to fit the current provisional timing.
+Opening WAVs 001-004 are now installed. Their measured durations automatically drive captions and CineGuru cuts. The remaining 17 recordings are pending; dropping in matching PCM WAVs and rebuilding binds them without changing the transcript. Voice assignments: Kestrel and Mira are female, SUIT is synthetic/androgynous, and the M-17 pilot is male.
