@@ -2,7 +2,15 @@
 -- The opening camera is ticked here because this mission HUD path is already proven
 -- to execute every frame in native MAX. This avoids depending on a separate controller
 -- entity's scheduling order for the mission-opening camera.
-require 'scriptbank\\aegis_reach\\firstlight_opening_native'
+--
+-- Headless mission tests intentionally execute this HUD in isolation without reproducing
+-- MAX's scriptbank package loader. Keep that harness isolated while production still
+-- requires the opening runtime normally and therefore fails loudly if it is missing.
+if FIRSTLIGHT_TEST then
+ -- test_firstlight_opening_native_runtime.py exercises the real module separately.
+else
+ require 'scriptbank\\aegis_reach\\firstlight_opening_native'
+end
 local pixel=nil
 local function rect(x,y,w,h,r,g,b,a)
  if not pixel and LoadImage and CreateSprite then
