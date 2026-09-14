@@ -18,17 +18,17 @@ OPENING_SEQUENCE=(
 )
 
 SHOT_PROFILES={
-    'ARRIVAL_WIDE':dict(seconds=9.0,focal_start=54,focal_end=72),
-    'ARRIVAL_PASS':dict(seconds=10.2,focal_start=58,focal_end=82),
-    'ARRIVAL_ORBIT':dict(seconds=9.7,focal_start=62,focal_end=86),
-    'ARRIVAL_DESCENT':dict(seconds=12.7,focal_start=66,focal_end=88),
-    'ARRIVAL_HANDOFF':dict(seconds=4.7,focal_start=70,focal_end=84),
-    'ARRIVAL_LIFTOFF':dict(seconds=2.6,focal_start=62,focal_end=78),
-    'ARRIVAL_CLIMB':dict(seconds=2.4,focal_start=60,focal_end=76),
-    'ARRIVAL_DEPART':dict(seconds=3.0,focal_start=56,focal_end=72),
-    'MIRA_SIGNAL':dict(seconds=5.2,focal_start=70,focal_end=84),
-    'AEGIS_REVEAL':dict(seconds=6.3,focal_start=58,focal_end=90),
-    'EXTRACTION':dict(seconds=6.0,focal_start=62,focal_end=82),
+    'ARRIVAL_WIDE':dict(seconds=9.0,fade=.24,focal_start=54,focal_end=72),
+    'ARRIVAL_PASS':dict(seconds=10.2,fade=.12,focal_start=58,focal_end=82),
+    'ARRIVAL_ORBIT':dict(seconds=9.7,fade=.14,focal_start=62,focal_end=86),
+    'ARRIVAL_DESCENT':dict(seconds=12.7,fade=.14,focal_start=66,focal_end=88),
+    'ARRIVAL_HANDOFF':dict(seconds=4.7,fade=.18,focal_start=70,focal_end=84),
+    'ARRIVAL_LIFTOFF':dict(seconds=2.6,fade=.12,focal_start=62,focal_end=78),
+    'ARRIVAL_CLIMB':dict(seconds=2.4,fade=.12,focal_start=60,focal_end=76),
+    'ARRIVAL_DEPART':dict(seconds=3.0,fade=.16,focal_start=56,focal_end=72),
+    'MIRA_SIGNAL':dict(seconds=5.2,fade=.35,focal_start=70,focal_end=84),
+    'AEGIS_REVEAL':dict(seconds=6.3,fade=.35,focal_start=58,focal_end=90),
+    'EXTRACTION':dict(seconds=6.0,fade=.35,focal_start=62,focal_end=82),
 }
 SHOT_LINES={
  'ARRIVAL_WIDE':('FL01_KES_001',),
@@ -65,7 +65,7 @@ def sync_coordinator(script):
  assert n==1
  profiles=[]
  for beat,p in SHOT_PROFILES.items():
-  profiles.append(beat+'={seconds='+str(p['seconds'])+',fade=.35,fls='+str(p['focal_start'])+',fle='+str(p['focal_end'])+'}')
+  profiles.append(beat+'={seconds='+str(p['seconds'])+',fade='+str(p.get('fade',.35))+',fls='+str(p['focal_start'])+',fle='+str(p['focal_end'])+'}')
  source,n=re.subn(r'local profiles=\{[^\n]+',lambda _:'local profiles={'+','.join(profiles)+'}',source,count=1)
  assert n==1
  rows=['local function update_story_timeline(beat,elapsed)']
@@ -125,8 +125,9 @@ def apply(build):
         cameras.append({
             'beat':beat,'name':name,'x':x,'y':round(y,2),'z':z,
             'pitch':round(pitch,2),'yaw':round(yaw,2),
-            'seconds':profile['seconds'],'focal_start':profile['focal_start'],
-            'focal_end':profile['focal_end'],'always_active':True,
+            'seconds':profile['seconds'],'fade':profile.get('fade',.35),
+            'focal_start':profile['focal_start'],'focal_end':profile['focal_end'],
+            'always_active':True,
         })
     build.add(
         MARKER,'FIRST LIGHT // CINEMATIC',180,-9500,y=100,kind='controller',
