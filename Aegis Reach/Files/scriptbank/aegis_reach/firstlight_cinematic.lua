@@ -3,7 +3,7 @@ require 'scriptbank\aegis_reach\firstlight_audit'
 local cine={}
 local cameras={ARRIVAL_WIDE="FL CG ARRIVAL WIDE",ARRIVAL_PASS="FL CG ARRIVAL PASS",ARRIVAL_ORBIT="FL CG ARRIVAL ORBIT",ARRIVAL_DESCENT="FL CG ARRIVAL DESCENT",ARRIVAL_HANDOFF="FL CG ARRIVAL HANDOFF",ARRIVAL_LIFTOFF="FL CG ARRIVAL LIFTOFF",ARRIVAL_CLIMB="FL CG ARRIVAL CLIMB",ARRIVAL_DEPART="FL CG ARRIVAL DEPART",MIRA_SIGNAL="FL CG MIRA SIGNAL",AEGIS_REVEAL="FL CG AEGIS REVEAL",EXTRACTION="FL CG EXTRACTION"}
 local opening_order={"ARRIVAL_WIDE","ARRIVAL_PASS","ARRIVAL_ORBIT","ARRIVAL_DESCENT","ARRIVAL_HANDOFF","ARRIVAL_LIFTOFF","ARRIVAL_CLIMB","ARRIVAL_DEPART"}
-local profiles={ARRIVAL_WIDE={seconds=8.99,fade=.35,fls=54,fle=72},ARRIVAL_PASS={seconds=10.19,fade=.35,fls=58,fle=82},ARRIVAL_ORBIT={seconds=9.64,fade=.35,fls=62,fle=86},ARRIVAL_DESCENT={seconds=12.67,fade=.35,fls=66,fle=88},ARRIVAL_HANDOFF={seconds=4.6,fade=.35,fls=70,fle=84},ARRIVAL_LIFTOFF={seconds=2.6,fade=.35,fls=62,fle=78},ARRIVAL_CLIMB={seconds=2.4,fade=.35,fls=60,fle=76},ARRIVAL_DEPART={seconds=3.0,fade=.35,fls=56,fle=72},MIRA_SIGNAL={seconds=9.95,fade=.35,fls=70,fle=84},AEGIS_REVEAL={seconds=10.75,fade=.35,fls=58,fle=90},EXTRACTION={seconds=7.75,fade=.35,fls=62,fle=82}}
+local profiles={ARRIVAL_WIDE={seconds=8.99,fade=0.24,fls=54,fle=72},ARRIVAL_PASS={seconds=10.19,fade=0.12,fls=58,fle=82},ARRIVAL_ORBIT={seconds=9.64,fade=0.14,fls=62,fle=86},ARRIVAL_DESCENT={seconds=12.67,fade=0.14,fls=66,fle=88},ARRIVAL_HANDOFF={seconds=4.6,fade=0.18,fls=70,fle=84},ARRIVAL_LIFTOFF={seconds=2.6,fade=0.12,fls=62,fle=78},ARRIVAL_CLIMB={seconds=2.4,fade=0.12,fls=60,fle=76},ARRIVAL_DEPART={seconds=3.0,fade=0.16,fls=56,fle=72},MIRA_SIGNAL={seconds=9.95,fade=0.35,fls=70,fle=84},AEGIS_REVEAL={seconds=10.75,fade=0.35,fls=58,fle=90},EXTRACTION={seconds=7.75,fade=0.35,fls=62,fle=82}}
 local RETRY_MS=250;local STARTUP_GRACE_MS=7000
 local function log(m)if fl_log then fl_log('cinematic '..m) end end
 local function entity_name(e)if not e or not GetEntityName then return nil end;local ok,n=pcall(GetEntityName,e);if ok then return n end end
@@ -72,10 +72,15 @@ local function clear_pending(reason,failed)
  if cine.queued then local q=cine.queued;cine.queued=nil;if aegis then aegis.cinematic_request=q end end
 end
 local function finish_active(reason)
- if not cine.active then return end;local beat=cine.active;if reason=='timeout' and CG_GetCamera and cine.active_camera then local ok,cam=pcall(CG_GetCamera,cine.active_camera);if ok and cam then cam.state='abort' end end;local skipped=reason=='aborted';if skipped and fl_dialogue_cancel then fl_dialogue_cancel() end;log('finish beat='..beat..' reason='..tostring(reason));cine.active=nil;cine.active_camera=nil;cine.active_started=0
- if aegis then aegis.cinematic_active=false;aegis.cinematic_beat=nil;aegis.music_cinematic_duck=false end
+ if not cine.active then return end
+ local beat=cine.active
+ if reason=='timeout' and CG_GetCamera and cine.active_camera then local ok,cam=pcall(CG_GetCamera,cine.active_camera);if ok and cam then cam.state='abort' end end
+ local skipped=reason=='aborted';local nextbeat=(not skipped and is_opening(beat)) and next_opening_beat(beat) or nil
+ if skipped and fl_dialogue_cancel then fl_dialogue_cancel() end
+ log('finish beat='..beat..' reason='..tostring(reason));cine.active=nil;cine.active_camera=nil;cine.active_started=0
+ if aegis then aegis.cinematic_active=false;aegis.cinematic_beat=nil;aegis.music_cinematic_duck=nextbeat~=nil end
  if skipped and is_opening(beat) then mark_opening_seen();finish_opening_handoff()
- elseif is_opening(beat) then local nextbeat=next_opening_beat(beat);if nextbeat then if aegis then aegis.cinematic_request=nextbeat end else finish_opening_handoff() end
+ elseif is_opening(beat) then if nextbeat then if aegis then aegis.cinematic_request=nextbeat end else finish_opening_handoff() end
  elseif beat=='EXTRACTION' and fl_finish_extraction then fl_finish_extraction() end
  if cine.queued then local q=cine.queued;cine.queued=nil;if aegis then aegis.cinematic_request=q end end
 end
@@ -95,7 +100,11 @@ local function confirm_pending()
  if current and camera_matches(beat,current) then configure_camera(beat,current);cine.active=beat;cine.active_camera=current;cine.active_started=g_Time;cine.lines={};cine.seen[beat]=true;cine.pending=nil;cine.pending_camera=nil;cine.pending_started=0;cine.last_activation=0;aegis.cinematic_request=nil;aegis.cinematic_active=true;aegis.cinematic_beat=beat;aegis.cinematic_started_at=g_Time;aegis.cinematic_duration_ms=math.floor(profiles[beat].seconds*1000);aegis.music_cinematic_duck=true;if fl then fl.message_until=0;fl.zone_until=0 end;log('start beat='..beat..' camera='..cameras[beat]..' entity='..tostring(current));return true end
  return false
 end
-local function begin_pending(beat)cine.pending=beat;cine.pending_camera=nil;cine.pending_started=g_Time;cine.last_activation=-RETRY_MS;aegis.music_cinematic_duck=false;log('pending beat='..beat..' camera='..cameras[beat]) end
+local function begin_pending(beat)
+ cine.pending=beat;cine.pending_camera=nil;cine.pending_started=g_Time;cine.last_activation=-RETRY_MS
+ if not is_opening(beat) then aegis.music_cinematic_duck=false end
+ log('pending beat='..beat..' camera='..cameras[beat])
+end
 local function active_timeout_ms(beat)local p=profiles[beat];return p and math.floor(p.seconds*1000+3500) or 9000 end
 function firstlight_cinematic_init(e)cine={controller=e,seen={},failed={},active=nil,active_camera=nil,active_started=0,pending=nil,pending_camera=nil,pending_started=0,last_activation=0,queued=nil,opening_fallback=false,lines={}};Hide(e);CollisionOff(e);if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end end
 function firstlight_cinematic_main(e)
