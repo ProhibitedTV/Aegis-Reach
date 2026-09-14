@@ -128,8 +128,10 @@ end
 function firstlight_opening_director_main(e)
  if director.finished or not fl or not fl.started or not aegis then return end
  if not director.started then
-  -- Start before the legacy coordinator's 350ms auto-open window and hold its request
-  -- slot for the duration of this director-owned sequence.
+  -- Reserve the opening immediately, even if camera entities are still finishing their
+  -- first-frame registration. This closes the race where the legacy coordinator could
+  -- launch ARRIVAL_PERIM while this director was still scanning its 17 source mounts.
+  if not aegis.insertion_complete then aegis.cinematic_request='OPENING_DIRECTOR_LOCK' end
   if g_Time-(fl.born or g_Time)>=120 then begin() end
   return
  end
