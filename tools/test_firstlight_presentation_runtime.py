@@ -1,7 +1,7 @@
 """Execute dialogue, cinematic scheduling and fauna motion in native Lua 5.2."""
 from native_format import ROOT
 from python_runtime import ensure_max_lua_runtime
-from firstlight_cinematics import TIMELINES,SHOT_PROFILES,OPENING_SEQUENCE
+from firstlight_cinematics import TIMELINES,SHOT_PROFILES,OPENING_SEQUENCE,SHOTS
 from firstlight_dialogue import LINES
 from firstlight_kestrel import kestrel_mesh,STATES,LANDED_CONTACT_Y
 from environment_pass import Mesh
@@ -64,6 +64,8 @@ g.fl_dialogue('FL01_KES_001');g.fl_dialogue('FL01_KES_002');assert g.calls.stopp
 g.fl_dialogue_cancel();assert g.calls.stopped==2 and not g.fl_dialogue_busy()
 
 # Drive the real coordinator through one healthy rapid cut, then skip the next.
+# The production opener now waits until the native CineGuru relationship graph is
+# parsed, and it preconfigures all seventeen follow-on cameras before PERIM rolls.
 lua.execute('''
 active_cam=nil;cg={}
 function CG_GetActiveCamera() return active_cam end
@@ -72,11 +74,21 @@ function CG_IsCamera(e) return cg[e]~=nil end
 function CG_ActivateCamera(e) if cg[e] then active_cam=e;cg[e].state='rolling';return true end end
 ''')
 lua.execute((scripts/'firstlight_cinematic.lua').read_text())
-g.g_Entity[40]=lua.table_from({'name':'FL CG ARRIVAL PERIM'});g.g_Entity[42]=lua.table_from({'name':'FL CG ARRIVAL NOSE'})
-g.cg[40]=lua.table_from({'state':'ready','data':lua.table()});g.cg[42]=lua.table_from({'state':'ready','data':lua.table()})
-g.aegis=lua.table();g.fl.born=g.g_Time-1000;g.firstlight_cinematic_init(41)
+opening_ids={'ARRIVAL_PERIM':40,'ARRIVAL_NOSE':42}
+for i,(beat,name,*_) in enumerate(SHOTS):
+ if beat not in OPENING_SEQUENCE:continue
+ entity_id=opening_ids.get(beat,100+i)
+ g.g_Entity[entity_id]=lua.table_from({'name':name})
+ g.cg[entity_id]=lua.table_from({'state':'ready','data':lua.table()})
+g.aegis=lua.table_from({'cineguru_native_chain_ready':True});g.fl.born=g.g_Time-1000;g.firstlight_cinematic_init(41)
 for _ in range(4):g.g_Time+=300;g.firstlight_cinematic_main(41)
 assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_PERIM'
+# Every native follow-on camera must have its authored duration before the first roll;
+# otherwise CineGuru would use its stock five-second film time for automatic cuts.
+for beat,name,*_ in SHOTS:
+ if beat not in OPENING_SEQUENCE:continue
+ entity_id=opening_ids.get(beat,100+next(i for i,row in enumerate(SHOTS) if row[0]==beat))
+ assert abs(g.cg[entity_id].filmtime-SHOT_PROFILES[beat]['seconds']*1000)<1
 opening_start=g.aegis.opening_started_at
 # Complete PERIM naturally. NOSE should be requested without ending the VO or music duck.
 g.g_Time=g.aegis.cinematic_started_at+int(SHOT_PROFILES['ARRIVAL_PERIM']['seconds']*1000);g.active_cam=None;g.firstlight_cinematic_main(41)
@@ -136,4 +148,4 @@ m=kestrel_mesh(Mesh);assert min(v[1] for v in m.verts)>=0
 for face in m.faces:
  a,b,c=[m.verts[i] for i in face];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
  n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]);assert sum(x*x for x in n)>1e-8
-print('PRESENTATION RUNTIME PASS: VO spans rapid PERIM->NOSE cuts, persistent opening clock, skip/fail-open, voice lifecycle and grounded continuous fauna.')
+print('PRESENTATION RUNTIME PASS: native CineGuru opener is preconfigured, VO spans rapid PERIM->NOSE cuts, persistent opening clock, skip/fail-open, voice lifecycle and grounded continuous fauna.')

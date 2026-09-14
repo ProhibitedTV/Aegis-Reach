@@ -16,6 +16,7 @@ SOURCES=(
  ROOT/'tools/firstlight_world.py',ROOT/'tools/build_first_light.py',ROOT/'tools/firstlight_combat_geometry.py',
  ROOT/'tools/firstlight_story_effects.py',ROOT/'tools/firstlight_transport.py',ROOT/'tools/firstlight_kestrel.py',
  ROOT/'tools/firstlight_kestrel_boarding.py',ROOT/'tools/firstlight_dialogue.py',ROOT/'tools/firstlight_cinematics.py',ROOT/'tools/firstlight_biosphere.py',
+ ROOT/'tools/firstlight_cineguru_native_chain.py',ROOT/'tools/firstlight_title_screen_convergence.py',
  ROOT/'tools/firstlight_native_engine_pass.py',ROOT/'tools/build_first_light_aaa.py',ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',ROOT/'tools/build_vesper_sky.py',ROOT/'tools/firstlight_material_polish.py',ROOT/'tools/firstlight_material_contracts.py',
  ROOT/'Aegis Reach/Design/First Light/Sky/vesper-orbital-panorama.png',
@@ -24,6 +25,7 @@ SOURCES=(
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_dialogue.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cinematic.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_rig.lua',
+ ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cineguru_chain.lua',
  *MATERIAL_SOURCES,
 )
 
