@@ -8,34 +8,50 @@ Meridian Shelf has missed two scheduled check-ins. Forty-two colonists are unacc
 
 Kestrel and Seven are therefore conducting an emergency recovery/investigation mission. The first practical goal is to restore Northstar so the evacuation packet can be recovered and the missing colonists located. The opening should imply danger and contradiction without explaining the Choir or revealing why the Wardens are interested in AEGIS.
 
+## Camera doctrine: military / diegetic, not omniscient
+
+The opening should feel like recovered operational footage from a real campaign. Every opening viewpoint must answer a practical question: **what physical object carries this camera?**
+
+There are no free-floating crane, dolly, drone or invisible "movie" cameras in the insertion sequence. CineGuru still owns presentation, but `firstlight_camera_rig.lua` moves the eight opening camera entities with the live Kestrel object every frame. Fixed hull cameras inherit the aircraft's pitch, yaw, roll and vibration. The ventral reconnaissance camera is a plausible gimbal-stabilized ISR sensor: its position remains attached to the belly while its boresight stays trained on Meridian Shelf.
+
+This makes the cinematic language part of the world rather than a layer floating above it.
+
 ## Recorded opening: about 54 seconds
 
-The existing five opening lines are preserved, including the four recorded Kestrel performances. The extra runtime is visual rather than expository: the player gets enough time to understand the Kestrel as a real vehicle entering, surveying, landing at, and leaving Meridian Shelf.
+The existing five opening lines are preserved, including the four recorded Kestrel performances. The extra runtime is visual rather than expository: the player experiences the insertion through the aircraft's own camera network.
 
-1. **ARRIVAL_WIDE — distant approach** — a high valley view establishes the dead shelf and lets the Kestrel enter as a small moving silhouette while Meridian's missed check-ins are introduced.
-2. **ARRIVAL_PASS — close shelf crossing** — the aircraft makes a fast lateral pass across the abandoned outpost as the forty-two missing colonists / no-beacon condition is stated.
-3. **ARRIVAL_ORBIT — reconnaissance arc** — the Kestrel curves around the facility rather than flying a single straight spline. Mira Sen's "array waking" burst plays here.
-4. **ARRIVAL_DESCENT — conversion and powered-lift approach** — the aircraft commits to the landing site while the Warden transponder and Northstar objective are delivered.
-5. **ARRIVAL_HANDOFF — touchdown / ramp** — a low hero angle owns touchdown and the line confirming Seven is down.
-6. **ARRIVAL_LIFTOFF — vertical clearance** — the Kestrel clears the pad on lift thrust.
-7. **ARRIVAL_CLIMB — transition** — a new angle catches the aircraft unloading vertical lift and beginning forward acceleration.
-8. **ARRIVAL_DEPART — valley exit** — a final wide shot watches the Kestrel accelerate out before normal control returns.
+1. **ARRIVAL_WIDE — KSTL-01 NOSE EO** — forward hull electro-optical feed. Meridian Shelf grows in the frame as the Kestrel crosses the valley and the missed check-ins are introduced.
+2. **ARRIVAL_PASS — KSTL-02 STBD SHOULDER** — starboard shoulder maintenance camera aimed back across the aircraft. Hull/wing structure should remain near frame while the outpost and terrain rip past beneath it during the forty-two-colonist line.
+3. **ARRIVAL_ORBIT — KSTL-03 VENTRAL ISR** — gimbal-stabilized belly reconnaissance feed. The sensor stays trained on Meridian while the aircraft banks around the site; Mira Sen's "array waking" burst plays here.
+4. **ARRIVAL_DESCENT — KSTL-04 STBD GEAR** — landing-gear / belly-side camera. Terrain rises toward the aircraft during the powered-lift descent while the Warden transponder and Northstar objective are delivered.
+5. **ARRIVAL_HANDOFF — KSTL-05 RAMP** — rear cargo-door camera looking down/out across the ramp. Touchdown and the confirmation that Seven is down happen from the same practical camera crew would use to monitor deployment.
+6. **ARRIVAL_LIFTOFF — KSTL-05 RAMP** — the same physical ramp camera remains in service as the ground drops away beneath the aircraft.
+7. **ARRIVAL_CLIMB — KSTL-06 PORT SHOULDER** — opposite-side maintenance camera catches the conversion/climb with the Kestrel structure anchoring the frame.
+8. **ARRIVAL_DEPART — KSTL-07 TAIL** — aft observation camera watches Meridian Shelf recede as the Kestrel accelerates away and normal control returns.
 
 Space still skips the entire opening. The Suno score remains continuous and ducks under the cinematic.
 
 ## Mechanical-state editing rule
 
-GameGuru MAX currently receives four authored Kestrel geometry states: `flight`, `convert`, `flare`, and `landed`. Those states cannot physically morph into one another, so the opening no longer exposes the swaps in a continuous shot.
+GameGuru MAX currently receives four authored Kestrel geometry states: `flight`, `convert`, `flare`, and `landed`. Those states cannot physically morph into one another, so the opening does not expose the swaps in a continuous feed.
 
-Instead, every major state change happens **under a CineGuru edit**:
+Every major state change happens **on a camera-source edit**:
 
-- `flight` is held through ARRIVAL_WIDE and ARRIVAL_PASS.
-- the cut to ARRIVAL_ORBIT masks `flight → convert`.
-- the cut to ARRIVAL_DESCENT masks `convert → flare`.
-- the cut to ARRIVAL_HANDOFF masks `flare → landed` and the ramp-open geometry change.
-- the departure edits similarly mask `landed → flare → convert → flight`.
+- `flight` is held through KSTL-01 and KSTL-02.
+- the cut to KSTL-03 masks `flight → convert`.
+- the cut to KSTL-04 masks `convert → flare`.
+- the cut to KSTL-05 masks `flare → landed` and the ramp-open geometry change.
+- departure edits similarly mask `landed → flare → convert → flight`.
 
-Within each shot, position, altitude, yaw, pitch and roll are continuously interpolated with curved paths and coordinated bank. The camera edit hides only the mechanical mesh replacement, not a teleport. Adjacent path endpoints are authored to meet exactly.
+Within a feed, Kestrel position, altitude, yaw, pitch and roll remain continuously interpolated. The camera mount itself inherits that live transform, so the viewer feels bank, deceleration, hover correction and climb as vehicle motion rather than as a floating camera tracking a ship.
+
+## Mount behavior
+
+- Fixed cameras use a rigid local-space position and boresight rotated by the live Kestrel transform.
+- KSTL-03 VENTRAL ISR uses a rigid local-space position but a stabilized world-space target over the Meridian outpost.
+- Small deterministic vibration is added per mount to imply real vehicle hardware without turning the shot into handheld shake.
+- KSTL-05 is intentionally reused for both touchdown and liftoff so the player recognizes one continuous physical camera source.
+- The normal CineGuru camera placements remain as editor/fail-safe transforms only; runtime presentation is owned by the diegetic rig.
 
 ## Gameplay handoff
 
@@ -45,21 +61,22 @@ Only after ARRIVAL_DEPART completes does the coordinator mark insertion complete
 
 The opening is fail-open by design. CineGuru registration is retried during native MAX startup. A beat is not marked seen until `CG_GetActiveCamera()` proves its camera is actually rolling. If any opening camera cannot start within the grace period, Kestrel delivers a concise in-game version of the premise, the remaining opening beats are marked seen, and the mission continues normally.
 
-Aborting/skipping any opening shot also skips the **entire remaining opening sequence** rather than forcing the player through the remaining edits.
+Aborting/skipping any opening shot also skips the **entire remaining opening sequence** rather than forcing the player through the remaining feeds.
 
 ## Native acceptance gate
 
 A successful native playtest should show all of the following:
 
-- ARRIVAL_WIDE takes camera ownership shortly after level start.
-- The Kestrel is visible at distance before the first close pass.
-- ARRIVAL_PASS reads as a fast aircraft pass with coordinated bank rather than a rigid linear slide.
-- ARRIVAL_ORBIT visibly curves around the outpost and gives the facility geographic context.
-- ARRIVAL_DESCENT looks like a decelerating powered-lift approach.
+- Every opening shot feels physically attached to the Kestrel rather than placed in empty world space.
+- KSTL-01 moves with the nose through the initial approach; the horizon reacts to aircraft attitude.
+- KSTL-02 visibly retains Kestrel structure near frame while terrain slides past below.
+- KSTL-03 remains attached to the belly while its stabilized ISR boresight keeps Meridian readable through the orbit.
+- KSTL-04 makes descent speed and ground closure obvious.
+- KSTL-05 reads as a real ramp/deployment camera at touchdown and again during liftoff.
+- KSTL-06 and KSTL-07 make the departure feel observed by onboard systems rather than an external film crew.
 - The flight / conversion / flare / landed geometry changes are not visibly popping on screen because each change occurs on an edit.
-- Touchdown, ramp, liftoff, climb and departure each receive a readable authored shot.
 - All three story phases remain readable: forty-two missing colonists, Mira's corrupted warning, Warden transponder + Northstar objective.
 - The Suno score continues underneath without a restart or pop and audibly ducks during the sequence.
-- Player weapon/HUD/camera presentation returns cleanly after the final departure shot or after an abort.
-- If CineGuru cannot start, the fallback Kestrel briefing appears and mission progression is unaffected.
+- Player weapon/HUD/camera presentation returns cleanly after the final tail-camera feed or after an abort.
+- If CineGuru or the camera rig cannot initialize, the fallback briefing / safe editor transforms leave mission progression unaffected.
 - `first-light-runtime.log` records the opening beats as separate `pending`, `activation accepted`, `start`, and `finish` events on a healthy run.
