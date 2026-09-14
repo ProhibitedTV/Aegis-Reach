@@ -37,14 +37,21 @@ boarding vestibule. Ramp upper-face winding and recessed engine-core winding
 are corrected. Ramp underside and landing feet share the authored contact plane.
 
 Flight, flare and landed are still discrete visual mesh swaps, not a rigged
-animation. Kestrel remains visual-only; the existing ground-level boarding
-interaction handles extraction. Walkable ramp collision, continuous mechanical
-animation, LODs, downwash and state-dependent engine audio are future work.
+animation. The moving airframe remains visual-only, but the landed extraction
+state now has a separate low-poly polygon collision proxy covering only the rear
+ramp and vestibule floor. Its controller keeps collision off until
+`aegis.kestrel_landed=true`, then clears it again immediately when departure starts.
+That makes the visible boarding route physically walkable without leaving an
+invisible ship-sized collider on the LZ during approach.
 
 The ship follows the confirmed camera clock. Opening skip removes all insertion
 variants. Departure waits for the boarding camera and fits its actual duration.
 The ship first holds for boarding, lifts in flare configuration, then accelerates
 in flight configuration.
+
+Remaining Kestrel presentation work is continuous mechanical animation, LODs,
+downwash and state-dependent engine audio. Those should follow native MAX review
+rather than being guessed from headless tests.
 
 ## Other integration corrections
 
@@ -57,19 +64,22 @@ The counterpart's wreck geometry, four collision cores and effects are preserved
 
 Preflight compiles every First Light script in actual Lua 5.2. Runtime tests drive
 caption expiry, voice interruption, camera activation/skip/fallback, Kestrel state
-selection/departure and a full skitter movement cycle. Geometry checks cover the
-open boarding sightline, ramp winding, contact plane and rotated wreck debris.
-The map and all active original generated assets are rebuilt as one candidate.
-No new DLC payloads, DBO caches, savegames or testmap/editor state are included.
+selection/departure, landed-only boarding collision and a full skitter movement
+cycle. Geometry checks cover the open boarding sightline, ramp winding, ramp
+collision slope, contact plane and rotated wreck debris. The map and all active
+original generated assets are rebuilt as one candidate. No new DLC payloads, DBO
+caches, savegames or testmap/editor state are included.
 
 Start a NEW GAME. Watch both opening shots, then test Space skip on a fresh run.
 Listen for all four complete spoken lines with matching captions. Circle M-17 and
 read its recorder. Observe a skitter pause. Finish the mission and inspect the
-landed ramp, then board and watch departure. Native MAX appearance, sound balance,
-performance and collision feel remain the final acceptance gate.
+landed ramp, walk from the terrain into the vestibule, then board and watch
+departure. Confirm that no invisible ramp collision is present before the ship lands
+or after liftoff starts. Native MAX appearance, sound balance, performance and
+collision feel remain the final acceptance gate.
 
 Native review attempt: MAX launched the registered candidate on September 13.
 The Computer Use capture API failed twice after fresh window selection with
 `SetIsBorderRequired failed: No such interface supported (0x80004002)`.
-No native screenshot or audiovisual approval is claimed. The branch is ready
-for player review; automated preflight passed all 18 test groups.
+No native screenshot or audiovisual approval is claimed. The automated source and
+runtime contracts are ready for the next player review.
