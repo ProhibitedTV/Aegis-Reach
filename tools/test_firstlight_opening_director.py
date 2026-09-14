@@ -21,13 +21,13 @@ def main():
     assert LAYOUT.is_file() and REPORT.is_file() and MAP.is_file(),'rebuild FIRST LIGHT first'
     layout=json.loads(LAYOUT.read_text());report=json.loads(REPORT.read_text())
     assert not [p for p in layout if str(p.get('name','')).startswith('FL CG ARRIVAL ')],'legacy opening camera placement survived'
-    assert not [p for p in layout if p.get('name') in ('FIRST LIGHT // CAMERA RIG','FIRST LIGHT // OPENING DIRECTOR')],'legacy opening controller survived'
+    assert len([p for p in layout if p.get('name')=='FIRST LIGHT // CAMERA RIG'])==1
+    assert len([p for p in layout if p.get('name')=='FIRST LIGHT // OPENING DIRECTOR'])==1
     meta=report.get('opening_director',{})
     assert meta.get('cut_count')==17,meta
     assert meta.get('opening_ms')==50800,meta
     assert meta.get('camera_owner')=='mission-hud-native-hard-replacement',meta
     assert meta.get('removed_opening_cameras')==17,meta
-    assert meta.get('removed_camera_rig') is True,meta
     assert meta.get('runtime_entry')=='firstlight_hud.lua -> fl_opening_native_tick()',meta
 
     native=NATIVE.read_text();hud=HUD.read_text();coord=COORD.read_text()
@@ -52,7 +52,6 @@ def main():
         archive.setpassword(PASSWORD);_,entities=read_ele(archive.read('map.ele'))
     opening=[e for e in entities if _name(e).startswith('FL CG ARRIVAL ')]
     assert not opening,[(_name(e),_script(e)) for e in opening]
-    assert not any(_name(e) in ('FIRST LIGHT // CAMERA RIG','FIRST LIGHT // OPENING DIRECTOR') for e in entities)
     later=[e for e in entities if _name(e) in ('FL CG MIRA SIGNAL','FL CG AEGIS REVEAL','FL CG EXTRACTION')]
     assert len(later)==3 and all(_script(e)==CINE for e in later),'later story cameras must retain CineGuru'
     print('FIRST LIGHT // HARD-REPLACEMENT OPENING PASS')
