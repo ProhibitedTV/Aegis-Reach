@@ -67,16 +67,26 @@ assert g.aegis.cinematic_beat=='ARRIVAL_NOSE',g.aegis.cinematic_beat
 nose=pose()
 assert distance_from_ship(nose)>900,nose
 assert nose[1]>=620,nose
+assert 50<=float(g.camera.fov)<=70,g.camera.fov
 
 # VO 001 begins 200 ms after the opening clock starts, not on the acquisition frame.
 g.g_Time=350;g.fl_opening_native_tick()
 assert g.spoken['FL01_KES_001'] is True
 
+# CineGuru-style camera movement happens inside the shot even with a stationary test ship.
+g.g_Time=1500;g.fl_opening_native_tick()
+assert g.aegis.cinematic_beat=='ARRIVAL_NOSE'
+nose_mid=pose()
+assert math.dist(nose,nose_mid)>40,(nose,nose_mid)
+assert distance_from_ship(nose_mid)>900,nose_mid
+assert 50<=float(g.camera.fov)<=70,g.camera.fov
+assert 0<float(g.aegis.opening_shot_progress)<1,g.aegis.opening_shot_progress
+
 # 3.0 s: port formation camera, a distinct live-airframe transform.
 g.g_Time=3100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_PORT_FWD',g.aegis.cinematic_beat
 port=pose()
-assert port!=nose,(nose,port)
+assert port!=nose_mid,(nose_mid,port)
 assert distance_from_ship(port)>900,port
 
 # 6.0 s: high tracking view should still frame the ship from outside its envelope.
@@ -86,11 +96,11 @@ isr=pose()
 assert isr!=port,(port,isr)
 assert distance_from_ship(isr)>900,isr
 
-# 8.7 s: fixed Gate camera auto-tracks the ship; second VO is live.
+# 8.7 s: Gate camera auto-tracks the ship while creeping on its short authored rail.
 g.g_Time=8800;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_GATE',g.aegis.cinematic_beat
 gate=pose()
-assert abs(gate[0]-(-520))<.01,gate
+assert -520<gate[0]<-430,gate
 assert g.spoken['FL01_KES_002'] is True
 
 # 11.8 s: back onto a starboard formation view.
@@ -106,6 +116,7 @@ assert g.aegis.cinematic_beat=='ARRIVAL_DEPLOY',g.aegis.cinematic_beat
 deploy=pose()
 assert deploy[1]>=570,deploy
 assert distance_from_ship(deploy)>900,deploy
+assert 40<=float(g.camera.fov)<=60,g.camera.fov
 
 # End restores player control and permanently gates any legacy insertion opener.
 g.g_Time=51000;g.fl_opening_native_tick()
@@ -113,5 +124,6 @@ assert g.camera.override==0,g.camera.override
 assert g.camera.unfreeze==1,g.camera.unfreeze
 assert g.aegis.insertion_complete is True
 assert g.aegis.cinematic_request=='OPENING_NATIVE_DONE',g.aegis.cinematic_request
-print('FIRST LIGHT // KESTREL-SUBJECT OPENING RUNTIME PASS')
-print('CHASE -> PORT FORMATION -> HIGH TRACK -> GATE AUTO-TRACK -> STBD keeps the airframe outside the camera envelope; deploy remains terrain-safe and control restores at handoff.')
+assert abs(float(g.camera.fov)-60)<.01,g.camera.fov
+print('FIRST LIGHT // CINEGURU-LANGUAGE OPENING RUNTIME PASS')
+print('CHASE MOVE -> PORT FORMATION -> HIGH TRACK -> GATE RAIL/AUTO-TRACK -> STBD uses smooth within-shot motion, real FOV degrees, terrain-safe deploy framing and clean player handoff.')
