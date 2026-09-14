@@ -1,13 +1,15 @@
 """Add the deterministic FIRST LIGHT opening director to the production map.
 
-CineGuru camera entities remain the authored camera mounts, but the opening game camera
-is driven directly from one 50.8 second cut clock. This prevents the runtime from
-silently sticking on an old CineGuru establishing shot while VO continues.
+The seventeen opening entities are physical/editor-space camera mounts only. They are
+made deliberately inert so CineGuru cannot compete with the deterministic director for
+the real GameGuru camera. Later story cameras still use CineGuru normally.
 """
 
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 SCRIPT=r'aegis_reach\firstlight_opening_director.lua'
+MOUNT_SCRIPT=r'aegis_reach\firstlight_camera_mount.lua'
 NAME='FIRST LIGHT // OPENING DIRECTOR'
+OPENING_PREFIX='FL CG ARRIVAL '
 
 
 def sync_coordinator_guard(path):
@@ -21,16 +23,43 @@ def sync_coordinator_guard(path):
     path.write_text(text)
 
 
+def neutralize_opening_cineguru(build):
+    """Turn only the seventeen insertion cameras into inert transform mounts.
+
+    The authoring transforms and native relationship metadata remain in the map for
+    inspection/debugging, but the entities no longer execute cg_cinematic_camera.lua.
+    This guarantees there is exactly one runtime writer of camera 0 during insertion.
+    """
+    count=0
+    for placement,entity in zip(build.placements,build.entities):
+        name=str(placement.get('name',''))
+        if not name.startswith(OPENING_PREFIX):
+            continue
+        if not build.set_suffix(entity,'eleprof.aimain_s',MOUNT_SCRIPT):
+            raise RuntimeError('opening camera entity has no aimain_s field: '+name)
+        build.set_suffix(entity,'staticflag',0)
+        build.set_suffix(entity,'eleprof.physics',0)
+        build.set_suffix(entity,'eleprof.phyalways',1)
+        count+=1
+    if count!=17:
+        raise RuntimeError(f'expected 17 opening camera mounts, found {count}')
+    return count
+
+
 def apply(build):
     sync_coordinator_guard(build.FILES/'scriptbank/aegis_reach/firstlight_cinematic.lua')
+    mounts=neutralize_opening_cineguru(build)
     build.add(MARKER,NAME,300,-9500,y=100,kind='controller',script=SCRIPT,
               **{'eleprof.physics':0,'eleprof.phyalways':1})
     return {
         'controller':NAME,
         'script':SCRIPT,
         'camera_owner':'deterministic-director',
-        'camera_sources':'17 authored CineGuru camera mounts',
+        'camera_sources':'17 inert authored camera mounts',
+        'opening_mount_script':MOUNT_SCRIPT,
+        'inert_opening_mounts':mounts,
         'cut_count':17,
         'opening_ms':50800,
         'legacy_opening_guard':'blocked after insertion_complete',
+        'cineguru_opening_runtime':'disabled; CineGuru reserved for later story beats',
     }
