@@ -15,7 +15,7 @@ MATERIAL_SOURCES=(ROOT/'tools/texture_sources/first_light/first_light_material_s
 SOURCES=(
  ROOT/'tools/firstlight_world.py',ROOT/'tools/build_first_light.py',ROOT/'tools/firstlight_combat_geometry.py',
  ROOT/'tools/firstlight_story_effects.py',ROOT/'tools/firstlight_transport.py',ROOT/'tools/firstlight_kestrel.py',
- ROOT/'tools/firstlight_kestrel_boarding.py',ROOT/'tools/firstlight_dialogue.py',ROOT/'tools/firstlight_cinematics.py',ROOT/'tools/firstlight_biosphere.py',
+ ROOT/'tools/firstlight_kestrel_boarding.py',ROOT/'tools/firstlight_dialogue.py',ROOT/'tools/firstlight_cinematics.py',ROOT/'tools/firstlight_opening_director.py',ROOT/'tools/firstlight_biosphere.py',
  ROOT/'tools/firstlight_cineguru_native_chain.py',ROOT/'tools/firstlight_title_screen_convergence.py',
  ROOT/'tools/firstlight_native_engine_pass.py',ROOT/'tools/build_first_light_aaa.py',ROOT/'tools/environment_pass.py',
  ROOT/'tools/meridian_fieldkit.py',ROOT/'tools/build_vesper_sky.py',ROOT/'tools/firstlight_material_polish.py',ROOT/'tools/firstlight_material_contracts.py',
@@ -24,6 +24,7 @@ SOURCES=(
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_kestrel_boarding.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_dialogue.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cinematic.lua',
+ ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_opening_director.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_rig.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cineguru_chain.lua',
  *MATERIAL_SOURCES,
@@ -45,10 +46,12 @@ def main():
  # so a successful build does not immediately report itself stale on the next launch.
  from firstlight_dialogue import sync_catalog
  from firstlight_cinematics import sync_coordinator
+ from firstlight_opening_director import sync_coordinator_guard
  from firstlight_material_polish import apply_material_polish
  from firstlight_material_contracts import enforce_material_contracts
  sync_catalog(GAME/'Files/scriptbank/aegis_reach/firstlight_dialogue.lua')
- sync_coordinator(GAME/'Files/scriptbank/aegis_reach/firstlight_cinematic.lua')
+ coordinator=GAME/'Files/scriptbank/aegis_reach/firstlight_cinematic.lua'
+ sync_coordinator(coordinator);sync_coordinator_guard(coordinator)
  signature=digest_sources();prior=current_stamp();needed=(not MAP.is_file()) or prior.get('source_sha256')!=signature
  if not needed:
   # Texture outputs are generated assets; restore them if a local cache was cleared
