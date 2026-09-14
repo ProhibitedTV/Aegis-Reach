@@ -23,7 +23,7 @@ LINES=(
  dict(id='FL01_KES_015',speaker='KESTREL',filename='fl01_kestrel_015.wav',seconds=3.2,direction='landed under fire; command voice',text='Kestrel is down. Clear the pad and get aboard.'),
  dict(id='FL01_KES_016',speaker='KESTREL',filename='fl01_kestrel_016.wav',seconds=2.4,direction='boarding acknowledgement',text='Seven, you are on. Strap in.'),
  dict(id='FL01_KES_017',speaker='KESTREL',filename='fl01_kestrel_017.wav',seconds=4.0,direction='liftoff; controlled relief with unresolved tension',text='Lifting. Shelter Twelve is alive. Mira is still transmitting.'),
- dict(id='FL01_M17_001',speaker='M-17 PILOT',filename='fl01_m17_pilot_001.wav',seconds=6.0,direction='recorded cockpit distress; clipped, under stress',text='Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.'),
+ dict(id='FL01_M17_001',speaker='M-17 PILOT',filename='fl01_m17_pilot_001.wav',seconds=8.5,direction='recorded cockpit distress; clipped, under stress',text='Colony filters. Medical packs. Security ammunition. Landing clearance revoked. Gate Zero-Seven will not answer. Putting her down in the tide channel.'),
 )
 
 # Actual PCM performances own timing. Leave a short tail for subtitle readability;

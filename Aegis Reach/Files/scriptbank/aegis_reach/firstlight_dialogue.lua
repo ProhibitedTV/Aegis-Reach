@@ -21,7 +21,7 @@ local catalog={
  FL01_KES_015={speaker="KESTREL",text="Kestrel is down. Clear the pad and get aboard.",seconds=3.2},
  FL01_KES_016={speaker="KESTREL",text="Seven, you are on. Strap in.",seconds=2.4},
  FL01_KES_017={speaker="KESTREL",text="Lifting. Shelter Twelve is alive. Mira is still transmitting.",seconds=4.0},
- FL01_M17_001={speaker="M-17 PILOT",text="Landing clearance revoked. Gate Zero-Seven will not take our distress call. Putting her down in the tide channel.",seconds=6.0},
+ FL01_M17_001={speaker="M-17 PILOT",text="Colony filters. Medical packs. Security ammunition. Landing clearance revoked. Gate Zero-Seven will not answer. Putting her down in the tide channel.",seconds=8.5},
 }
 local voice_entities={};local last_played={};local active_voice=nil;local runtime={zone='',evac_started=false,evac={}}
 local function split_line(text,limit)
