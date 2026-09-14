@@ -47,6 +47,7 @@ allowed_environment_passes={
  'single-owner-production-recomposition',
  'single-owner-production-recomposition + tactical-cover-layer',
  'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
+ 'single-owner-production-recomposition + tactical-cover-layer + title-screen skyline convergence',
 }
 assert report.get('environment_pass') in allowed_environment_passes, report.get('environment_pass')
 
