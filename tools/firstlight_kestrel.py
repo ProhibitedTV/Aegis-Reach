@@ -1,9 +1,9 @@
 """Author the Broadwing-pattern Vanguard Kestrel dropship for FIRST LIGHT.
 
-The asset is procedural and original. Three geometry states are authored from one
-airframe: clean flight, VTOL/gear flare, and landed/ramp-open.  Lua swaps those
-states during insertion/extraction so the ship reads like a vehicle with systems,
-not a static prop sliding through space.
+The asset is procedural and original. Four geometry states are authored from one
+airframe: clean flight, conversion, VTOL/gear flare, and landed/ramp-open. Lua
+swaps those states during insertion/extraction so the ship reads like a vehicle
+with systems, not a static prop sliding through space.
 """
 import math
 from PIL import Image,ImageDraw,ImageFilter
@@ -15,7 +15,7 @@ TEXTURE='kestrel_broadwing_atlas.png'
 NORMAL='kestrel_broadwing_normal.png'
 SURFACE='kestrel_broadwing_surface.png'
 EMISSIVE='kestrel_broadwing_emissive.png'
-STATES=('flight','flare','landed')
+STATES=('flight','convert','flare','landed')
 # Local model-space inches. The ramp tip/foot pad is authored at Y=4 so a landed
 # entity placed at ground-4 sits on terrain instead of hovering above it.
 LANDED_CONTACT_Y=4
@@ -169,20 +169,32 @@ def _down_nozzle(m,x,y,z,outer=21,plume=True):
         if plume:quad(m,[inner[i],inner[j],tail[j],tail[i]],5)
 
 
-def _gear(m):
-    """Wide four-point outriggers kept outside the central lift-wash footprint."""
+def _gear(m,extension=1.0):
+    """Four-point gear with a partially deployed conversion pose."""
+    extension=max(0.0,min(1.0,extension))
     for x,z in ((-286,-92),(286,-92),(-278,132),(278,132)):
         sx=-1 if x<0 else 1
-        # triangulated two-link oleo reads as aircraft gear rather than stair rails
-        strut(m,(sx*184,62,z),(x,22,z),10,2)
-        strut(m,(sx*212,54,z+8),(x,22,z),7,2)
-        m.box(x,4,z,46,8,34,7)
-        m.box(x,12,z,22,11,22,2)
+        root1=(sx*184,62,z);root2=(sx*212,54,z+8)
+        full_x=x
+        # Retraction pulls the bogie toward the shoulder and upward. The conversion
+        # state stops midway so silhouette change is visible before the full flare.
+        tuck_x=sx*(205 if abs(x)>280 else 202)
+        foot_x=tuck_x+(full_x-tuck_x)*extension
+        joint_y=50+(22-50)*extension
+        foot_y=42+(4-42)*extension
+        strut(m,root1,(foot_x,joint_y,z),10,2)
+        strut(m,root2,(foot_x,joint_y,z),7,2)
+        m.box(foot_x,foot_y,z,46,8,34,7)
+        m.box(foot_x,foot_y+8,z,22,11,22,2)
 
 
-def _gear_doors(m):
+def _gear_doors(m,opening=0.0):
+    """Closed in cruise; visibly cracked open during conversion."""
+    opening=max(0.0,min(1.0,opening))
     for x,z in ((-214,-92),(214,-92),(-210,132),(210,132)):
-        m.box(x,46,z,62,4,50,7,angle=8 if x<0 else -8)
+        sx=-1 if x<0 else 1
+        m.box(x+sx*12*opening,46-9*opening,z,62,4,50,7,
+              angle=(8+24*opening) if x<0 else -(8+24*opening))
 
 
 def _lift_bays(m,state):
@@ -191,6 +203,14 @@ def _lift_bays(m,state):
         for z in (-86,96):
             if state=='flight':
                 m.box(x,49,z,58,5,60,1)
+            elif state=='convert':
+                # Split doors are only part-way open. The throat is visible but the
+                # downward plume has not established yet, making this state legible
+                # between clean cruise and full powered-lift flare.
+                sx=-1 if x<0 else 1
+                m.box(x-sx*22,50,z,34,4,58,1,angle=-9*sx)
+                m.box(x+sx*22,50,z,34,4,58,1,angle=9*sx)
+                _down_nozzle(m,x,48,z,18,plume=False)
             else:
                 # open split doors expose a recessed throat
                 sx=-1 if x<0 else 1
@@ -285,7 +305,7 @@ def kestrel_mesh(Mesh,state='flight'):
     _cockpit(m);_tails(m);_service_details(m)
 
     # Compact shoulder pods keep thrust near the mass center and leave the cargo centerline clear.
-    cruise_plume=state=='flight'
+    cruise_plume=state in ('flight','convert')
     for x in (-236,236):
         m.box(x,82,140,86,70,250,1)
         m.box(x,96,32,62,32,70,2)
@@ -293,8 +313,13 @@ def kestrel_mesh(Mesh,state='flight'):
         _aft_nozzle(m,x,88,279,43,44,plume=cruise_plume)
 
     _lift_bays(m,state)
-    if state=='flight':_gear_doors(m)
-    else:_gear(m)
+    if state=='flight':
+        _gear_doors(m,0.0)
+    elif state=='convert':
+        _gear_doors(m,0.65)
+        _gear(m,0.46)
+    else:
+        _gear(m,1.0)
     _cargo(m,state)
     return m
 
@@ -316,7 +341,7 @@ def _write_fpe_maps(folder,name):
 def apply(build):
     _atlas(build.AS)
     paths={}
-    labels={'flight':'Flight','flare':'VTOL Flare','landed':'Landed Ramp'}
+    labels={'flight':'Flight','convert':'Conversion','flare':'VTOL Flare','landed':'Landed Ramp'}
     for state in STATES:
         asset=NAME+' - '+labels[state]
         paths[state]=build.own(asset,kestrel_mesh(build.Mesh,state),TEXTURE,collision=11)
@@ -334,13 +359,13 @@ def apply(build):
                   kind=layout_kind,script=SCRIPT,**{'eleprof.physics':0,'eleprof.phyalways':1})
 
     return {
-        'ship':NAME,'vehicle_entities':2,'state_entities':6,'state_variants':list(STATES),
+        'ship':NAME,'vehicle_entities':2,'state_entities':8,'state_variants':list(STATES),
         'insertion_visible':True,'extraction_visible':True,
         'extraction_approach_ms':36000,'touchdown_ms':60000,
         'boarding_requires_landed_state':True,'collision':'visual-only',
         'airframe':{'length_in':LENGTH_IN,'span_in':SPAN_IN,'lifting_body':True,'rear_cargo_aperture':True},
         'propulsion':{'cruise_nozzles':2,'balanced_vtol_nozzles':4,'flight_plumes':True,'flare_plumes':True},
-        'landing_gear':'wide four-point outriggers outside lift wash',
+        'landing_gear':'wide four-point outriggers outside lift wash; partial conversion deployment',
         'thermal_zones':'ventral TPS + hot cruise throats',
         'landed_contact_y':LANDED_CONTACT_Y,
     }
