@@ -1,9 +1,9 @@
-"""Execute dialogue, cinematic scheduling and fauna motion in native Lua 5.2."""
+"""Execute FIRST LIGHT dialogue, later-story presentation, vehicle and fauna runtime contracts."""
 from native_format import ROOT
 from python_runtime import ensure_max_lua_runtime
-from firstlight_cinematics import TIMELINES,SHOT_PROFILES,OPENING_SEQUENCE,SHOTS
+from firstlight_cinematics import TIMELINES,SHOT_PROFILES,OPENING_SEQUENCE
 from firstlight_dialogue import LINES
-from firstlight_kestrel import kestrel_mesh,STATES,LANDED_CONTACT_Y
+from firstlight_kestrel import kestrel_mesh,LANDED_CONTACT_Y
 from environment_pass import Mesh
 import math,wave
 
@@ -21,7 +21,7 @@ function Hide(e) calls['hidden'..e]=true end
 function Show(e) calls['hidden'..e]=false end
 function CollisionOff(e) end
 function SetEntityAlwaysActive(e,v) end
-function GetEntityName(e) return g_Entity[e].name end
+function GetEntityName(e) return g_Entity[e] and g_Entity[e].name or '' end
 function PlayNon3DSound(e,s) calls.voice=e end
 function StopSound(e,s) calls.stopped=e end
 function Panel(...) end
@@ -40,20 +40,15 @@ for line in LINES[:4]:
   assert (wav.getnchannels(),wav.getsampwidth(),wav.getframerate())==(1,2,44100)
   assert duration<line['seconds']<duration+.16,'caption timing does not follow PCM duration'
 
-# Non-opening story beats still contain complete dialogue schedules. During insertion,
-# a radio line is intentionally allowed to outlive the 2.5-4.2 second camera source.
+# Later CineGuru beats still own complete dialogue schedules. Opening VO is intentionally
+# longer than an individual editorial source because the hard-replacement native opener
+# carries voice across cuts.
 for beat,events in TIMELINES.items():
  if not events:continue
  for (ms,a),(nxt,b) in zip(events,events[1:]):assert ms+by[a]['seconds']*1000<nxt,(beat,'overlapping dialogue',a,b)
- if beat in OPENING_SEQUENCE:
-  assert events[0][0] < SHOT_PROFILES[beat]['seconds']*1000,(beat,'line never starts before cut')
- else:
+ if beat not in OPENING_SEQUENCE:
   last_ms,last_id=events[-1];assert last_ms+by[last_id]['seconds']*1000<SHOT_PROFILES[beat]['seconds']*1000
-
-# Long opening VO must actually span multiple cuts; this is the regression for the
-# old behavior that stretched a camera to the entire audio file.
-assert SHOT_PROFILES['ARRIVAL_PERIM']['seconds'] < by['FL01_KES_001']['seconds']
-assert SHOT_PROFILES['ARRIVAL_STBD']['seconds'] < by['FL01_KES_002']['seconds']
+assert min(SHOT_PROFILES[b]['seconds'] for b in OPENING_SEQUENCE)<by['FL01_KES_001']['seconds']
 
 g.aegis.cinematic_active=True
 for line in LINES:
@@ -63,9 +58,7 @@ g.g_Entity[1]=lua.table_from({'name':'FL VO FL01_KES_001'});g.g_Entity[2]=lua.ta
 g.fl_dialogue('FL01_KES_001');g.fl_dialogue('FL01_KES_002');assert g.calls.stopped==1 and g.calls.voice==2
 g.fl_dialogue_cancel();assert g.calls.stopped==2 and not g.fl_dialogue_busy()
 
-# Drive the real coordinator through one healthy rapid cut, then skip the next.
-# The production opener now waits until the native CineGuru relationship graph is
-# parsed, and it preconfigures all seventeen follow-on cameras before PERIM rolls.
+# The shared CineGuru coordinator remains responsible only for post-insertion story beats.
 lua.execute('''
 active_cam=nil;cg={}
 function CG_GetActiveCamera() return active_cam end
@@ -74,36 +67,10 @@ function CG_IsCamera(e) return cg[e]~=nil end
 function CG_ActivateCamera(e) if cg[e] then active_cam=e;cg[e].state='rolling';return true end end
 ''')
 lua.execute((scripts/'firstlight_cinematic.lua').read_text())
-opening_ids={'ARRIVAL_PERIM':40,'ARRIVAL_NOSE':42}
-for i,(beat,name,*_) in enumerate(SHOTS):
- if beat not in OPENING_SEQUENCE:continue
- entity_id=opening_ids.get(beat,100+i)
- g.g_Entity[entity_id]=lua.table_from({'name':name})
- g.cg[entity_id]=lua.table_from({'state':'ready','data':lua.table()})
-g.aegis=lua.table_from({'cineguru_native_chain_ready':True});g.fl.born=g.g_Time-1000;g.firstlight_cinematic_init(41)
-for _ in range(4):g.g_Time+=300;g.firstlight_cinematic_main(41)
-assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_PERIM'
-# Every native follow-on camera must have its authored duration before the first roll;
-# otherwise CineGuru would use its stock five-second film time for automatic cuts.
-for beat,name,*_ in SHOTS:
- if beat not in OPENING_SEQUENCE:continue
- entity_id=opening_ids.get(beat,100+next(i for i,row in enumerate(SHOTS) if row[0]==beat))
- assert abs(g.cg[entity_id].filmtime-SHOT_PROFILES[beat]['seconds']*1000)<1
-opening_start=g.aegis.opening_started_at
-# Complete PERIM naturally. NOSE should be requested without ending the VO or music duck.
-g.g_Time=g.aegis.cinematic_started_at+int(SHOT_PROFILES['ARRIVAL_PERIM']['seconds']*1000);g.active_cam=None;g.firstlight_cinematic_main(41)
-assert g.aegis.cinematic_request=='ARRIVAL_NOSE' and g.aegis.music_cinematic_duck
-for _ in range(3):g.g_Time+=300;g.firstlight_cinematic_main(41)
-assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_NOSE' and g.aegis.music_cinematic_duck
-assert g.aegis.opening_started_at==opening_start,'opening motion clock reset at camera cut'
-g.g_Time+=100;g.firstlight_cinematic_main(41)
-assert g.aegis.opening_elapsed_ms>SHOT_PROFILES['ARRIVAL_PERIM']['seconds']*1000,'opening clock did not advance across cut'
-# Early abort of NOSE skips every remaining opening feed and releases mission control.
-g.active_cam=None;g.g_Time+=900;g.firstlight_cinematic_main(41)
-assert not g.aegis.cinematic_active and not g.aegis.cinematic_request
-assert g.aegis.insertion_complete,'skipping an opening edit launches the remaining forced feeds'
-# Missing Mira camera still delivers the urgent shelter warning.
-g.fl.stage=3;assert g.fl_request_cinematic('MIRA_SIGNAL');g.g_Time+=300;g.firstlight_cinematic_main(41);g.g_Time+=7500;g.firstlight_cinematic_main(41)
+g.aegis=lua.table_from({'insertion_complete':True});g.fl.born=g.g_Time-1000;g.firstlight_cinematic_init(41)
+# Missing Mira camera must still fail open and deliver the shelter warning.
+g.fl.stage=3;g.fl.in_contact=False;g.dist=500
+assert g.fl_request_cinematic('MIRA_SIGNAL');g.g_Time+=300;g.firstlight_cinematic_main(41);g.g_Time+=7500;g.firstlight_cinematic_main(41)
 assert g.aegis.dialogue_current.id=='FL01_MIR_001'
 
 # Extraction waits for the boarding camera before leaving the landed pose.
@@ -125,7 +92,7 @@ for _ in range(150):
 steps=[math.dist(a,b) for a,b in zip(positions,positions[1:])]
 assert max(steps)<3,'skitter teleports at a pause boundary';assert sum(d<.001 for d in steps)>15,'skitter never pauses'
 
-# Boarding aperture must reveal the cargo bulkhead, not the old closed tail/belly.
+# Boarding aperture must reveal the cargo bulkhead, not the closed tail/belly.
 def rear_sightline(mesh,x=0,y=86):
  hits=[]
  for face in mesh.faces:
@@ -143,9 +110,8 @@ landed=kestrel_mesh(Mesh,'landed')
 ramp_faces=[f for f in landed.faces if max(landed.verts[i][2] for i in f)>520 and all(397<=landed.verts[i][2]<=527 and 7<=landed.verts[i][1]<=43 and 7/8<landed.uv[i][0]<1 for i in f)]
 assert ramp_faces and all(landed.norm[f[0]][1]>0 for f in ramp_faces),'ramp walking face is culled from above'
 
-# No degenerate mesh face can reach the native importer.
 m=kestrel_mesh(Mesh);assert min(v[1] for v in m.verts)>=0
 for face in m.faces:
  a,b,c=[m.verts[i] for i in face];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
  n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]);assert sum(x*x for x in n)>1e-8
-print('PRESENTATION RUNTIME PASS: native CineGuru opener is preconfigured, VO spans rapid PERIM->NOSE cuts, persistent opening clock, skip/fail-open, voice lifecycle and grounded continuous fauna.')
+print('PRESENTATION RUNTIME PASS: hard-replacement onboard insertion is tested separately; later CineGuru fail-open, voice lifecycle, extraction choreography and grounded fauna remain verified.')
