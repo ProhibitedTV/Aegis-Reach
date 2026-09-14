@@ -1,6 +1,6 @@
 """Runtime regression for the hard-replacement FIRST LIGHT opening camera."""
 from pathlib import Path
-import sys
+import math,sys
 
 ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/'tools'));sys.path.insert(0,str(ROOT/'tools/vendor'))
@@ -53,43 +53,59 @@ function fl_dialogue_cancel() end
 lua.execute(source)
 g=lua.globals();g.fl_opening_native_reset()
 
-# The first rendered frame must already be the hull-mounted nose EO feed.
+def pose():
+    return (float(g.camera.x),float(g.camera.y),float(g.camera.z))
+
+def distance_from_ship(p):
+    return math.dist(p,(1000.0,900.0,-10000.0))
+
+# The first rendered frame must already be an external Kestrel-subject chase view.
 g.g_Time=100;g.fl_opening_native_tick()
 assert g.camera.override==3,g.camera.override
 assert g.camera.freeze==1,g.camera.freeze
 assert g.aegis.cinematic_beat=='ARRIVAL_NOSE',g.aegis.cinematic_beat
-nose=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
-assert abs(nose[0]-1000)>1 or abs(nose[2]-(-10000))>1,nose
+nose=pose()
+assert distance_from_ship(nose)>900,nose
+assert nose[1]>=620,nose
 
-# Opening VO is deliberately offset 200 ms from the opening-owned clock, so advance
-# one additional frame instead of incorrectly requiring dialogue on the exact begin tick.
+# VO 001 begins 200 ms after the opening clock starts, not on the acquisition frame.
 g.g_Time=350;g.fl_opening_native_tick()
 assert g.spoken['FL01_KES_001'] is True
 
-# 3.0 s: port shoulder camera, a distinct live-airframe transform.
+# 3.0 s: port formation camera, a distinct live-airframe transform.
 g.g_Time=3100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_PORT_FWD',g.aegis.cinematic_beat
-port=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
+port=pose()
 assert port!=nose,(nose,port)
+assert distance_from_ship(port)>900,port
 
-# 6.0 s: stabilized ventral ISR looking at Meridian rather than along the hull.
+# 6.0 s: high tracking view should still frame the ship from outside its envelope.
 g.g_Time=6100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_ISR',g.aegis.cinematic_beat
-isr=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
+isr=pose()
 assert isr!=port,(port,isr)
+assert distance_from_ship(isr)>900,isr
 
-# 8.7 s: first external context shot is fixed Gate CCTV; second VO is live.
+# 8.7 s: fixed Gate camera auto-tracks the ship; second VO is live.
 g.g_Time=8800;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_GATE',g.aegis.cinematic_beat
-gate=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
+gate=pose()
 assert abs(gate[0]-(-520))<.01,gate
 assert g.spoken['FL01_KES_002'] is True
 
-# 11.8 s: back onto a Kestrel-mounted starboard shoulder feed.
+# 11.8 s: back onto a starboard formation view.
 g.g_Time=11900;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_STBD',g.aegis.cinematic_beat
-stbd=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
+stbd=pose()
 assert stbd!=gate,(gate,stbd)
+assert distance_from_ship(stbd)>900,stbd
+
+# A late grounded/deploy shot must never bury the camera in terrain.
+g.g_Time=39000;g.fl_opening_native_tick()
+assert g.aegis.cinematic_beat=='ARRIVAL_DEPLOY',g.aegis.cinematic_beat
+deploy=pose()
+assert deploy[1]>=570,deploy
+assert distance_from_ship(deploy)>900,deploy
 
 # End restores player control and permanently gates any legacy insertion opener.
 g.g_Time=51000;g.fl_opening_native_tick()
@@ -97,5 +113,5 @@ assert g.camera.override==0,g.camera.override
 assert g.camera.unfreeze==1,g.camera.unfreeze
 assert g.aegis.insertion_complete is True
 assert g.aegis.cinematic_request=='OPENING_NATIVE_DONE',g.aegis.cinematic_request
-print('FIRST LIGHT // ONBOARD-FIRST OPENING RUNTIME PASS')
-print('NOSE -> PORT SHOULDER -> ISR -> GATE CCTV -> STBD changes camera 0 on one 50.8s clock; player control restores at handoff.')
+print('FIRST LIGHT // KESTREL-SUBJECT OPENING RUNTIME PASS')
+print('CHASE -> PORT FORMATION -> HIGH TRACK -> GATE AUTO-TRACK -> STBD keeps the airframe outside the camera envelope; deploy remains terrain-safe and control restores at handoff.')
