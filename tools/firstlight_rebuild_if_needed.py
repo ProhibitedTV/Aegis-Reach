@@ -25,6 +25,8 @@ SOURCES=(
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_dialogue.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cinematic.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_opening_director.lua',
+ ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_opening_native.lua',
+ ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_hud.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_mount.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_rig.lua',
  ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cineguru_chain.lua',

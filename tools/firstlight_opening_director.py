@@ -1,12 +1,15 @@
-"""Add the deterministic FIRST LIGHT opening director to the production map.
+"""Add the FIRST LIGHT opening compatibility layer to the production map.
 
 The seventeen opening entities are physical/editor-space camera mounts only. They are
-made deliberately inert so CineGuru cannot compete with the deterministic director for
-the real GameGuru camera. Later story cameras still use CineGuru normally.
+made deliberately inert so CineGuru cannot compete for the real GameGuru camera.
+The actual 50.8-second insertion camera is driven from the mission HUD tick through
+firstlight_opening_native.lua; the legacy opening-director entity remains as an inert
+compatibility marker only. Later story cameras still use CineGuru normally.
 """
 
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 SCRIPT=r'aegis_reach\firstlight_opening_director.lua'
+NATIVE_SCRIPT=r'aegis_reach\firstlight_opening_native.lua'
 MOUNT_SCRIPT=r'aegis_reach\firstlight_camera_mount.lua'
 NAME='FIRST LIGHT // OPENING DIRECTOR'
 OPENING_PREFIX='FL CG ARRIVAL '
@@ -24,12 +27,7 @@ def sync_coordinator_guard(path):
 
 
 def neutralize_opening_cineguru(build):
-    """Turn only the seventeen insertion cameras into inert transform mounts.
-
-    The authoring transforms and native relationship metadata remain in the map for
-    inspection/debugging, but the entities no longer execute cg_cinematic_camera.lua.
-    This guarantees there is exactly one runtime writer of camera 0 during insertion.
-    """
+    """Turn only the seventeen insertion cameras into inert transform markers."""
     count=0
     for placement,entity in zip(build.placements,build.entities):
         name=str(placement.get('name',''))
@@ -49,17 +47,20 @@ def neutralize_opening_cineguru(build):
 def apply(build):
     sync_coordinator_guard(build.FILES/'scriptbank/aegis_reach/firstlight_cinematic.lua')
     mounts=neutralize_opening_cineguru(build)
+    # Kept only as an inert compatibility marker for older build/report tooling.
     build.add(MARKER,NAME,300,-9500,y=100,kind='controller',script=SCRIPT,
               **{'eleprof.physics':0,'eleprof.phyalways':1})
     return {
         'controller':NAME,
         'script':SCRIPT,
-        'camera_owner':'deterministic-director',
-        'camera_sources':'17 inert authored camera mounts',
+        'native_camera_script':NATIVE_SCRIPT,
+        'camera_owner':'mission-hud-native',
+        'camera_sources':'direct world poses + live Kestrel transform',
         'opening_mount_script':MOUNT_SCRIPT,
         'inert_opening_mounts':mounts,
         'cut_count':17,
         'opening_ms':50800,
         'legacy_opening_guard':'blocked after insertion_complete',
         'cineguru_opening_runtime':'disabled; CineGuru reserved for later story beats',
+        'runtime_entry':'firstlight_hud.lua -> fl_opening_native_tick()',
     }

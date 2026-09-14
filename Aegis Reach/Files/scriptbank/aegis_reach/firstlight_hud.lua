@@ -1,4 +1,8 @@
 -- Native percentage-coordinate HUD. Only real mission/vital values are shown.
+-- The opening camera is ticked here because this mission HUD path is already proven
+-- to execute every frame in native MAX. This avoids depending on a separate controller
+-- entity's scheduling order for the mission-opening camera.
+require 'scriptbank\\aegis_reach\\firstlight_opening_native'
 local pixel=nil
 local function rect(x,y,w,h,r,g,b,a)
  if not pixel and LoadImage and CreateSprite then
@@ -7,14 +11,20 @@ local function rect(x,y,w,h,r,g,b,a)
  end
  if pixel then SetSpriteSize(pixel,w,h);SetSpriteColor(pixel,r,g,b,a or 255);PasteSpritePosition(pixel,x,y) end
 end
-function fl_hud_reset()if pixel and DeleteSprite then pcall(DeleteSprite,pixel) end;pixel=nil end
+function fl_hud_reset()
+ if pixel and DeleteSprite then pcall(DeleteSprite,pixel) end;pixel=nil
+ if fl_opening_native_reset then fl_opening_native_reset() end
+end
 function fl_hud_delta(bearing,yaw)return (bearing-yaw+540)%360-180 end
 local function meter(y,value,r,g,b)
  value=math.max(0,math.min(100,value or 0));for i=0,4 do local x=84+i*2.7;rect(x,y,2.4,.6,58,73,81,220);local fill=math.max(0,math.min(1,(value-i*20)/20));if fill>0 then rect(x,y,2.4*fill,.6,r,g,b,255) end end
 end
 function fl_hud_draw(objective,meters,bearing,yaw,shield,armour)
+ -- Run the insertion owner before the normal HUD's cinematic suppression. If active,
+ -- it has already written camera 0 and drawn the operational source identifier.
+ if fl_opening_native_tick then fl_opening_native_tick() end
  -- CineGuru only hides native HUD layers; FIRST LIGHT owns this custom sprite HUD, so
- -- explicitly suppress it while a story camera is rolling.
+ -- explicitly suppress it while any story camera is rolling.
  if aegis and aegis.cinematic_active then return end
  yaw=(yaw or 0)%360;rect(2.2,2.1,18.8,6.5,8,16,22,185);rect(2.2,2.1,.18,6.5,89,190,210,225);TextColor(3.1,2.7,1,'FIRST LIGHT',116,211,224);TextColor(3.1,6,2,objective,232,239,239)
  local delta=fl_hud_delta(bearing,yaw);local direction=math.abs(delta)<25 and 'AHEAD' or (math.abs(delta)>145 and 'BEHIND' or (delta>0 and 'RIGHT' or 'LEFT'));TextColor(3.1,10,2,'NAV  '..math.floor(meters)..' m  /  '..direction,244,196,100)
