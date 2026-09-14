@@ -60,6 +60,10 @@ assert g.camera.freeze==1,g.camera.freeze
 assert g.aegis.cinematic_beat=='ARRIVAL_NOSE',g.aegis.cinematic_beat
 nose=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert abs(nose[0]-1000)>1 or abs(nose[2]-(-10000))>1,nose
+
+# Opening VO is deliberately offset 200 ms from the opening-owned clock, so advance
+# one additional frame instead of incorrectly requiring dialogue on the exact begin tick.
+g.g_Time=350;g.fl_opening_native_tick()
 assert g.spoken['FL01_KES_001'] is True
 
 # 3.0 s: port shoulder camera, a distinct live-airframe transform.
