@@ -33,7 +33,7 @@ def main():
  for name in tests:run_test(name)
  combat,layout,combat_cover,combat_lights,authored_enemies=load_combat_geometry_manifest()
  cine=[p for p in layout if p.get('kind')=='cinematic_camera'];controllers=[p for p in layout if p.get('name')=='FIRST LIGHT // CINEMATIC'];vehicles=[p for p in layout if p.get('kind')=='vehicle'];dialogue_audio=[p for p in layout if p.get('kind')=='dialogue_audio'];boarding_collision=[p for p in layout if p.get('name')=='FL KESTREL BOARDING COLLISION']
- if len(cine)!=5 or len(controllers)!=1:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected five CineGuru cameras and one coordinator')
+ if len(cine)!=11 or len(controllers)!=1:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected eleven CineGuru cameras and one coordinator')
  if len(vehicles)!=2:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected insertion and extraction Kestrel entities')
  if len(boarding_collision)!=1 or boarding_collision[0].get('kind')!='vehicle_collision':raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected one landed-only Kestrel boarding collision proxy')
  with zipfile.ZipFile(MAP) as archive:
