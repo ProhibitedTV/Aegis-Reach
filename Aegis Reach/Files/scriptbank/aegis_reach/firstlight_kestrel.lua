@@ -69,6 +69,18 @@ local function beat_elapsed(s,beat)
  return g_Time-s.beat_start
 end
 
+local function insertion_ground_y(s)
+ -- The authored insertion entities pre-date the touchdown shot and are placed at a
+ -- hover anchor. Resolve the native terrain when possible so the landed/ramp state
+ -- actually sits on its four-inch model contact plane instead of floating above it.
+ if GetGroundHeight then
+  local ok,h=pcall(GetGroundHeight,s.x,s.z)
+  if ok and type(h)=='number' then return h-4 end
+ end
+ -- Builder fallback: legacy insertion anchor = ground + 190, contact plane = +4.
+ return s.y-194
+end
+
 function firstlight_kestrel_init_name(e,name)
  local ent=g_Entity and g_Entity[e] or {}
  local role=string.find(name,'INSERTION',1,true) and 'insertion' or 'extraction'
@@ -83,13 +95,14 @@ local function insertion(e,s)
  if not fl or not fl.started or (aegis and aegis.insertion_complete) then set_visible(e,s,false);return end
  local beat=aegis and aegis.cinematic_beat or nil
  local duration=math.max(1000,aegis and aegis.cinematic_duration_ms or 1000)
+ local base_y=insertion_ground_y(s)
 
  if beat=='ARRIVAL_WIDE' then
   local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw)
   -- Far establishing approach.  The ship remains a clean cruise silhouette.
   show_state(e,s,'flight')
   pose(e,s.x+curve(-2700,-1450,180,t),
-       s.y+curve(1250,880,70,t),
+       base_y+curve(1250,880,70,t),
        s.z+curve(-2500,-1550,-120,t),
        lerp(-5,-3,t),lerp(138,154,t),lerp(7,4,t))
  elseif beat=='ARRIVAL_PASS' then
@@ -97,7 +110,7 @@ local function insertion(e,s)
   -- Fast side pass over the shelf.  Continuous bank sells mass and forward velocity.
   show_state(e,s,'flight')
   pose(e,s.x+curve(-1450,850,320,t),
-       s.y+curve(880,650,35,t),
+       base_y+curve(880,650,35,t),
        s.z+curve(-1550,-650,-220,t),
        lerp(-3,-1,t)-arc*.7,
        lerp(154,194,t)+arc*4.5,
@@ -108,7 +121,7 @@ local function insertion(e,s)
   -- broad curving reconnaissance arc around the outpost before committing to land.
   show_state(e,s,'convert')
   pose(e,s.x+curve(850,520,-1150,t),
-       s.y+curve(650,500,80,t),
+       base_y+curve(650,500,80,t),
        s.z+curve(-650,360,260,t),
        lerp(-1,-.6,t)-arc*.8,
        lerp(194,180,t)+arc*34,
@@ -120,7 +133,7 @@ local function insertion(e,s)
   -- there are no exposed mesh swaps: only a continuous decelerating descent.
   show_state(e,s,'flare')
   pose(e,s.x+curve(520,0,-120,t)+dx,
-       s.y+curve(500,0,45,t)+dy,
+       base_y+curve(500,0,45,t)+dy,
        s.z+curve(360,0,60,t)+dz,
        lerp(-.6,0,t)-flare*1.7+dp,
        lerp(180,180,t)+dyaw,
@@ -129,14 +142,14 @@ local function insertion(e,s)
   beat_elapsed(s,beat)
   -- Touchdown/ramp state appears on the cut, never as an exposed in-shot pop.
   show_state(e,s,'landed')
-  pose(e,s.x,s.y,s.z,0,180,0)
+  pose(e,s.x,base_y,s.z,0,180,0)
  elseif beat=='ARRIVAL_LIFTOFF' then
   local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw)
   local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,(1-t)*.55)
   -- Cut hides landed -> flare.  Hold mostly vertical until clear of the pad.
   show_state(e,s,'flare')
   pose(e,s.x+dx,
-       s.y+lerp(0,300,t)+dy,
+       base_y+lerp(0,300,t)+dy,
        s.z+lerp(0,-70,t)+dz,
        lerp(0,-1.5,t)+dp,
        lerp(180,176,t)+dyaw,
@@ -146,7 +159,7 @@ local function insertion(e,s)
   -- Another edit hides flare -> conversion while the aircraft unloads lift thrust.
   show_state(e,s,'convert')
   pose(e,s.x+curve(0,180,70,t),
-       s.y+lerp(300,620,t),
+       base_y+lerp(300,620,t),
        s.z+curve(-70,-420,-45,t),
        lerp(-1.5,-3,t),
        lerp(176,166,t),
@@ -157,7 +170,7 @@ local function insertion(e,s)
   -- the valley so the player has actually watched it leave before control returns.
   show_state(e,s,'flight')
   pose(e,s.x+curve(180,2300,260,t),
-       s.y+curve(620,1300,80,t),
+       base_y+curve(620,1300,80,t),
        s.z+curve(-420,-2600,-180,t),
        lerp(-3,-7,t)-arc*1.2,
        lerp(166,142,t)-arc*3,
