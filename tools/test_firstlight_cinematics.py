@@ -13,6 +13,7 @@ def main():
  check('Opening is an eight-shot Kestrel approach and departure sequence',summary['opening']['shots']==list(OPENING_SEQUENCE) and len(OPENING_SEQUENCE)==8,checks)
  expected=list(OPENING_SEQUENCE)+['MIRA_SIGNAL','AEGIS_REVEAL','EXTRACTION']
  check('Cinematic beat names remain stable and unique',summary['beats']==expected and len({p['name'] for p in cams})==11,checks)
+ check('Opening edits use fast fades rather than eight slow dissolves',max(SHOT_PROFILES[x]['fade'] for x in OPENING_SEQUENCE)<=.24,checks)
  check('Every story camera uses CineGuru',all(p['script']==CAMERA_SCRIPT for p in cams),checks)
  check('Camera transforms are finite and elevated',all(math.isfinite(p['y']) and math.isfinite(p['ry']) and p['y']>fake.ground(p['x'],p['z']) for p in cams),checks)
  check('All cameras are always-active',all(p['params'].get('eleprof.phyalways')==1 for p in cams),checks)
@@ -27,6 +28,7 @@ def main():
  check('Coordinator retries startup registration','RETRY_MS' in cine and 'STARTUP_GRACE_MS' in cine and 'resolve_registered_camera' in cine,checks)
  check('Rolling camera confirmation gates seen state','active_camera()' in cine and 'cine.seen[beat]=true' in cine,checks)
  check('Opening chains through the complete approach sequence','next_opening_beat' in cine and 'ARRIVAL_WIDE' in cine and 'ARRIVAL_DEPART' in cine,checks)
+ check('Opening keeps score ducked between chained edits','aegis.music_cinematic_duck=nextbeat~=nil' in cine and 'if not is_opening(beat) then aegis.music_cinematic_duck=false end' in cine,checks)
  check('Skipping any opening shot releases control instead of forcing the remaining cuts','skipped and is_opening(beat)' in cine and 'mark_opening_seen()' in cine,checks)
  check('Opening dialogue uses stable IDs',"FL01_KES_001" in cine and "FL01_KES_004" in cine and "FL01_KES_005" in cine,checks)
  check('Mira and AEGIS beats have dialogue IDs',"FL01_MIR_001" in cine and "FL01_MIR_002" in cine and "FL01_KES_010" in cine,checks)
