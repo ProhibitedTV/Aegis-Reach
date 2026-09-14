@@ -1,9 +1,9 @@
 # First Light: Kestrel VO and presentation integration
 
-Baseline: remote main `5789387`, September 13. Work branch:
-`codex/kestrel-vo-integration`. The incoming Broadwing, CineGuru, M-17 and
-biosphere changes are retained. This pass does not alter the orbital sky,
-terrain, Camp 12, mission objectives or authored enemy starts.
+Baseline: remote main `4e60ec2`, September 14. Work branch:
+`codex/kestrel-boarding-collision`. The Broadwing, CineGuru, M-17, biosphere and
+recorded Kestrel VO integration are retained. This pass does not alter the orbital
+sky, terrain, Camp 12, mission objectives or authored enemy starts.
 
 ## Voice and story
 
