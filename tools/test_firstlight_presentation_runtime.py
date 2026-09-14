@@ -61,7 +61,7 @@ g.fl_dialogue('FL01_KES_001');g.fl_dialogue('FL01_KES_002')
 assert g.calls.stopped==1 and g.calls.voice==2
 g.fl_dialogue_cancel();assert g.calls.stopped==2 and not g.fl_dialogue_busy()
 
-# Drive the real coordinator, including an early skip and missing-camera recovery.
+# Drive the real coordinator through one healthy opening cut, then skip the next.
 lua.execute('''
 active_cam=nil;cg={}
 function CG_GetActiveCamera() return active_cam end
@@ -71,11 +71,20 @@ function CG_ActivateCamera(e) if cg[e] then active_cam=e;cg[e].state='rolling';r
 ''')
 lua.execute((scripts/'firstlight_cinematic.lua').read_text())
 g.g_Entity[40]=lua.table_from({'name':'FL CG ARRIVAL WIDE'})
+g.g_Entity[42]=lua.table_from({'name':'FL CG ARRIVAL PASS'})
 g.cg[40]=lua.table_from({'state':'ready','data':lua.table()})
+g.cg[42]=lua.table_from({'state':'ready','data':lua.table()})
 g.aegis=lua.table();g.fl.born=g.g_Time-1000
 g.firstlight_cinematic_init(41)
 for _ in range(4):g.g_Time+=300;g.firstlight_cinematic_main(41)
 assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_WIDE'
+# Complete WIDE naturally. The next opening request must keep the score ducked.
+g.g_Time=g.aegis.cinematic_started_at+int(SHOT_PROFILES['ARRIVAL_WIDE']['seconds']*1000)
+g.active_cam=None;g.firstlight_cinematic_main(41)
+assert g.aegis.cinematic_request=='ARRIVAL_PASS' and g.aegis.music_cinematic_duck
+for _ in range(3):g.g_Time+=300;g.firstlight_cinematic_main(41)
+assert g.aegis.cinematic_active and g.aegis.cinematic_beat=='ARRIVAL_PASS' and g.aegis.music_cinematic_duck
+# Early abort of PASS skips every remaining opening shot and releases mission control.
 g.active_cam=None;g.g_Time+=900;g.firstlight_cinematic_main(41)
 assert not g.aegis.cinematic_active and not g.aegis.cinematic_request
 assert g.aegis.insertion_complete,'skipping an opening edit launches the remaining forced shots'
@@ -140,4 +149,4 @@ for face in m.faces:
  u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
  n=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
  assert sum(x*x for x in n)>1e-8
-print('PRESENTATION RUNTIME PASS: full readable subtitles, multi-shot opening skip/fail-open, voice lifecycle and grounded continuous fauna.')
+print('PRESENTATION RUNTIME PASS: full readable subtitles, healthy WIDE->PASS chain, skip/fail-open, voice lifecycle and grounded continuous fauna.')
