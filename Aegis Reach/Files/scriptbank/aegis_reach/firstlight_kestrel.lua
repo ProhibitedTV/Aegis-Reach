@@ -1,4 +1,4 @@
-require 'scriptbank\aegis_reach\firstlight_audit'
+require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- Broadwing Kestrel choreography. Eight visual entities share one mission-safe controller:
 -- insertion/extraction x flight/convert/flare/landed. Mission state stays authoritative elsewhere.
 -- Motion is procedural so the ship carries inertia and VTOL weight. During the opening,
