@@ -16,7 +16,11 @@ end
 function firstlight_interact_init_name(e,name)items[e]={role=string.match(name,'FL (%w+)'),hold=0,last=0,used=false,visual_state='',blocked_bark=-20000} end
 function firstlight_interact_main(e)
  if not fl or not fl.started or fl.won or g_PlayerHealth<=0 then return end;local item=items[e];if not item then return end
- local dt=item.last>0 and math.min(150,math.max(0,g_Time-item.last)) or 0;item.last=g_Time;local role=item.role;if item.used then return end;local radius=role=='EXTRACT' and 360 or 210;local near=GetPlayerDistance(e)<=radius
+ local dt=item.last>0 and math.min(150,math.max(0,g_Time-item.last)) or 0;item.last=g_Time;local role=item.role;if item.used then return end
+ -- Broadwing's rear ramp reaches roughly 526 MAX inches behind the ship origin. The
+ -- extraction objective stays at the LZ center, so its interaction radius must include
+ -- the physical ramp instead of forcing Seven to walk under the non-colliding hull.
+ local radius=role=='EXTRACT' and 640 or 210;local near=GetPlayerDistance(e)<=radius
  if fieldnotes[role] then
   if GetPlayerDistance(e)>110 then return end;local note_label=role=='GATELOG' and 'inspection log' or role=='FLIGHTLOG' and 'M-17 flight recorder' or 'maintenance record';Prompt('E // Read '..note_label)
   if g_KeyPressE==1 then item.used=true;local note=fieldnotes[role];if role=='FLIGHTLOG' then story('FL01_M17_001',note[1],note[2],8) else fl_say(note[1],note[2],13) end;fl.discovery_until=g_Time+10000;fl.discovery_track='discovery_human';fl_log('fieldnote '..role) end;return
