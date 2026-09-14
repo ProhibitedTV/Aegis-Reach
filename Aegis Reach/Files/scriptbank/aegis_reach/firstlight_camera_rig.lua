@@ -24,8 +24,8 @@ local sqrt=math.sqrt
 local atan=math.atan2
 
 local function rotate_local(x,y,z,rx,ry,rz)
- -- Local roll -> pitch -> yaw.  This is used for both the physical mount offset and
- -- the boresight vector, keeping a fixed hull camera attached through bank/pitch/yaw.
+ -- Local roll -> pitch -> yaw. This is used for both physical mount offset and
+ -- boresight vector, keeping a fixed hull camera attached through bank/pitch/yaw.
  local cr,sr=cos(rad(rz)),sin(rad(rz))
  local x1,y1,z1=x*cr-y*sr,x*sr+y*cr,z
  local cp,sp=cos(rad(rx)),sin(rad(rx))
@@ -40,8 +40,18 @@ local function look_angles(cx,cy,cz,tx,ty,tz,roll)
  return -deg(atan(dy,flat)),deg(atan(dx,dz)),roll or 0
 end
 
+local function is_ready()
+ if not rig.ship_obj then return false end
+ for beat,_ in pairs(mounts) do if not rig.cameras[beat] then return false end end
+ return true
+end
+
+local function publish_ready()
+ if aegis then aegis.kestrel_camera_rig_ready=is_ready() end
+end
+
 local function scan()
- if not g_Entity or not GetEntityName then return end
+ if not g_Entity or not GetEntityName then publish_ready();return end
  for id,ent in pairs(g_Entity) do
   if ent and ent.obj then
    local ok,name=pcall(GetEntityName,id)
@@ -53,6 +63,7 @@ local function scan()
    end
   end
  end
+ publish_ready()
 end
 
 local function active_beat()
@@ -89,17 +100,19 @@ end
 
 function firstlight_camera_rig_init(e)
  rig.ship_obj=nil;rig.cameras={}
+ if aegis then aegis.kestrel_camera_rig_ready=false end
  Hide(e);CollisionOff(e)
  if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
  scan()
 end
 
 function firstlight_camera_rig_main(e)
- if not rig.ship_obj or not next(rig.cameras) then scan() end
- if not rig.ship_obj or not GetObjectPosAng then return end
+ if not is_ready() then scan() end
+ if not is_ready() or not GetObjectPosAng then return end
  local x,y,z,rx,ry,rz=GetObjectPosAng(rig.ship_obj)
- if not x then return end
+ if not x then if aegis then aegis.kestrel_camera_rig_ready=false end;return end
  for beat,m in pairs(mounts) do position_mount(beat,m,x,y,z,rx or 0,ry or 0,rz or 0) end
+ publish_ready()
 end
 
 firstlight_camera_rig_init=firstlight_guard('firstlight_camera_rig_init',firstlight_camera_rig_init)
