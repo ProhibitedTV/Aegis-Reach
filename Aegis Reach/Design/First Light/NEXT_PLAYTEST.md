@@ -1,8 +1,9 @@
-# First Light: facility candidate handoff
+# First Light: integrated candidate handoff
 
-This candidate is on `codex/vesper-environment-polish`, PR #23. It is not merged
-or native-approved. Start a NEW GAME; saved games can retain old positions/state.
-The registered MAX project currently points to this worktree candidate, not main.
+Baseline: remote main `34dbebe`. Current candidate branch: `codex/first-light-cinematic-polish`.
+Start a NEW GAME; saves may retain older positions and state. See
+[PRESENTATION_INTEGRATION.md](PRESENTATION_INTEGRATION.md) for this pass, validation
+and native review steps. The candidate is not visually approved for merge.
 
 ## Latest environmental effects
 

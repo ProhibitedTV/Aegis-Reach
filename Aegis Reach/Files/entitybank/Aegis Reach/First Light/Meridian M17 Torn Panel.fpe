@@ -1,5 +1,5 @@
-desc = Meridian M17 Transport Wreck
-model = Meridian M17 Transport Wreck.x
+desc = Meridian M17 Torn Panel
+model = Meridian M17 Torn Panel.x
 scale = 100
 textured = meridian_fieldkit.png
 baseColorMap = meridian_fieldkit.png

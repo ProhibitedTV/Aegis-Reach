@@ -176,6 +176,19 @@ def _finish_fpe(build,name):
     f=build.AS/(name+'.fpe')
     f.write_text(f.read_text()+f'normalMap = {NORMAL}\nnormalStrength = 0.55\nsurfaceMap = {SURFACE}\nreflectance = 0.04\n')
 
+def resting_height(mesh,x,z,yaw,ground,pitch=0,roll=0,scale=100):
+    """Set the lowest transformed contact against the actual native terrain.
+
+    Origin-at-centre placement was burying rotated plates and propping up cases.
+    Rigid wreckage rests on the first contact; it does not drape like a decal.
+    """
+    a=math.radians(yaw);co,si=math.cos(a),math.sin(a)
+    heights=[]
+    for p in mesh.verts:
+        xx,yy,zz=_rotate_point(p,pitch,roll);xx*=scale/100;yy*=scale/100;zz*=scale/100
+        heights.append(ground(x+xx*co+zz*si,z-xx*si+zz*co)-yy)
+    return max(heights)
+
 
 def apply(build):
     models={}
@@ -214,22 +227,23 @@ def apply(build):
     # Detached engine and torn panels make the right-side failure readable from the road.
     ex,ez=world_offset(275,80)
     build.add(models['Meridian M17 Detached Engine'],'M-17 / detached starboard engine',
-              ex,ez,y=build.ground(ex,ez)+2,ry=CRASH_YAW+28,kind='wreck_detail',
+              ex,ez,y=resting_height(detached_engine(build.Mesh),ex,ez,CRASH_YAW+28,build.ground,7,18),ry=CRASH_YAW+28,kind='wreck_detail',
               **{'rx':7,'rz':18,'eleprof.physics':0,'eleprof.phyalways':0})
     for i,(dx,dz,ang) in enumerate(((218,-38,31),(156,221,-24)),1):
         px,pz=world_offset(dx,dz)
         build.add(models['Meridian M17 Torn Panel'],f'M-17 / torn hull panel {i}',
-                  px,pz,y=build.ground(px,pz)+1,ry=CRASH_YAW+ang,kind='wreck_detail',
+                  px,pz,y=resting_height(torn_panel(build.Mesh),px,pz,CRASH_YAW+ang,build.ground,6 if i==1 else -4,14 if i==1 else -11),ry=CRASH_YAW+ang,kind='wreck_detail',
                   **{'rx':6 if i==1 else -4,'rz':14 if i==1 else -11,
                      'eleprof.physics':0,'eleprof.phyalways':0})
 
     # Cargo/recorder stay off the combat road and read as a trail away from the rupture.
+    from firstlight_story_effects import scorched_case
     cx,cz=world_offset(45,325)
     build.add(r'Aegis Reach\First Light\Meridian Scorched Case.fpe',
-              'M-17 / ruptured cargo',cx,cz,y=build.ground(cx,cz),ry=CRASH_YAW+12,kind='wreck_detail')
+              'M-17 / ruptured cargo',cx,cz,y=resting_height(scorched_case(build.Mesh),cx,cz,CRASH_YAW+12,build.ground),ry=CRASH_YAW+12,kind='wreck_detail')
     ex2,ez2=world_offset(-72,372)
     build.add(r'Aegis Reach\First Light\Meridian Scorched Case.fpe',
-              'M-17 / ejected cargo',ex2,ez2,y=build.ground(ex2,ez2),
+              'M-17 / ejected cargo',ex2,ez2,y=resting_height(scorched_case(build.Mesh),ex2,ez2,CRASH_YAW-28,build.ground,4,-9,88),
               ry=CRASH_YAW-28,scale=88,kind='wreck_detail',
               **{'rx':4,'rz':-9})
     rx,rz=world_offset(188,316)

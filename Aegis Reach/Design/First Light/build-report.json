@@ -1,8 +1,8 @@
 {
   "map": "Aegis Reach - First Light.fpm",
-  "entities": 251,
+  "entities": 312,
   "enemy_count": 28,
-  "lights": 44,
+  "lights": 45,
   "assets": [
     "Aegis Reach\\First Light\\Meridian Field Lab.fpe",
     "Aegis Reach\\First Light\\Camp 12 Utility Spine.fpe",
@@ -60,7 +60,21 @@
     "Aegis Reach\\First Light\\Meridian Scorched Case.fpe",
     "_markers\\Particles.fpe",
     "Aegis Reach\\First Light\\Meridian M17 Transport Wreck.fpe",
-    "Aegis Reach\\First Light\\Meridian Flight Recorder.fpe"
+    "Aegis Reach\\First Light\\Meridian M17 Collision Forward.fpe",
+    "Aegis Reach\\First Light\\Meridian M17 Collision Cargo.fpe",
+    "Aegis Reach\\First Light\\Meridian M17 Collision Port Engine.fpe",
+    "Aegis Reach\\First Light\\Meridian M17 Collision Starboard Root.fpe",
+    "Aegis Reach\\First Light\\Meridian M17 Detached Engine.fpe",
+    "Aegis Reach\\First Light\\Meridian M17 Torn Panel.fpe",
+    "Aegis Reach\\First Light\\Meridian Flight Recorder.fpe",
+    "Aegis Reach\\First Light\\Vanguard Kestrel Dropship - Flight.fpe",
+    "Aegis Reach\\First Light\\Vanguard Kestrel Dropship - VTOL Flare.fpe",
+    "Aegis Reach\\First Light\\Vanguard Kestrel Dropship - Landed Ramp.fpe",
+    "Aegis Reach\\First Light\\Vesper Glass Fan.fpe",
+    "Aegis Reach\\First Light\\Vesper Brine Cup.fpe",
+    "Aegis Reach\\First Light\\Vesper Salt Lace.fpe",
+    "Aegis Reach\\First Light\\Vesper Crust Skitter.fpe",
+    "Aegis Reach\\First Light\\Vesper Veilwing.fpe"
   ],
   "staged_dependencies": [
     "Booster Pack\\Construction Pack\\CableReel.fpe",
@@ -343,9 +357,9 @@
     "vesper_brineglass_energy.png",
     "vesper_brineglass_resonant.png"
   ],
-  "environment_pass": "single-owner-production-recomposition + tactical-cover-layer",
+  "environment_pass": "single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer",
   "environment_polish": "sheltered-shelf-and-grounded-brineglass",
-  "asset_types": 57,
+  "asset_types": 71,
   "production_combat_geometry": {
     "cover_count": 25,
     "combat_light_count": 8,
@@ -551,7 +565,7 @@
     "design_rule": "offset cover triangles with preserved traversal spine"
   },
   "story_effects": {
-    "effect_count": 8,
+    "effect_count": 10,
     "debris_count": 3,
     "installed_presets": [
       "camp smoke",
@@ -567,8 +581,188 @@
       -5560,
       385
     ],
-    "lights": 1,
+    "lights": 2,
     "ammo": 60,
-    "record": "FLIGHTLOG"
+    "record": "FLIGHTLOG",
+    "collision_boxes": 4,
+    "hidden_collision": true,
+    "detached_engine": true,
+    "crash_yaw": 14
+  },
+  "kestrel": {
+    "ship": "Vanguard Kestrel Dropship",
+    "vehicle_entities": 2,
+    "state_entities": 6,
+    "state_variants": [
+      "flight",
+      "flare",
+      "landed"
+    ],
+    "insertion_visible": true,
+    "extraction_visible": true,
+    "extraction_approach_ms": 36000,
+    "touchdown_ms": 60000,
+    "boarding_requires_landed_state": true,
+    "collision": "visual-only",
+    "airframe": {
+      "length_in": 800,
+      "span_in": 704,
+      "lifting_body": true,
+      "rear_cargo_aperture": true
+    },
+    "propulsion": {
+      "cruise_nozzles": 2,
+      "balanced_vtol_nozzles": 4,
+      "flight_plumes": true,
+      "flare_plumes": true
+    },
+    "landing_gear": "wide four-point outriggers outside lift wash",
+    "thermal_zones": "ventral TPS + hot cruise throats",
+    "landed_contact_y": 4
+  },
+  "dialogue": {
+    "line_count": 21,
+    "audio_bound_count": 0,
+    "audio_bound": [],
+    "audio_directory": "aegis_reach\\dialogue",
+    "missing_audio": [
+      "FL01_KES_001",
+      "FL01_KES_002",
+      "FL01_KES_003",
+      "FL01_KES_004",
+      "FL01_KES_005",
+      "FL01_KES_006",
+      "FL01_KES_007",
+      "FL01_KES_008",
+      "FL01_MIR_001",
+      "FL01_KES_009",
+      "FL01_MIR_002",
+      "FL01_KES_010",
+      "FL01_KES_011",
+      "FL01_KES_012",
+      "FL01_SUIT_001",
+      "FL01_KES_013",
+      "FL01_KES_014",
+      "FL01_KES_015",
+      "FL01_KES_016",
+      "FL01_KES_017",
+      "FL01_M17_001"
+    ]
+  },
+  "cinematics": {
+    "system": "CineGuru MAX",
+    "camera_count": 5,
+    "beats": [
+      "ARRIVAL",
+      "ARRIVAL_HANDOFF",
+      "MIRA_SIGNAL",
+      "AEGIS_REVEAL",
+      "EXTRACTION"
+    ],
+    "cameras": [
+      {
+        "beat": "ARRIVAL",
+        "name": "FL CG ARRIVAL",
+        "x": 690,
+        "y": 1460.78,
+        "z": -9640,
+        "pitch": 16.8,
+        "yaw": 301.69,
+        "seconds": 9.55,
+        "focal_start": 58,
+        "focal_end": 76,
+        "always_active": true
+      },
+      {
+        "beat": "ARRIVAL_HANDOFF",
+        "name": "FL CG ARRIVAL HANDOFF",
+        "x": -560,
+        "y": 1429.24,
+        "z": -9270,
+        "pitch": 18.4,
+        "yaw": 325.03,
+        "seconds": 15.9,
+        "focal_start": 64,
+        "focal_end": 84,
+        "always_active": true
+      },
+      {
+        "beat": "MIRA_SIGNAL",
+        "name": "FL CG MIRA SIGNAL",
+        "x": 820,
+        "y": 1285.0,
+        "z": 650,
+        "pitch": 9.45,
+        "yaw": 56.31,
+        "seconds": 9.95,
+        "focal_start": 70,
+        "focal_end": 84,
+        "always_active": true
+      },
+      {
+        "beat": "AEGIS_REVEAL",
+        "name": "FL CG AEGIS REVEAL",
+        "x": -1060,
+        "y": 1886.5,
+        "z": 2070,
+        "pitch": 6.32,
+        "yaw": 43.17,
+        "seconds": 10.75,
+        "focal_start": 58,
+        "focal_end": 90,
+        "always_active": true
+      },
+      {
+        "beat": "EXTRACTION",
+        "name": "FL CG EXTRACTION",
+        "x": -1050,
+        "y": 833.42,
+        "z": -3070,
+        "pitch": 2.63,
+        "yaw": 55.56,
+        "seconds": 7.75,
+        "focal_start": 62,
+        "focal_end": 82,
+        "always_active": true
+      }
+    ],
+    "opening": {
+      "shots": [
+        "ARRIVAL",
+        "ARRIVAL_HANDOFF"
+      ],
+      "purpose": "show Kestrel insertion, establish 42 missing colonists, Mira signal, Warden intrusion, then hand control toward Northstar",
+      "first_action": "Restore Northstar and recover the evacuation packet",
+      "seconds": 25.450000000000003
+    },
+    "extraction": "Kestrel approaches visibly during gameplay; EXTRACTION camera is reserved for boarding/liftoff",
+    "always_active": true,
+    "registration_retry": true,
+    "fail_open": true,
+    "music_owner": "firstlight_score.lua"
+  },
+  "biosphere": {
+    "ecology": "primitive halophile / mineral-membrane biosphere",
+    "visual_language": "glass-fan membranes + brine cups + salt lace + segmented mineral-chitin fauna",
+    "flora_count": 21,
+    "glass_fan_count": 10,
+    "brine_cup_count": 6,
+    "salt_lace_count": 5,
+    "skitter_count": 6,
+    "veilwing_count": 6,
+    "midge_cloud_count": 4,
+    "legacy_stock_shrubs_retired": 8,
+    "life_gradient": "brine + shelter + waste heat; deliberately barren toward AEGIS",
+    "navigation_collision": false,
+    "damage": false
+  },
+  "native_engine_pass": {
+    "responsive_practical_lights": 2,
+    "light_api": "GetEntityLightNumber + SetLightRange + SetLightRGB",
+    "policy": "small local dynamic lights; no broad area-light flattening",
+    "changed": [
+      "M-17 / fire practical 1",
+      "M-17 / fire practical 2"
+    ]
   }
 }

@@ -1,10 +1,10 @@
-desc = Meridian M17 Transport Wreck
-model = Meridian M17 Transport Wreck.x
+desc = Meridian M17 Collision Forward
+model = Meridian M17 Collision Forward.x
 scale = 100
 textured = meridian_fieldkit.png
 baseColorMap = meridian_fieldkit.png
 effect = effectbank\reloaded\apbr_basic.fx
-collisionmode = 11
+collisionmode = 0
 defaultstatic = 1
 strength = 0
 materialindex = 2

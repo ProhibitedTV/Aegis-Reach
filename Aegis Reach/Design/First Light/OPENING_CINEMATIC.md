@@ -2,13 +2,17 @@
 
 ## Narrative job
 
+Timing comes from `tools/firstlight_dialogue.py` and `tools/firstlight_cinematics.py`;
+the runtime catalog and shot events are synchronized during the normal build.
+Space skips the entire insertion sequence.
+
 The opening exists to answer the player's immediate question: **why is Vanguard Seven on Vesper?**
 
-Meridian Shelf has missed two scheduled check-ins. Forty-two colonists are unaccounted for, there is no evacuation beacon, and normal traffic has stopped. Six hours earlier, survey chief Mira Sen transmitted a corrupted burst from Operations containing only fragments: Northstar is offline and an unknown "array" is waking. Nine minutes later, an Iron Warden transponder crossed Gate 07.
+Meridian Shelf has missed two scheduled check-ins. Forty-two evacuees never reached orbit, and Mira Sen is still missing. There is no evacuation beacon and normal traffic has stopped. Six hours earlier, survey chief Mira Sen transmitted a corrupted burst from Operations containing only fragments: Northstar is offline and an unknown "array" is waking. Nine minutes later, an Iron Warden transponder crossed Gate 07.
 
 Kestrel and Seven are therefore conducting an emergency recovery/investigation mission. The first practical goal is to restore Northstar so the evacuation packet can be recovered and the missing colonists located. The opening should imply danger and contradiction without explaining the Choir or revealing why the Wardens are interested in AEGIS.
 
-## 9.5-second beat
+## Current two-shot opening (about 25 seconds)
 
 1. **Human stakes** — high establishing view over the dead Meridian service corridor toward Camp 12. Kestrel states that Meridian missed two check-ins: forty-two colonists, no beacon, no traffic.
 2. **Mystery** — Mira Sen's corrupted final burst is presented as recovered signal text: "...Northstar offline... array waking..." The source is Operations; the rest is lost.

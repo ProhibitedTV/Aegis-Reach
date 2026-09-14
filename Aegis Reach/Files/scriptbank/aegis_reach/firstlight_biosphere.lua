@@ -16,7 +16,7 @@ end
 
 function firstlight_biosphere_init_name(e,name)
  local ent=g_Entity and g_Entity[e] or nil
- local common={x=ent and ent.x or 0,y=ent and ent.y or 0,z=ent and ent.z or 0,next_tick=0,phase=(e%23)*.61}
+ local common={x=ent and ent.x or 0,y=ent and ent.y or 0,z=ent and ent.z or 0,next_tick=0,phase=(e%23)*.61,motion=0,clock=0,last_motion=0}
  if string.find(name,'FL BIO SKITTER',1,true) then
   common.kind='skitter';common.radius=16+(e%5)*3;common.speed=.56+(e%4)*.06;common.lastx=common.x;common.lastz=common.z
  elseif string.find(name,'FL BIO VEILWING',1,true) then
@@ -51,13 +51,19 @@ end
 local function update_skitter(e,s)
  if g_Time<s.next_tick then return end;s.next_tick=g_Time+90
  local obj=object_of(e);if not obj or not PositionObject or distance(e)>1450 then return end
- local t=g_Time*.001*s.speed+s.phase
+ local dt=s.last_motion>0 and math.min(.15,(g_Time-s.last_motion)*.001) or 0
+ s.last_motion=g_Time
+ s.clock=s.clock+dt
  -- Five seconds of movement followed by a short graze/pause reads as an animal instead
  -- of a prop sliding on a mathematical loop forever.
- local cycle=t%8.0;local move=cycle<5.2 and 1 or 0
- local dx=(math.sin(t)*s.radius+math.sin(t*2.13)*s.radius*.22)*move
- local dz=(math.cos(t*.83)*s.radius+math.cos(t*1.61)*s.radius*.18)*move
- local x=s.x+dx;local z=s.z+dz;local y=s.y+(move==1 and math.abs(math.sin(t*5.1))*.28 or 0)
+ local move=s.clock%8.0<5.2
+ if move then s.motion=s.motion+dt*s.speed end
+ local t=s.phase+s.motion
+ local dx=(math.sin(t)-math.sin(s.phase))*s.radius
+ local dz=(math.cos(t*.83)-math.cos(s.phase*.83))*s.radius
+ local x=s.x+dx;local z=s.z+dz
+ local y=GetGroundHeight and GetGroundHeight(x,z) or s.y
+ y=y+.15+(move and math.abs(math.sin(t*5.1))*.22 or 0)
  PositionObject(obj,x,y,z)
  if RotateObject then
   local vx=x-s.lastx;local vz=z-s.lastz
@@ -86,6 +92,7 @@ end
 
 function firstlight_biosphere_main(e)
  local s=bio[e];if not s then return end
+ if s.kind~='spores' and (not fl or not fl.started or fl.won or g_PlayerHealth<=0) then return end
  if s.kind=='spores' then update_spores(e,s)
  elseif s.kind=='skitter' then update_skitter(e,s)
  elseif s.kind=='veilwing' then update_veilwing(e,s) end

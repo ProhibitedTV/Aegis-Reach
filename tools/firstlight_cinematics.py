@@ -4,7 +4,8 @@ The opening is now a two-shot insertion sequence built around the visible Kestre
 (1) arrival/descent and (2) mission handoff as the ship departs. Mid-mission story
 beats remain sparse and gameplay owns the extraction approach itself.
 """
-import math
+import math,json,re
+from firstlight_dialogue import LINES
 
 CAMERA_SCRIPT=r'Cine Guru MAX\cg_cinematic_camera.lua'
 CONTROLLER_SCRIPT=r'aegis_reach\firstlight_cinematic.lua'
@@ -17,6 +18,39 @@ SHOT_PROFILES={
     'AEGIS_REVEAL':dict(seconds=6.3,focal_start=58,focal_end=90),
     'EXTRACTION':dict(seconds=6.0,focal_start=62,focal_end=82),
 }
+SHOT_LINES={
+ 'ARRIVAL':('FL01_KES_001','FL01_KES_002'),
+ 'ARRIVAL_HANDOFF':('FL01_KES_003','FL01_KES_004','FL01_KES_005'),
+ 'MIRA_SIGNAL':('FL01_MIR_001','FL01_KES_009'),
+ 'AEGIS_REVEAL':('FL01_MIR_002','FL01_KES_010'),
+ 'EXTRACTION':('FL01_KES_016','FL01_KES_017'),
+}
+LINE_BY_ID={line['id']:line for line in LINES}
+TIMELINES={}
+for beat,ids in SHOT_LINES.items():
+ elapsed=.35;TIMELINES[beat]=[]
+ for line_id in ids:
+  TIMELINES[beat].append((round(elapsed*1000),line_id))
+  elapsed+=LINE_BY_ID[line_id]['seconds']+.35
+ SHOT_PROFILES[beat]['seconds']=round(elapsed+.3,2)
+
+def sync_coordinator(script):
+ source=script.read_text()
+ profiles=[]
+ for beat,p in SHOT_PROFILES.items():
+  profiles.append(beat+'={seconds='+str(p['seconds'])+',fade=.35,fls='+str(p['focal_start'])+',fle='+str(p['focal_end'])+'}')
+ source,n=re.subn(r'local profiles=\{[^\n]+',lambda _:'local profiles={'+','.join(profiles)+'}',source,count=1)
+ assert n==1
+ rows=['local function update_story_timeline(beat,elapsed)']
+ for index,(beat,events) in enumerate(TIMELINES.items()):
+  rows.append((' if' if index==0 else ' elseif')+' beat=='+json.dumps(beat)+' then')
+  for ms,line_id in events:
+   line=LINE_BY_ID[line_id]
+   rows.append('  if elapsed>='+str(ms)+' then mark_line('+json.dumps(line_id)+','+json.dumps(line_id)+','+json.dumps(line['speaker']+': '+line['text'])+',"",'+str(line['seconds'])+') end')
+ rows+=[' end',' if fl_dialogue_draw_cinematic then fl_dialogue_draw_cinematic() end','end','local function finish_opening_handoff']
+ source,n=re.subn(r'local function update_story_timeline\(beat,elapsed\).*?local function finish_opening_handoff',lambda _:'\n'.join(rows),source,count=1,flags=re.S)
+ assert n==1
+ script.write_text(source)
 
 SHOTS=(
     # beat, name, camera x/z, height, target x/z, target height
@@ -42,6 +76,7 @@ def _pose(build,x,z,height,tx,tz,target_height):
 
 
 def apply(build):
+    if hasattr(build,'FILES'):sync_coordinator(build.FILES/'scriptbank/aegis_reach/firstlight_cinematic.lua')
     cameras=[]
     for beat,name,x,z,height,tx,tz,target_height in SHOTS:
         y,pitch,yaw=_pose(build,x,z,height,tx,tz,target_height)

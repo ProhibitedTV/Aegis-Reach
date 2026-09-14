@@ -29,5 +29,10 @@ firstlight_probe = firstlight_guard('firstlight_probe', firstlight_probe)
 
 result = lua.globals().firstlight_probe(17, 25)
 assert result == 42, result
+compile_chunk=lua.eval('function(s,n) local f,e=load(s,n); return f~=nil,e end')
+for script in sorted(audit.parent.glob('firstlight_*.lua')):
+    valid,error=compile_chunk(script.read_text(),script.name)
+    assert valid,f'{script.name}: {error}'
 print('FIRST LIGHT // LUA RUNTIME COMPAT PASS')
+print('Every First Light runtime script compiles under native Lua 5.2.')
 print('GameGuru MAX Lua 5.2 guard path verified: table.unpack / no global unpack')
