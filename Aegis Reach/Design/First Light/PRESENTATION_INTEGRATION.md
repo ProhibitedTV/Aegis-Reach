@@ -1,9 +1,9 @@
 # First Light: Kestrel VO and presentation integration
 
-Baseline: remote main `4e60ec2`, September 14. Work branch:
-`codex/kestrel-boarding-collision`. The Broadwing, CineGuru, M-17, biosphere and
-recorded Kestrel VO integration are retained. This pass does not alter the orbital
-sky, terrain, Camp 12, mission objectives or authored enemy starts.
+Baseline: remote main `592822b`, September 14. The Broadwing, CineGuru, M-17,
+biosphere, recorded Kestrel VO integration and landed-only boarding collision are
+retained. This pass does not alter the orbital sky, terrain, Camp 12, mission
+objectives or authored enemy starts.
 
 ## Voice and story
 
@@ -38,20 +38,41 @@ are corrected. Ramp underside and landing feet share the authored contact plane.
 
 Flight, flare and landed are still discrete visual mesh swaps, not a rigged
 animation. The moving airframe remains visual-only, but the landed extraction
-state now has a separate low-poly polygon collision proxy covering only the rear
+state has a separate low-poly polygon collision proxy covering only the rear
 ramp and vestibule floor. Its controller keeps collision off until
 `aegis.kestrel_landed=true`, then clears it again immediately when departure starts.
 That makes the visible boarding route physically walkable without leaving an
 invisible ship-sized collider on the LZ during approach.
+
+### Flight-dynamics presentation pass
+
+The Kestrel controller now adds deterministic inertial motion around the existing
+mission-safe state swaps. Approach paths carry shallow coordinated bank, yaw and
+pitch rather than moving a rigid airframe along a position spline. The VTOL phases
+use low-amplitude multi-frequency corrections that fade as the ship settles or
+commits to cruise. Opening handoff hover remains restrained enough that the craft
+continues to read as a heavy powered-lift transport rather than a helicopter.
+
+Extraction now unloads its cruise bank into a deceleration flare, damps powered-lift
+corrections through final descent, holds the landed state completely rigid while the
+ramp collision is active, then transitions from vertical clearance into a banked,
+nose-down accelerating departure. The landed geometry is intentionally excluded
+from hover noise so visual ramp, collision proxy and interaction volume cannot drift
+apart under the player.
+
+This is a presentation/choreography improvement only. Mission authority, boarding
+state, collision lifecycle and the confirmed cinematic clocks are unchanged.
 
 The ship follows the confirmed camera clock. Opening skip removes all insertion
 variants. Departure waits for the boarding camera and fits its actual duration.
 The ship first holds for boarding, lifts in flare configuration, then accelerates
 in flight configuration.
 
-Remaining Kestrel presentation work is continuous mechanical animation, LODs,
-downwash and state-dependent engine audio. Those should follow native MAX review
-rather than being guessed from headless tests.
+Remaining Kestrel presentation work is true continuous hardware animation between
+the discrete meshes, LODs, downwash and state-dependent engine audio. Those should
+follow native MAX review rather than being guessed from headless tests. The new
+flight dynamics also require native review for perceived mass, camera framing and
+motion comfort before their amplitudes are treated as final.
 
 ## Other integration corrections
 
@@ -75,8 +96,10 @@ Listen for all four complete spoken lines with matching captions. Circle M-17 an
 read its recorder. Observe a skitter pause. Finish the mission and inspect the
 landed ramp, walk from the terrain into the vestibule, then board and watch
 departure. Confirm that no invisible ramp collision is present before the ship lands
-or after liftoff starts. Native MAX appearance, sound balance, performance and
-collision feel remain the final acceptance gate.
+or after liftoff starts. During both Kestrel approaches, specifically watch whether
+the banking reads as inertia rather than camera-relative wobble and whether the VTOL
+corrections feel heavy at the existing shot distance. Native MAX appearance, sound
+balance, performance and collision feel remain the final acceptance gate.
 
 Native review attempt: MAX launched the registered candidate on September 13.
 The Computer Use capture API failed twice after fresh window selection with
