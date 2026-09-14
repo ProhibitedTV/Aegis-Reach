@@ -35,15 +35,15 @@ def main():
         'FreezePlayer()','UnFreezePlayer()','SetCameraOverride(3)',
         'SetCameraPosition(0,x,y,z)','SetCameraAngle(0,rx,ry,rz)',
         "aegis.cinematic_request='OPENING_NATIVE_LOCK'",'g_KeyPressSPACE==1',
-        "FL KESTREL INSERTION FLIGHT","KSTL-01 NOSE EO // LIVE",
-        "KSTL-08 STBD GEAR // GROUND","KSTL-09 RAMP // DEPLOY",
-        'for id=1,4096 do',
+        "FL KESTREL INSERTION FLIGHT","KSTL-01 FORWARD CHASE // LIVE",
+        "KSTL-08 GEAR CLOSE // LIVE","KSTL-10 PORT REAR OBS // DEPLOY",
+        'for id=1,4096 do','trackship=true','local floor=ground(cx,cz)+(s.clear or 60)',
     ):
         assert token in native,token
     assert native.count("beat='ARRIVAL_")>=17
     assert "stop=50800" in native
     first_shot=native.index("beat='ARRIVAL_NOSE'")
-    assert first_shot<native.index("beat='ARRIVAL_GATE'"),'opening no longer begins onboard'
+    assert first_shot<native.index("beat='ARRIVAL_GATE'"),'opening no longer begins with the Kestrel as subject'
     assert "require 'scriptbank\\\\aegis_reach\\\\firstlight_opening_native'" in hud
     assert 'if fl_opening_native_tick then fl_opening_native_tick() end' in hud
     assert 'if false and not cine.seen.ARRIVAL_PERIM' in coord,'legacy coordinator opener still enabled'
@@ -55,6 +55,6 @@ def main():
     later=[e for e in entities if _name(e) in ('FL CG MIRA SIGNAL','FL CG AEGIS REVEAL','FL CG EXTRACTION')]
     assert len(later)==3 and all(_script(e)==CINE for e in later),'later story cameras must retain CineGuru'
     print('FIRST LIGHT // HARD-REPLACEMENT OPENING PASS')
-    print('0 insertion CineGuru cameras in map.ele; 17 native cuts begin on KSTL-01 NOSE EO; CineGuru remains only for later story beats.')
+    print('0 insertion CineGuru cameras in map.ele; 17 native cuts frame the Kestrel with chase/formation/LZ tracking views; CineGuru remains only for later story beats.')
 
 if __name__=='__main__':main()
