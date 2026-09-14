@@ -2,6 +2,7 @@
 from pathlib import Path
 from PIL import Image,ImageFile,ImageStat
 from firstlight_material_polish import _compose_tiles,_normal_from_albedo,_surface_from_albedo,_replace_field,_source_image
+from firstlight_material_contracts import correct_brineglass_surface
 
 # The checked-in JPEG may arrive through a connector with only its terminal EOI
 # marker stripped. Accept that transport artifact, but still verify dimensions and
@@ -31,11 +32,17 @@ def main():
     assert surface.mode=='RGBA' and surface.getpixel((2,2))[0]==255
     assert 80<=surface.getpixel((2,2))[1]<=120
     assert surface.getpixel((2,2))[2]==200 and surface.getpixel((2,2))[3]==255
+    # Source-art detail may vary, but brineglass remains a dielectric crystal in the
+    # engine contract: zero packed metalness and bounded glossy roughness.
+    crystal=Image.new('RGBA',(16,16),(255,160,73,255))
+    crystal=correct_brineglass_surface(crystal)
+    assert crystal.getchannel('B').getextrema()==(0,0)
+    assert crystal.getchannel('G').getextrema()==(110,110)
     text='effect = effectbank\\reloaded\\apbr_basic.fx\nbaseColorMap = old.png\n'
     text=_replace_field(text,'normalMap','new_normal.png')
     text=_replace_field(text,'baseColorMap','new_base.png')
     assert 'normalMap = new_normal.png' in text and 'baseColorMap = new_base.png' in text
     print('FIRST LIGHT // MATERIAL POLISH REGRESSION PASS')
-    print('Source sheet: 960x640 // 6 atlases // APBR packing + normal generation + binding helpers verified.')
+    print('Source sheet: 960x640 // 6 atlases // APBR packing + dielectric brineglass + binding helpers verified.')
 
 if __name__=='__main__':main()
