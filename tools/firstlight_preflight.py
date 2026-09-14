@@ -34,12 +34,14 @@ def main():
  combat,layout,combat_cover,combat_lights,authored_enemies=load_combat_geometry_manifest()
  cine=[p for p in layout if p.get('kind')=='cinematic_camera'];controllers=[p for p in layout if p.get('name')=='FIRST LIGHT // CINEMATIC'];camera_rigs=[p for p in layout if p.get('name')=='FIRST LIGHT // CAMERA RIG'];vehicles=[p for p in layout if p.get('kind')=='vehicle'];dialogue_audio=[p for p in layout if p.get('kind')=='dialogue_audio'];boarding_collision=[p for p in layout if p.get('name')=='FL KESTREL BOARDING COLLISION']
  if len(cine)!=20 or len(controllers)!=1:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected twenty CineGuru cameras and one coordinator')
- if len(camera_rigs)!=1 or camera_rigs[0].get('script')!='aegis_reach\\firstlight_camera_rig.lua':raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected one diegetic Kestrel camera rig controller')
+ if len(camera_rigs)!=1:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected one diegetic Kestrel camera rig placement')
  if len(vehicles)!=2:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected insertion and extraction Kestrel entities')
  if len(boarding_collision)!=1 or boarding_collision[0].get('kind')!='vehicle_collision':raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: expected one landed-only Kestrel boarding collision proxy')
  with zipfile.ZipFile(MAP) as archive:
   archive.setpassword(PASSWORD);version,entities=read_ele(archive.read('map.ele'));encrypted=all(info.flag_bits&1 for info in archive.infolist())
  if len(entities)!=len(layout):raise SystemExit(f'FIRST LIGHT // PREFLIGHT FAILED: native map has {len(entities)} entities but layout has {len(layout)}')
+ native_camera_rigs=[e for e in entities if str(e.get('101:eleprof.name_s',''))=='FIRST LIGHT // CAMERA RIG']
+ if len(native_camera_rigs)!=1 or normalized_script(native_camera_rigs[0])!='aegis_reach\\firstlight_camera_rig.lua':raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: native camera rig entity is missing or bound to the wrong script')
  bad=[str(e.get('101:eleprof.name_s','<unnamed>')) for e in entities if normalized_script(e) in BAD_SCRIPTS]
  if bad:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: unsafe stock weapon.lua entities remain: '+', '.join(bad))
  if not encrypted:raise SystemExit('FIRST LIGHT // PREFLIGHT FAILED: map archive is not fully MAX-encrypted')
