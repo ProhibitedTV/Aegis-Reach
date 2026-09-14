@@ -20,6 +20,8 @@ from firstlight_cinematics import apply as add_cinematics
 cinematics=add_cinematics(build)
 from firstlight_biosphere import apply as add_biosphere
 biosphere=add_biosphere(build)
+from firstlight_title_screen_convergence import apply as add_title_screen_convergence
+title_screen=add_title_screen_convergence(build)
 from firstlight_native_engine_pass import apply as add_native_engine_pass
 native_engine=add_native_engine_pass(build)
 
@@ -41,14 +43,16 @@ report.update({
  'lights':len(build.light_locations)+len(build.crystal_sites)+summary['combat_light_count']+transport['lights'],
  'production_combat_geometry':summary,'story_effects':story_effects,'transport_wreck':transport,
  'kestrel':kestrel,'kestrel_boarding':kestrel_boarding,'dialogue':dialogue,'cinematics':cinematics,'biosphere':biosphere,
- 'native_engine_pass':native_engine,
- 'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + sparse-cinematic-layer',
+ 'title_screen_convergence':title_screen,'native_engine_pass':native_engine,
+ 'environment_pass':'single-owner-production-recomposition + tactical-cover-layer + title-screen skyline convergence',
 })
 report_path.write_text(json.dumps(report,indent=2));write_manifest(build.DESIGN/'combat-geometry.json',summary)
 
 print('FIRST LIGHT // PRODUCTION COMBAT + STORY + VEHICLE + BIOSPHERE + NATIVE ENGINE LAYER')
 print('Cover pieces:',summary['cover_count']);print('Combat backlights:',summary['combat_light_count']);print('Repositioned Warden starts:',len(summary['enemy_starts']))
 print('CineGuru story beats:',', '.join(cinematics['beats']))
+print('Native CineGuru opener chain:',cinematics['opening'].get('native_chain',False),'//',cinematics['opening'].get('native_chain_count',0),'linked cameras')
+print('Title-screen skyline:',title_screen['entity_count'],'visual-only landmarks //',title_screen['spire_count'],'relay spires')
 print('Kestrel:',kestrel['vehicle_entities'],'visible vehicle entities // landing at',kestrel['touchdown_ms']//1000,'s')
 print('Kestrel boarding:',kestrel_boarding['proxy_entities'],'landed-only polygon collision proxy')
 print('Dialogue:',dialogue['line_count'],'scripted lines /',dialogue['audio_bound_count'],'audio files currently bound')
