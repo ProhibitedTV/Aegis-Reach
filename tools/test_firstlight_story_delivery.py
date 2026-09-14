@@ -53,6 +53,7 @@ assert 'fl.evac_elapsed' in k and 'aegis.kestrel_landed=true' in k and 'aegis.ke
 assert "aegis.cinematic_request='ARRIVAL_HANDOFF'" in c and "FL01_KES_001" in c and "FL01_KES_017" in c
 assert 'function fl_dialogue(id)' in d and 'FL VO ' in d and 'PlayNon3DSound' in d
 assert 'aegis.kestrel_landed' in i and "aegis.kestrel_depart=true" in i
+assert "local radius=role=='EXTRACT' and 640 or 210" in i,'Broadwing ramp fell outside extraction boarding radius'
 
 # Execute the real Kestrel Lua in the vendored MAX-compatible runtime. This catches
 # native syntax/runtime regressions and verifies that the six authored entities swap
