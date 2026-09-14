@@ -1,6 +1,6 @@
 """Static/runtime contract tests for the FIRST LIGHT CineGuru story layer."""
 import math
-from firstlight_cinematics import apply,SHOTS,SHOT_PROFILES,CAMERA_SCRIPT,CONTROLLER_SCRIPT
+from firstlight_cinematics import apply,SHOTS,SHOT_PROFILES,OPENING_SEQUENCE,CAMERA_SCRIPT,CONTROLLER_SCRIPT
 from native_format import ROOT
 class FakeBuild:
  def __init__(self):self.placements=[]
@@ -9,21 +9,27 @@ class FakeBuild:
 def check(name,ok,checks):assert ok,name;checks.append(name)
 def main():
  checks=[];fake=FakeBuild();summary=apply(fake);cams=[p for p in fake.placements if p['kind']=='cinematic_camera'];controllers=[p for p in fake.placements if p['name']=='FIRST LIGHT // CINEMATIC'];by={p['name']:p for p in cams}
- check('Five authored CineGuru story cameras are emitted',len(cams)==5 and summary['camera_count']==5,checks)
- check('Opening is a two-shot insertion sequence',summary['opening']['shots']==['ARRIVAL','ARRIVAL_HANDOFF'] and 'ARRIVAL_HANDOFF' in summary['beats'],checks)
- check('Cinematic beat names remain stable and unique',summary['beats']==['ARRIVAL','ARRIVAL_HANDOFF','MIRA_SIGNAL','AEGIS_REVEAL','EXTRACTION'] and len({p['name'] for p in cams})==5,checks)
+ check('Eleven authored CineGuru story cameras are emitted',len(cams)==11 and summary['camera_count']==11,checks)
+ check('Opening is an eight-shot Kestrel approach and departure sequence',summary['opening']['shots']==list(OPENING_SEQUENCE) and len(OPENING_SEQUENCE)==8,checks)
+ expected=list(OPENING_SEQUENCE)+['MIRA_SIGNAL','AEGIS_REVEAL','EXTRACTION']
+ check('Cinematic beat names remain stable and unique',summary['beats']==expected and len({p['name'] for p in cams})==11,checks)
+ check('Opening edits use fast fades rather than eight slow dissolves',max(SHOT_PROFILES[x]['fade'] for x in OPENING_SEQUENCE)<=.24,checks)
  check('Every story camera uses CineGuru',all(p['script']==CAMERA_SCRIPT for p in cams),checks)
  check('Camera transforms are finite and elevated',all(math.isfinite(p['y']) and math.isfinite(p['ry']) and p['y']>fake.ground(p['x'],p['z']) for p in cams),checks)
  check('All cameras are always-active',all(p['params'].get('eleprof.phyalways')==1 for p in cams),checks)
  check('One always-active fail-open coordinator is emitted',len(controllers)==1 and controllers[0]['script']==CONTROLLER_SCRIPT and controllers[0]['params'].get('eleprof.phyalways')==1,checks)
- check('Insertion camera frames the visible Kestrel drop zone',by['FL CG ARRIVAL']['z']<-9000 and by['FL CG ARRIVAL']['y']-fake.ground(by['FL CG ARRIVAL']['x'],by['FL CG ARRIVAL']['z'])>=300,checks)
+ check('Opening wide establishes the remote Kestrel approach',by['FL CG ARRIVAL WIDE']['z']<-10000 and by['FL CG ARRIVAL WIDE']['y']-fake.ground(by['FL CG ARRIVAL WIDE']['x'],by['FL CG ARRIVAL WIDE']['z'])>=700,checks)
+ check('Touchdown and departure receive dedicated edits','FL CG ARRIVAL HANDOFF' in by and 'FL CG ARRIVAL LIFTOFF' in by and 'FL CG ARRIVAL DEPART' in by,checks)
+ check('Opening state swaps are explicitly hidden by camera cuts','state_editing' in summary['opening'] and 'under CineGuru cuts' in summary['opening']['state_editing'],checks)
  check('Extraction camera is reserved for boarding/liftoff','boarding/liftoff' in summary['extraction'],checks)
  scripts=ROOT/'Aegis Reach/Files/scriptbank';cine=(scripts/'aegis_reach/firstlight_cinematic.lua').read_text(errors='replace');score=(scripts/'aegis_reach/firstlight_score.lua').read_text(errors='replace');interact=(scripts/'aegis_reach/firstlight_interact.lua').read_text(errors='replace');cg=(scripts/'Cine Guru MAX/cg_cinematic_camera.lua').read_text(errors='replace')
  check('Coordinator uses CineGuru registration activation completion APIs','CG_IsCamera' in cine and 'CG_ActivateCamera' in cine and 'CG_GetActiveCamera' in cine,checks)
  check('Coordinator configures film time and focal progression','CG_GetCamera' in cine and 'cam.filmtime' in cine and 'cam.data.fls' in cine and 'cam.data.fle' in cine,checks)
  check('Coordinator retries startup registration','RETRY_MS' in cine and 'STARTUP_GRACE_MS' in cine and 'resolve_registered_camera' in cine,checks)
  check('Rolling camera confirmation gates seen state','active_camera()' in cine and 'cine.seen[beat]=true' in cine,checks)
- check('Arrival chains into handoff',"aegis.cinematic_request='ARRIVAL_HANDOFF'" in cine,checks)
+ check('Opening chains through the complete approach sequence','next_opening_beat' in cine and 'ARRIVAL_WIDE' in cine and 'ARRIVAL_DEPART' in cine,checks)
+ check('Opening keeps score ducked between chained edits','aegis.music_cinematic_duck=nextbeat~=nil' in cine and 'if not is_opening(beat) then aegis.music_cinematic_duck=false end' in cine,checks)
+ check('Skipping any opening shot releases control instead of forcing the remaining cuts','skipped and is_opening(beat)' in cine and 'mark_opening_seen()' in cine,checks)
  check('Opening dialogue uses stable IDs',"FL01_KES_001" in cine and "FL01_KES_004" in cine and "FL01_KES_005" in cine,checks)
  check('Mira and AEGIS beats have dialogue IDs',"FL01_MIR_001" in cine and "FL01_MIR_002" in cine and "FL01_KES_010" in cine,checks)
  check('Extraction liftoff has dialogue IDs',"FL01_KES_016" in cine and "FL01_KES_017" in cine,checks)

@@ -1,8 +1,8 @@
-require 'scriptbank\\aegis_reach\\firstlight_audit'
+require 'scriptbank\aegis_reach\firstlight_audit'
 -- Broadwing Kestrel choreography. Eight visual entities share one mission-safe controller:
 -- insertion/extraction x flight/convert/flare/landed. Mission state stays authoritative elsewhere.
--- Motion is procedural so the ship carries inertia and VTOL weight while the authored
--- conversion mesh bridges cruise hardware and full powered-lift configuration.
+-- Motion is procedural so the ship carries inertia and VTOL weight. During the opening,
+-- major geometry-state swaps happen only on CineGuru cuts; motion inside each shot is continuous.
 local ships={}
 
 local function smooth(t)
@@ -14,6 +14,7 @@ local function clamp01(t)
  return t
 end
 local function lerp(a,b,t)return a+(b-a)*t end
+local function curve(a,b,bow,t)return lerp(a,b,t)+math.sin(clamp01(t)*math.pi)*bow end
 local function pose(e,x,y,z,rx,ry,rz)
  local ent=g_Entity and g_Entity[e] or nil
  if not ent or not ent.obj or not PositionObject then return end
@@ -60,11 +61,31 @@ local function pose_hover(e,s,ms,amount,yaw)
  pose(e,s.x+dx,s.y+dy,s.z+dz,dp,(yaw or 180)+dyaw,dr)
 end
 
+local function beat_elapsed(s,beat)
+ if s.beat~=beat then
+  s.beat=beat
+  s.beat_start=(aegis and aegis.cinematic_started_at) or g_Time
+ end
+ return g_Time-s.beat_start
+end
+
+local function insertion_ground_y(s)
+ -- The authored insertion entities pre-date the touchdown shot and are placed at a
+ -- hover anchor. Resolve the native terrain when possible so the landed/ramp state
+ -- actually sits on its four-inch model contact plane instead of floating above it.
+ if GetGroundHeight then
+  local ok,h=pcall(GetGroundHeight,s.x,s.z)
+  if ok and type(h)=='number' then return h-4 end
+ end
+ -- Builder fallback: legacy insertion anchor = ground + 190, contact plane = +4.
+ return s.y-194
+end
+
 function firstlight_kestrel_init_name(e,name)
  local ent=g_Entity and g_Entity[e] or {}
  local role=string.find(name,'INSERTION',1,true) and 'insertion' or 'extraction'
  ships[e]={role=role,variant=variant_from_name(name),x=ent.x or 0,y=ent.y or 0,z=ent.z or 0,
-           visible=false,intro_start=0,handoff_start=0,depart_start=0}
+           visible=false,beat=nil,beat_start=0,depart_start=0}
  Hide(e);CollisionOff(e)
  if aegis then if role=='insertion' then aegis.insertion_complete=false else aegis.kestrel_landed=false end end
  if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
@@ -73,55 +94,87 @@ end
 local function insertion(e,s)
  if not fl or not fl.started or (aegis and aegis.insertion_complete) then set_visible(e,s,false);return end
  local beat=aegis and aegis.cinematic_beat or nil
- if beat=='ARRIVAL' then
-  if s.intro_start==0 then s.intro_start=aegis.cinematic_started_at or g_Time end
-  local elapsed=g_Time-s.intro_start
-  -- Recorded VO gives the approach room to breathe: the ship crosses and descends for
-  -- ~15.5 s, starts conversion before the pad, then establishes full lift for the hold.
-  local raw=elapsed/math.max(1000,(aegis.cinematic_duration_ms or 18000)-2300)
-  local t=smooth(raw)
-  show_state(e,s,staged(raw,0.58,0.78,'flight','convert','flare'))
+ local duration=math.max(1000,aegis and aegis.cinematic_duration_ms or 1000)
+ local base_y=insertion_ground_y(s)
 
-  -- The approach carries a shallow coordinated bank and deceleration pitch instead
-  -- of sliding a rigid model down a spline. Both return to neutral before touchdown.
-  local turn=math.sin(clamp01(t)*math.pi)
-  local settle=smooth(clamp01((raw-0.72)/0.28))
-  local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,settle*0.55)
-  pose(e,lerp(s.x-1250,s.x,t)+dx,
-       lerp(s.y+720,s.y,t)+dy,
-       lerp(s.z-1450,s.z,t)+dz,
-       lerp(-6,0,t)+turn*1.4+dp,
-       lerp(148,180,t)+turn*2.2+dyaw,
-       lerp(5,0,t)-turn*3.8+dr)
+ if beat=='ARRIVAL_WIDE' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw)
+  -- Far establishing approach.  The ship remains a clean cruise silhouette.
+  show_state(e,s,'flight')
+  pose(e,s.x+curve(-2700,-1450,180,t),
+       base_y+curve(1250,880,70,t),
+       s.z+curve(-2500,-1550,-120,t),
+       lerp(-5,-3,t),lerp(138,154,t),lerp(7,4,t))
+ elseif beat=='ARRIVAL_PASS' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw);local arc=math.sin(t*math.pi)
+  -- Fast side pass over the shelf.  Continuous bank sells mass and forward velocity.
+  show_state(e,s,'flight')
+  pose(e,s.x+curve(-1450,850,320,t),
+       base_y+curve(880,650,35,t),
+       s.z+curve(-1550,-650,-220,t),
+       lerp(-3,-1,t)-arc*.7,
+       lerp(154,194,t)+arc*4.5,
+       lerp(4,-7,t)-arc*2.5)
+ elseif beat=='ARRIVAL_ORBIT' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw);local arc=math.sin(t*math.pi)
+  -- The cut into this shot hides flight -> conversion.  The craft then makes one
+  -- broad curving reconnaissance arc around the outpost before committing to land.
+  show_state(e,s,'convert')
+  pose(e,s.x+curve(850,520,-1150,t),
+       base_y+curve(650,500,80,t),
+       s.z+curve(-650,360,260,t),
+       lerp(-1,-.6,t)-arc*.8,
+       lerp(194,180,t)+arc*34,
+       lerp(-7,-2,t)+arc*9)
+ elseif beat=='ARRIVAL_DESCENT' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw);local flare=math.sin(t*math.pi)
+  local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,(1-t)*.45)
+  -- The camera cut hides conversion -> full powered lift.  From here to touchdown
+  -- there are no exposed mesh swaps: only a continuous decelerating descent.
+  show_state(e,s,'flare')
+  pose(e,s.x+curve(520,0,-120,t)+dx,
+       base_y+curve(500,0,45,t)+dy,
+       s.z+curve(360,0,60,t)+dz,
+       lerp(-.6,0,t)-flare*1.7+dp,
+       lerp(180,180,t)+dyaw,
+       lerp(-2,0,t)-flare*1.4+dr)
  elseif beat=='ARRIVAL_HANDOFF' then
-  if s.handoff_start==0 then s.handoff_start=aegis.cinematic_started_at or g_Time end
-  local elapsed=g_Time-s.handoff_start
-  local hold=math.max(0,(aegis.cinematic_duration_ms or 25000)-6500)
-  if elapsed<hold then
-   -- Kestrel stays over the pad while the evidence/order dialogue plays. Powered-lift
-   -- corrections keep the hold alive without moving the boarding footprint materially.
-   show_state(e,s,'flare')
-   pose_hover(e,s,elapsed,0.65,180)
-  else
-   local raw=(elapsed-hold)/6200
-   local t=smooth(raw)
-   show_state(e,s,staged(raw,0.18,0.50,'flare','convert','flight'))
-   local lift=smooth(clamp01(raw/0.32))
-   local cruise=smooth(clamp01((raw-0.24)/0.76))
-   local turn=math.sin(clamp01(t)*math.pi)
-   local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,math.max(0,1-cruise)*0.55)
-   pose(e,lerp(s.x,s.x+2050,t)+dx,
-        lerp(s.y,s.y+1080,lift*0.42+t*0.58)+dy,
-        lerp(s.z,s.z-2050,t)+dz,
-        lerp(0,-5,t)-turn*1.0+dp,
-        lerp(180,218,t)+turn*1.8+dyaw,
-        lerp(0,-7,t)-turn*2.0+dr)
-  end
- elseif s.handoff_start>0 then
-  set_visible(e,s,false)
- elseif g_Time-(fl.born or g_Time)>50000 then
-  -- Fail-open opening path: never leave any Kestrel state parked forever.
-  set_visible(e,s,false)
+  beat_elapsed(s,beat)
+  -- Touchdown/ramp state appears on the cut, never as an exposed in-shot pop.
+  show_state(e,s,'landed')
+  pose(e,s.x,base_y,s.z,0,180,0)
+ elseif beat=='ARRIVAL_LIFTOFF' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw)
+  local dx,dy,dz,dp,dyaw,dr=hover_motion(elapsed,(1-t)*.55)
+  -- Cut hides landed -> flare.  Hold mostly vertical until clear of the pad.
+  show_state(e,s,'flare')
+  pose(e,s.x+dx,
+       base_y+lerp(0,300,t)+dy,
+       s.z+lerp(0,-70,t)+dz,
+       lerp(0,-1.5,t)+dp,
+       lerp(180,176,t)+dyaw,
+       lerp(0,-1,t)+dr)
+ elseif beat=='ARRIVAL_CLIMB' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw);local arc=math.sin(t*math.pi)
+  -- Another edit hides flare -> conversion while the aircraft unloads lift thrust.
+  show_state(e,s,'convert')
+  pose(e,s.x+curve(0,180,70,t),
+       base_y+lerp(300,620,t),
+       s.z+curve(-70,-420,-45,t),
+       lerp(-1.5,-3,t),
+       lerp(176,166,t),
+       lerp(-1,3,t)+arc*2)
+ elseif beat=='ARRIVAL_DEPART' then
+  local elapsed=beat_elapsed(s,beat);local raw=clamp01(elapsed/duration);local t=smooth(raw);local arc=math.sin(t*math.pi)
+  -- Final cut hides conversion -> clean flight.  The Kestrel accelerates out across
+  -- the valley so the player has actually watched it leave before control returns.
+  show_state(e,s,'flight')
+  pose(e,s.x+curve(180,2300,260,t),
+       base_y+curve(620,1300,80,t),
+       s.z+curve(-420,-2600,-180,t),
+       lerp(-3,-7,t)-arc*1.2,
+       lerp(166,142,t)-arc*3,
+       lerp(3,9,t)+arc*4)
  else
   set_visible(e,s,false)
  end

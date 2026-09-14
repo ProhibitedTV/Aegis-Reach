@@ -4,7 +4,7 @@ from native_format import ROOT
 from environment_pass import Mesh
 from firstlight_dialogue import LINES
 from firstlight_kestrel import kestrel_mesh,STATES,LENGTH_IN,SPAN_IN,LANDED_CONTACT_Y
-from firstlight_cinematics import SHOT_PROFILES
+from firstlight_cinematics import SHOT_PROFILES,OPENING_SEQUENCE
 from python_runtime import ensure_max_lua_runtime
 
 ids=[x['id'] for x in LINES];files=[x['filename'] for x in LINES]
@@ -40,7 +40,8 @@ for token in (
 ):
  assert token in source,token
 assert 'long rail skids' not in source.lower()
-assert SHOT_PROFILES['ARRIVAL']['seconds']>=6 and SHOT_PROFILES['ARRIVAL_HANDOFF']['seconds']>=6
+assert len(OPENING_SEQUENCE)==8 and OPENING_SEQUENCE[0]=='ARRIVAL_WIDE' and OPENING_SEQUENCE[-1]=='ARRIVAL_DEPART'
+assert sum(SHOT_PROFILES[x]['seconds'] for x in OPENING_SEQUENCE)>50
 
 scripts=ROOT/'Aegis Reach/Files/scriptbank/aegis_reach'
 k=(scripts/'firstlight_kestrel.lua').read_text(errors='replace')
@@ -51,16 +52,17 @@ for token in ("variant_from_name","string.find(name,'CONVERT',1,true)","show_sta
               "show_state(e,s,'flare')","show_state(e,s,'landed')","ms<1100","ms<2700","ms<4000",
               "elapsed<47000","elapsed<53000","elapsed<60000"):
  assert token in k,token
-assert 'PositionObject' in k and "beat=='ARRIVAL'" in k and "beat=='ARRIVAL_HANDOFF'" in k
+for beat in OPENING_SEQUENCE:assert f"beat=='{beat}'" in k,beat
+assert 'curve(' in k and "show_state(e,s,'flight')" in k and "beat=='ARRIVAL_ORBIT'" in k and "beat=='ARRIVAL_DESCENT'" in k
 assert 'fl.evac_elapsed' in k and 'aegis.kestrel_landed=true' in k and 'aegis.kestrel_depart' in k
-assert "aegis.cinematic_request='ARRIVAL_HANDOFF'" in c and "FL01_KES_001" in c and "FL01_KES_017" in c
+assert 'next_opening_beat' in c and "ARRIVAL_WIDE" in c and "ARRIVAL_DEPART" in c and "FL01_KES_001" in c and "FL01_KES_017" in c
 assert 'function fl_dialogue(id)' in d and 'FL VO ' in d and 'PlayNon3DSound' in d
 assert 'aegis.kestrel_landed' in i and "aegis.kestrel_depart=true" in i
 assert "local radius=role=='EXTRACT' and 640 or 210" in i,'Broadwing ramp fell outside extraction boarding radius'
 
 # Execute the real Kestrel Lua in the vendored MAX-compatible runtime. This catches
-# native syntax/runtime regressions and verifies that the eight authored entities swap
-# flight -> convert -> flare -> landed -> flare -> convert -> flight at expected phases.
+# native syntax/runtime regressions and verifies opening cuts own the mechanical
+# states while the ship's position remains continuous across adjacent edits.
 LuaRuntime=ensure_max_lua_runtime(__file__)
 lua=LuaRuntime(unpack_returned_tuples=True)
 lua.execute('FIRSTLIGHT_TEST=true')
@@ -89,7 +91,33 @@ firstlight_kestrel_init_name(6,'FL KESTREL EXTRACTION CONVERT')
 firstlight_kestrel_init_name(7,'FL KESTREL EXTRACTION FLARE')
 firstlight_kestrel_init_name(8,'FL KESTREL EXTRACTION LANDED')
 
-fl.evac_elapsed=40000;g_Time=40000
+-- Opening states are editorially isolated: no visible in-shot mesh swap.
+aegis.cinematic_beat='ARRIVAL_WIDE';aegis.cinematic_started_at=1000;aegis.cinematic_duration_ms=9000;g_Time=5500
+for e=1,4 do firstlight_kestrel_main(e) end
+assert(shown[1]==true and shown[2]==false and shown[3]==false and shown[4]==false)
+
+aegis.cinematic_beat='ARRIVAL_ORBIT';aegis.cinematic_started_at=10000;aegis.cinematic_duration_ms=9600;g_Time=14800
+for e=1,4 do firstlight_kestrel_main(e) end
+assert(shown[1]==false and shown[2]==true and shown[3]==false and shown[4]==false)
+
+aegis.cinematic_beat='ARRIVAL_DESCENT';aegis.cinematic_started_at=20000;aegis.cinematic_duration_ms=12670;g_Time=26000
+for e=1,4 do firstlight_kestrel_main(e) end
+assert(shown[1]==false and shown[2]==false and shown[3]==true and shown[4]==false)
+
+aegis.cinematic_beat='ARRIVAL_HANDOFF';aegis.cinematic_started_at=33000;aegis.cinematic_duration_ms=4600;g_Time=33200
+for e=1,4 do firstlight_kestrel_main(e) end
+assert(shown[1]==false and shown[2]==false and shown[3]==false and shown[4]==true)
+
+-- PASS end and ORBIT start share the exact same world position; the camera cut hides
+-- only the geometry-state change, not a teleport.
+aegis.cinematic_beat='ARRIVAL_PASS';aegis.cinematic_started_at=40000;aegis.cinematic_duration_ms=10000;g_Time=50000
+for e=1,4 do firstlight_kestrel_main(e) end
+px=poses[1].x;py=poses[1].y;pz=poses[1].z
+aegis.cinematic_beat='ARRIVAL_ORBIT';aegis.cinematic_started_at=50000;aegis.cinematic_duration_ms=10000;g_Time=50000
+for e=1,4 do firstlight_kestrel_main(e) end
+assert(math.abs(poses[2].x-px)<0.01 and math.abs(poses[2].y-py)<0.01 and math.abs(poses[2].z-pz)<0.01)
+
+fl.evac_elapsed=40000;g_Time=40000;aegis.cinematic_beat=nil
 for e=5,8 do firstlight_kestrel_main(e) end
 assert(shown[5]==true and shown[6]==false and shown[7]==false and shown[8]==false)
 
@@ -128,4 +156,4 @@ assert (ROOT/'Aegis Reach/Design/First Light/KESTREL_DESIGN.md').is_file()
 print('FIRST LIGHT // STORY DELIVERY PASS')
 print('Dialogue lines:',len(LINES),'// Broadwing Kestrel states:',
       ', '.join(f'{s}:{len(meshes[s].verts)}v' for s in STATES),
-      '// lifting-body + staged VTOL conversion + grounded rear-ramp + MAX-Lua state-swap contract verified.')
+      '// continuous eight-shot insertion + cut-hidden VTOL state changes + grounded rear-ramp verified.')
