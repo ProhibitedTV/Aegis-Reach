@@ -1,21 +1,37 @@
 """CineGuru story cameras for FIRST LIGHT.
 
-The opening now uses a multi-shot Kestrel approach, orbit, descent, touchdown and
-climb-out sequence.  Each shot owns one mechanical ship state so the unavoidable
-mesh-state swaps happen under camera cuts while position/attitude motion remains
-continuous inside the shot.
+The opening uses an eight-shot Kestrel approach/descent/departure sequence, but its
+visual grammar is now diegetic: every opening camera is mounted to plausible ship
+hardware instead of behaving like an omniscient floating film camera.  A dedicated
+runtime rig inherits the live Kestrel transform and keeps the camera entities attached
+through pitch, bank, yaw and VTOL motion.  The ventral ISR feed is intentionally
+gimbal-stabilized on Meridian Shelf.
 """
 import math,json,re
 from firstlight_dialogue import LINES
 
 CAMERA_SCRIPT=r'Cine Guru MAX\cg_cinematic_camera.lua'
 CONTROLLER_SCRIPT=r'aegis_reach\firstlight_cinematic.lua'
+CAMERA_RIG_SCRIPT=r'aegis_reach\firstlight_camera_rig.lua'
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 
 OPENING_SEQUENCE=(
     'ARRIVAL_WIDE','ARRIVAL_PASS','ARRIVAL_ORBIT','ARRIVAL_DESCENT',
     'ARRIVAL_HANDOFF','ARRIVAL_LIFTOFF','ARRIVAL_CLIMB','ARRIVAL_DEPART',
 )
+
+# Physical/diegetic source for each feed.  Runtime offsets/boresights are owned by
+# firstlight_camera_rig.lua; this table documents the intent in build reports/tests.
+OPENING_MOUNTS={
+    'ARRIVAL_WIDE':dict(label='KSTL-01 NOSE EO',mount='forward hull / nose electro-optical camera',mode='fixed hull'),
+    'ARRIVAL_PASS':dict(label='KSTL-02 STBD SHOULDER',mount='starboard shoulder maintenance camera',mode='fixed hull'),
+    'ARRIVAL_ORBIT':dict(label='KSTL-03 VENTRAL ISR',mount='ventral reconnaissance sensor',mode='gimbal stabilized'),
+    'ARRIVAL_DESCENT':dict(label='KSTL-04 STBD GEAR',mount='starboard landing-gear camera',mode='fixed hull'),
+    'ARRIVAL_HANDOFF':dict(label='KSTL-05 RAMP',mount='rear ramp / cargo-door camera',mode='fixed hull'),
+    'ARRIVAL_LIFTOFF':dict(label='KSTL-05 RAMP',mount='rear ramp / cargo-door camera',mode='fixed hull'),
+    'ARRIVAL_CLIMB':dict(label='KSTL-06 PORT SHOULDER',mount='port shoulder maintenance camera',mode='fixed hull'),
+    'ARRIVAL_DEPART':dict(label='KSTL-07 TAIL',mount='aft tail observation camera',mode='fixed hull'),
+}
 
 SHOT_PROFILES={
     'ARRIVAL_WIDE':dict(seconds=9.0,fade=.24,focal_start=54,focal_end=72),
@@ -80,18 +96,13 @@ def sync_coordinator(script):
  script.write_text(source)
 
 SHOTS=(
-    # beat, name, camera x/z, height, target x/z, target height
-    # Distant valley reveal: Kestrel is a moving silhouette before we ever cut close.
+    # Opening camera placements are editor/fail-safe transforms only. At runtime the
+    # camera-rig controller physically mounts these eight camera objects to the Kestrel.
     ('ARRIVAL_WIDE','FL CG ARRIVAL WIDE',2450,-11100,720,-1050,-10050,520),
-    # Side tracking composition for the fast low approach across the abandoned shelf.
     ('ARRIVAL_PASS','FL CG ARRIVAL PASS',-900,-10450,430,-120,-9300,310),
-    # Three-quarter view across the facility while the ship curves around the outpost.
     ('ARRIVAL_ORBIT','FL CG ARRIVAL ORBIT',1500,-8650,520,-260,-8820,330),
-    # Low telephoto descent angle; the cut masks conversion -> full powered-lift state.
     ('ARRIVAL_DESCENT','FL CG ARRIVAL DESCENT',-1150,-8550,300,-120,-9140,170),
-    # Ground-level touchdown/ramp hero shot.  The landed-state swap happens on this cut.
     ('ARRIVAL_HANDOFF','FL CG ARRIVAL HANDOFF',720,-9300,145,-120,-9140,88),
-    # Separate departure edits hide landed -> flare -> convert -> cruise state changes.
     ('ARRIVAL_LIFTOFF','FL CG ARRIVAL LIFTOFF',-420,-9500,180,-120,-9140,430),
     ('ARRIVAL_CLIMB','FL CG ARRIVAL CLIMB',1160,-8460,390,150,-9320,720),
     ('ARRIVAL_DEPART','FL CG ARRIVAL DEPART',-1720,-7600,650,860,-10020,1040),
@@ -127,21 +138,32 @@ def apply(build):
             'pitch':round(pitch,2),'yaw':round(yaw,2),
             'seconds':profile['seconds'],'fade':profile.get('fade',.35),
             'focal_start':profile['focal_start'],'focal_end':profile['focal_end'],
-            'always_active':True,
+            'always_active':True,'diegetic_mount':OPENING_MOUNTS.get(beat),
         })
     build.add(
         MARKER,'FIRST LIGHT // CINEMATIC',180,-9500,y=100,kind='controller',
         script=CONTROLLER_SCRIPT,**{'eleprof.physics':0,'eleprof.phyalways':1}
+    )
+    build.add(
+        MARKER,'FIRST LIGHT // CAMERA RIG',220,-9500,y=100,kind='controller',
+        script=CAMERA_RIG_SCRIPT,**{'eleprof.physics':0,'eleprof.phyalways':1}
     )
     return {
         'system':'CineGuru MAX','camera_count':len(cameras),'beats':[c['beat'] for c in cameras],
         'cameras':cameras,
         'opening':{
             'shots':list(OPENING_SEQUENCE),
-            'purpose':'introduce the Kestrel as a vehicle: distant approach, close pass, outpost orbit, conversion/descent, touchdown, then a staged climb-out before control returns',
+            'purpose':'present Meridian insertion through plausible military camera sources mounted to the Kestrel: hull, shoulder, ISR, gear, ramp and tail feeds',
             'first_action':'Restore Northstar and recover the evacuation packet',
             'seconds':sum(SHOT_PROFILES[x]['seconds'] for x in OPENING_SEQUENCE),
             'state_editing':'major Kestrel mesh-state swaps occur only under CineGuru cuts; movement inside every shot remains continuous',
+            'camera_language':'diegetic documentary / military telemetry; no omniscient opening cameras',
+            'mounts':{beat:OPENING_MOUNTS[beat] for beat in OPENING_SEQUENCE},
+        },
+        'camera_rig':{
+            'controller':'FIRST LIGHT // CAMERA RIG','script':CAMERA_RIG_SCRIPT,
+            'tracked_ship':'FL KESTREL INSERTION FLIGHT','mount_count':len(OPENING_MOUNTS),
+            'transform':'camera position and boresight inherit live Kestrel pitch/yaw/roll; ventral ISR remains target-stabilized',
         },
         'extraction':'Kestrel approaches visibly during gameplay; EXTRACTION camera is reserved for boarding/liftoff',
         'always_active':True,'registration_retry':True,'fail_open':True,
