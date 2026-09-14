@@ -1,5 +1,4 @@
 """Runtime regression for the diegetic Kestrel-mounted opening cameras."""
-import math
 from native_format import ROOT
 from python_runtime import ensure_max_lua_runtime
 from firstlight_cinematics import OPENING_MOUNTS,OPENING_SEQUENCE
@@ -47,6 +46,7 @@ source=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_camera_rig.lua
 lua.execute('\n'.join(line for line in source.splitlines() if not line.startswith('require ')))
 lua.execute(r'''
 firstlight_camera_rig_init(99)
+assert(aegis.kestrel_camera_rig_ready==true,'rig did not publish ready state')
 firstlight_camera_rig_main(99)
 for obj=210,217 do assert(campos[obj]~=nil and camrot[obj]~=nil,'camera mount not positioned '..obj) end
 
@@ -64,10 +64,11 @@ assert(math.abs(campos[214].z-campos[215].z)<0.001)
 -- The ventral ISR is position-attached but roll-stabilized relative to the hull.
 assert(math.abs(camrot[212].rz-ship.rz*.12)<0.01,'ISR roll stabilization regressed')
 
-local oldx,oldy,oldz=nose.x,nose.y,nose.z
+local oldx,oldz=nose.x,nose.z
 ship.x=1100;ship.y=700;ship.z=-8500;ship.rx=-4;ship.ry=128;ship.rz=-9
 g_Time=1500;aegis.cinematic_beat='ARRIVAL_PASS'
 firstlight_camera_rig_main(99)
+assert(aegis.kestrel_camera_rig_ready==true)
 local newnose=campos[210]
 assert(math.abs(newnose.x-oldx)>100 or math.abs(newnose.z-oldz)>100,'camera did not follow translated ship')
 local nd=math.sqrt((newnose.x-ship.x)^2+(newnose.y-ship.y)^2+(newnose.z-ship.z)^2)
