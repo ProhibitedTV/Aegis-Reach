@@ -51,23 +51,17 @@ firstlight_camera_rig_init(99)
 assert(aegis.kestrel_camera_rig_ready==true,'ship camera rig did not publish ready state')
 firstlight_camera_rig_main(99)
 
--- Objects 211,213,214,216,217,218,221,222,223,224,225 are Kestrel-mounted.
-local mounted={211,213,214,216,217,218,221,222,223,224,225}
+local mounted={211,213,214,216,217,218,222,223,224,225,226}
 for _,obj in ipairs(mounted) do assert(campos[obj]~=nil and camrot[obj]~=nil,'camera mount not positioned '..obj) end
--- World infrastructure feeds remain at their authored CineGuru transforms.
-local fixed={210,212,215,219,220,221-0} -- 221 is overwritten below; use explicit checks next
-assert(campos[210]==nil and campos[212]==nil and campos[215]==nil and campos[219]==nil and campos[220]==nil,'world camera was incorrectly attached to ship')
--- ARRIVAL_TOUCHDOWN object is 221? Mapping is PERIM=210 ... TOUCHDOWN=221; it must stay world-fixed.
-assert(campos[221]==nil,'touchdown pad camera was incorrectly attached to ship')
+local fixed={210,212,215,219,220,221}
+for _,obj in ipairs(fixed) do assert(campos[obj]==nil,'world camera was incorrectly attached to ship '..obj) end
 
 local ship=objpose[101]
 local nose=campos[211]
 local d=math.sqrt((nose.x-ship.x)^2+(nose.y-ship.y)^2+(nose.z-ship.z)^2)
 local expected=math.sqrt(154^2+378^2)
 assert(math.abs(d-expected)<0.01,'nose mount lost rigid offset')
--- Ventral ISR is position-attached but strongly roll-stabilized.
 assert(math.abs(camrot[214].rz-ship.rz*.12)<0.01,'ISR roll stabilization regressed')
--- Three separate CineGuru beats deliberately occupy the same physical ramp mount.
 for _,obj in ipairs({222,223,224}) do assert(campos[obj]~=nil) end
 assert(math.abs(campos[222].x-campos[223].x)<0.001 and math.abs(campos[223].x-campos[224].x)<0.001)
 
@@ -79,8 +73,7 @@ local newnose=campos[211]
 assert(math.abs(newnose.x-oldx)>100 or math.abs(newnose.z-oldz)>100,'camera did not follow translated ship')
 local nd=math.sqrt((newnose.x-ship.x)^2+(newnose.y-ship.y)^2+(newnose.z-ship.z)^2)
 assert(math.abs(nd-expected)<0.01,'camera offset changed under ship rotation')
-local rendered=''
-for _,v in pairs(texts) do rendered=rendered..' '..v end
+local rendered='';for _,v in pairs(texts) do rendered=rendered..' '..v end
 assert(string.find(rendered,'KSTL%-02 STBD SHOULDER'),'active feed telemetry label missing')
 ''')
 print('FIRST LIGHT // DIEGETIC CAMERA RIG PASS')
