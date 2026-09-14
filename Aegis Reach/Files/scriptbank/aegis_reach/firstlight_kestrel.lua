@@ -1,5 +1,6 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- Visible Kestrel flight choreography. Visual-only; mission state remains authoritative.
+-- Broadwing Kestrel choreography. Six visual entities share one mission-safe controller:
+-- insertion/extraction x flight/flare/landed. Mission state stays authoritative elsewhere.
 local ships={}
 
 local function smooth(t)
@@ -13,63 +14,101 @@ local function pose(e,x,y,z,rx,ry,rz)
  PositionObject(ent.obj,x,y,z)
  if RotateObject then RotateObject(ent.obj,rx or 0,ry or 180,rz or 0) end
 end
-local function show(e,s)
- if not s.visible then Show(e);s.visible=true end
+local function set_visible(e,s,on)
+ if on and not s.visible then Show(e);s.visible=true
+ elseif not on and s.visible then Hide(e);s.visible=false end
 end
-local function hide(e,s)
- if s.visible then Hide(e);s.visible=false end
+local function show_state(e,s,wanted)
+ set_visible(e,s,s.variant==wanted)
+end
+local function variant_from_name(name)
+ if string.find(name,'LANDED',1,true) then return 'landed' end
+ if string.find(name,'FLARE',1,true) then return 'flare' end
+ return 'flight'
 end
 
 function firstlight_kestrel_init_name(e,name)
  local ent=g_Entity and g_Entity[e] or {}
  local role=string.find(name,'INSERTION',1,true) and 'insertion' or 'extraction'
- ships[e]={role=role,x=ent.x or 0,y=ent.y or 0,z=ent.z or 0,visible=false,
-           intro_start=0,handoff_start=0,depart_start=0}
+ ships[e]={role=role,variant=variant_from_name(name),x=ent.x or 0,y=ent.y or 0,z=ent.z or 0,
+           visible=false,intro_start=0,handoff_start=0,depart_start=0}
  Hide(e);CollisionOff(e)
  if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
 end
 
 local function insertion(e,s)
- if not fl or not fl.started then hide(e,s);return end
+ if not fl or not fl.started then set_visible(e,s,false);return end
  local beat=aegis and aegis.cinematic_beat or nil
  if beat=='ARRIVAL' then
   if s.intro_start==0 then s.intro_start=g_Time end
-  show(e,s)
-  local t=smooth((g_Time-s.intro_start)/6200)
-  pose(e,lerp(s.x-980,s.x,t),lerp(s.y+620,s.y,t),lerp(s.z-1120,s.z,t),lerp(-7,0,t),lerp(148,180,t),lerp(5,0,t))
+  local raw=(g_Time-s.intro_start)/6200
+  local t=smooth(raw)
+  -- Clean lifting-body flight transitions to the VTOL/gear configuration only near
+  -- the handoff point. This is a visual state swap, not a gameplay-state change.
+  show_state(e,s,raw<0.72 and 'flight' or 'flare')
+  pose(e,lerp(s.x-1250,s.x,t),lerp(s.y+720,s.y,t),lerp(s.z-1450,s.z,t),
+       lerp(-6,0,t),lerp(148,180,t),lerp(5,0,t))
  elseif beat=='ARRIVAL_HANDOFF' then
   if s.handoff_start==0 then s.handoff_start=g_Time end
-  show(e,s)
-  local t=smooth((g_Time-s.handoff_start)/5900)
-  pose(e,lerp(s.x,s.x+1750,t),lerp(s.y,s.y+900,t),lerp(s.z,s.z-1700,t),lerp(0,-5,t),lerp(180,218,t),lerp(0,-7,t))
- elseif s.handoff_start>0 and g_Time-s.handoff_start>6200 then
-  hide(e,s)
- elseif g_Time-(fl.born or g_Time)>15000 then
-  -- Fail-open opening path: never leave the insertion ship parked forever.
-  hide(e,s)
+  local raw=(g_Time-s.handoff_start)/6200
+  local t=smooth(raw)
+  show_state(e,s,raw<0.20 and 'flare' or 'flight')
+  pose(e,lerp(s.x,s.x+2050,t),lerp(s.y,s.y+1080,t),lerp(s.z,s.z-2050,t),
+       lerp(0,-5,t),lerp(180,218,t),lerp(0,-7,t))
+ elseif s.handoff_start>0 and g_Time-s.handoff_start>6500 then
+  set_visible(e,s,false)
+ elseif g_Time-(fl.born or g_Time)>16000 then
+  -- Fail-open opening path: never leave any Kestrel state parked forever.
+  set_visible(e,s,false)
+ else
+  set_visible(e,s,false)
+ end
+end
+
+local function departure(e,s)
+ if s.depart_start==0 then s.depart_start=g_Time end
+ local ms=g_Time-s.depart_start
+ if aegis then aegis.kestrel_landed=false end
+ if ms<1100 then
+  -- Ramp closes / ship takes the weight before thrust comes up.
+  show_state(e,s,'landed')
+  pose(e,s.x,s.y,s.z,0,180,0)
+ elseif ms<3300 then
+  -- Vertical clearance on the lift system with gear still out.
+  local t=smooth((ms-1100)/2200)
+  show_state(e,s,'flare')
+  pose(e,s.x,lerp(s.y,s.y+360,t),lerp(s.z,s.z-80,t),lerp(0,-2,t),lerp(180,174,t),0)
+ else
+  -- Once clear of the pad, stow the VTOL/gear hardware and accelerate away.
+  local t=smooth((ms-3300)/4700)
+  show_state(e,s,'flight')
+  pose(e,lerp(s.x,s.x-2050,t),lerp(s.y+360,s.y+1320,t),lerp(s.z-80,s.z-2550,t),
+       lerp(-2,-7,t),lerp(174,142,t),lerp(0,8,t))
+  if ms>=8000 then set_visible(e,s,false) end
  end
 end
 
 local function extraction(e,s)
- if not fl or not fl.started or fl.evac_start==0 then hide(e,s);return end
- if aegis and aegis.kestrel_depart then
-  if s.depart_start==0 then s.depart_start=g_Time end
-  show(e,s)
-  local t=smooth((g_Time-s.depart_start)/6000)
-  pose(e,lerp(s.x,s.x-1700,t),lerp(s.y,s.y+1050,t),lerp(s.z,s.z-2200,t),lerp(0,-6,t),lerp(180,142,t),lerp(0,8,t))
-  if t>=1 then hide(e,s) end
-  return
- end
+ if not fl or not fl.started or fl.evac_start==0 then set_visible(e,s,false);return end
+ if aegis and aegis.kestrel_depart then departure(e,s);return end
  local elapsed=fl.evac_elapsed or 0
- if elapsed<36000 then hide(e,s);return end
- show(e,s)
- if elapsed<52000 then
-  local t=smooth((elapsed-36000)/16000)
-  pose(e,lerp(s.x+2850,s.x+520,t),lerp(s.y+1250,s.y+340,t),lerp(s.z-2750,s.z-560,t),lerp(-4,0,t),lerp(228,190,t),lerp(-6,0,t))
+ if elapsed<36000 then set_visible(e,s,false);return end
+
+ if elapsed<50000 then
+  -- Long oblique approach: clean airframe, cruise thrust, no dangling landing gear.
+  local t=smooth((elapsed-36000)/14000)
+  show_state(e,s,'flight')
+  pose(e,lerp(s.x+3400,s.x+780,t),lerp(s.y+1480,s.y+470,t),lerp(s.z-3350,s.z-730,t),
+       lerp(-4,0,t),lerp(228,192,t),lerp(-6,0,t))
  elseif elapsed<60000 then
-  local t=smooth((elapsed-52000)/8000)
-  pose(e,lerp(s.x+520,s.x,t),lerp(s.y+340,s.y,t),lerp(s.z-560,s.z,t),lerp(0,0,t),lerp(190,180,t),0)
+  -- Convert to lift around the CG, slow forward motion first, then settle mostly vertically.
+  local t=smooth((elapsed-50000)/10000)
+  show_state(e,s,'flare')
+  local horizontal=smooth(math.min(1,(elapsed-50000)/5200))
+  pose(e,lerp(s.x+780,s.x,horizontal),lerp(s.y+470,s.y,t),lerp(s.z-730,s.z,horizontal),
+       lerp(0,0,t),lerp(192,180,horizontal),0)
  else
+  show_state(e,s,'landed')
   pose(e,s.x,s.y,s.z,0,180,0)
   if aegis then aegis.kestrel_landed=true end
  end
