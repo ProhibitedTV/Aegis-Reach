@@ -57,22 +57,32 @@ the final descent is primarily vertical. At 60 seconds it swaps to the ramp-open
 landed state and sets `aegis.kestrel_landed=true`.
 
 Departure deliberately runs in the opposite order: the landed state holds briefly
-for boarding, then the sealed flare mesh lifts the ship vertically clear of the pad, and clean
-flight takes over for the accelerating departure. `aegis.kestrel_landed` is cleared
-as soon as departure begins.
+for boarding, then the sealed flare mesh lifts the ship vertically clear of the pad,
+and clean flight takes over for the accelerating departure. `aegis.kestrel_landed`
+is cleared as soon as departure begins.
 
 ## Grounding and collision
 
-Kestrel geometry is visual-only (`collisionmode = 11` and runtime `CollisionOff`).
-Mission boarding remains controlled by the existing interaction state instead of a
-large moving physics body.
+The six moving Kestrel visual meshes remain non-physical (`collisionmode = 11` and
+runtime `CollisionOff`). That avoids turning a large state-swapped aircraft into a
+moving physics body during approach, touchdown or departure.
 
-The flare gear foot plane is authored at local Y=4. Extraction state entities are
-placed at `ground - 4`, so the foot pads meet terrain at touchdown instead of
-hovering above it. The landed ramp underside shares that Y=4 contact plane. The visible upper tip
-sits four inches above it. The vestibule floor and the ramp hinge both meet at
-Y=42. A sealed interior bulkhead hides the unused hull volume; the open rear
-sightline and upward ramp normals are regression-tested.
+The landed extraction state now has one separate, very low-poly polygon collision
+proxy authored by `firstlight_kestrel_boarding.py`. It covers only the rear ramp and
+vestibule floor. `firstlight_kestrel_boarding.lua` keeps the proxy hidden and
+collision-off during the entire mission, enables it only while
+`aegis.kestrel_landed=true`, and disables it again as soon as departure begins. The
+mission interaction remains authoritative for boarding; the proxy exists so the
+visible ramp is physically walkable without creating an invisible aircraft-sized
+obstacle before touchdown.
+
+The flare gear foot plane is authored at local Y=4. Extraction state entities and
+the boarding proxy are placed at `ground - 4`, so the foot pads and ramp underside
+meet terrain at touchdown instead of hovering above it. The visible ramp upper tip
+sits four inches above that contact plane. The vestibule floor and the ramp hinge
+both meet at Y=42. A sealed interior bulkhead hides the unused hull volume; the open
+rear sightline, upward ramp normals and the ground-to-floor collision slope are
+regression-tested.
 
 ## Generated materials
 
@@ -89,14 +99,16 @@ surface and emissive maps and keep the ship on the standard reloaded APBR shader
 ## Native MAX validation
 
 Source regressions verify geometry integrity, minimum span/length, the deployed gear
-contact plane, rear-ramp reach, three-state Lua switching and existing story hooks.
-Those checks do **not** prove the final presentation. A native GameGuru MAX pass must
-still confirm:
+contact plane, rear-ramp reach, three-state Lua switching, landed-only collision
+lifecycle and existing story hooks. Those checks do **not** prove the final
+presentation. A native GameGuru MAX pass must still confirm:
 
 - the state swap is visually seamless enough at cinematic distance;
 - no alternate state flashes visible for a frame at startup;
 - the flare configuration reads as powered lift rather than exposed decoration;
 - the landed feet and ramp actually meet the local terrain;
+- the ramp can be walked from terrain into the vestibule without snagging;
+- no invisible ramp collision exists before touchdown or after liftoff begins;
 - the ship does not clip nearby LZ geometry during the larger approach path;
 - emissive cruise/lift throats remain readable without blowing out the APBR material;
 - the rear aperture/ramp is legible during boarding.
@@ -110,4 +122,5 @@ The user-supplied Kestrel Dropship Design Research for FIRST LIGHT informed the
 boarding aperture, cabin volume, hinge/actuator details, recessed exhaust and
 flight-state presentation. The source remains an original mesh; no reference
 vehicle geometry or markings are reused. See PRESENTATION_INTEGRATION.md for
-implemented changes and the remaining animation, collision, LOD and effects work.
+implemented changes and the remaining continuous-animation, LOD, downwash and
+state-dependent engine-audio work.
