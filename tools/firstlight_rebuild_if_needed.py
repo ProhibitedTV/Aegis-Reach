@@ -1,7 +1,14 @@
 """Rebuild First Light only when authored world/build sources changed."""
 from pathlib import Path
 import hashlib,json,subprocess,sys
+from PIL import ImageFile
 from native_format import ROOT
+
+# GitHub/connector transports have occasionally stripped only the terminal JPEG EOI
+# marker from the checked-in material source sheet. Pillow can safely decode the
+# complete scan data in that case; material regression checks still enforce sheet
+# dimensions and visual variance before any generated texture is accepted.
+ImageFile.LOAD_TRUNCATED_IMAGES=True
 
 GAME=ROOT/'Aegis Reach';MAP=GAME/'Files/mapbank/Aegis Reach - First Light.fpm';STAMP=ROOT/'.local-review/firstlight-build-signature.json'
 MATERIAL_SOURCES=(ROOT/'tools/texture_sources/first_light/first_light_material_sources.jpg',)
