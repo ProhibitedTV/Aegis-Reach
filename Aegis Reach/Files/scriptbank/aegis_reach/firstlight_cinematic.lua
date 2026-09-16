@@ -1,9 +1,8 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
--- FIRST LIGHT narrative camera coordinator. CineGuru owns presentation; mission fails open.
--- Opening VO is continuous across short diegetic camera cuts. The ship follows one
--- opening clock instead of restarting its motion every time the editor changes source.
--- The opening cameras are also a real native CineGuru relationship graph; configure
--- every follow-on camera before rolling PERIM so CineGuru never falls back to 5s defaults.
+-- FIRST LIGHT narrative camera coordinator for later story beats.
+-- The insertion itself is a hard native replacement owned by firstlight_opening_native.lua
+-- from the mission HUD path. Legacy ARRIVAL CineGuru definitions remain here only as
+-- build-time compatibility data and must never bootstrap at runtime.
 local cine={}
 local cameras={ARRIVAL_PERIM="FL CG ARRIVAL PERIM",ARRIVAL_NOSE="FL CG ARRIVAL NOSE",ARRIVAL_GATE="FL CG ARRIVAL GATE",ARRIVAL_STBD="FL CG ARRIVAL STBD",ARRIVAL_ISR="FL CG ARRIVAL ISR",ARRIVAL_MAST="FL CG ARRIVAL MAST",ARRIVAL_CONVERT="FL CG ARRIVAL CONVERT",ARRIVAL_BELLY="FL CG ARRIVAL BELLY",ARRIVAL_GEAR="FL CG ARRIVAL GEAR",ARRIVAL_LZ="FL CG ARRIVAL LZ",ARRIVAL_FLARE="FL CG ARRIVAL FLARE",ARRIVAL_TOUCHDOWN="FL CG ARRIVAL TOUCHDOWN",ARRIVAL_RAMP="FL CG ARRIVAL RAMP",ARRIVAL_DEPLOY="FL CG ARRIVAL DEPLOY",ARRIVAL_LIFTOFF="FL CG ARRIVAL LIFTOFF",ARRIVAL_CLIMB="FL CG ARRIVAL CLIMB",ARRIVAL_DEPART="FL CG ARRIVAL DEPART",MIRA_SIGNAL="FL CG MIRA SIGNAL",AEGIS_REVEAL="FL CG AEGIS REVEAL",EXTRACTION="FL CG EXTRACTION"}
 local opening_order={"ARRIVAL_PERIM","ARRIVAL_NOSE","ARRIVAL_GATE","ARRIVAL_STBD","ARRIVAL_ISR","ARRIVAL_MAST","ARRIVAL_CONVERT","ARRIVAL_BELLY","ARRIVAL_GEAR","ARRIVAL_LZ","ARRIVAL_FLARE","ARRIVAL_TOUCHDOWN","ARRIVAL_RAMP","ARRIVAL_DEPLOY","ARRIVAL_LIFTOFF","ARRIVAL_CLIMB","ARRIVAL_DEPART"}
@@ -114,7 +113,7 @@ function firstlight_cinematic_init(e)cine={controller=e,seen={},failed={},active
 function firstlight_cinematic_main(e)
  if not fl or not fl.started or not aegis then return end
  if aegis.opening_started_at then aegis.opening_elapsed_ms=g_Time-aegis.opening_started_at end
- if not cine.seen.ARRIVAL_PERIM and not cine.failed.ARRIVAL_PERIM and not cine.active and not cine.pending and not aegis.cinematic_request and g_Time-(fl.born or g_Time)>350 then
+ if false and not cine.seen.ARRIVAL_PERIM and not cine.failed.ARRIVAL_PERIM and not cine.active and not cine.pending and not aegis.cinematic_request and g_Time-(fl.born or g_Time)>350 then
   if configure_opening_graph() then fl_request_cinematic('ARRIVAL_PERIM')
   elseif g_Time-(fl.born or g_Time)>STARTUP_GRACE_MS then opening_fallback('native_chain_not_ready');mark_opening_seen();finish_opening_handoff() end
  end
