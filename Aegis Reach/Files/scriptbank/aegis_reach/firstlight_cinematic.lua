@@ -114,7 +114,7 @@ function firstlight_cinematic_init(e)cine={controller=e,seen={},failed={},active
 function firstlight_cinematic_main(e)
  if not fl or not fl.started or not aegis then return end
  if aegis.opening_started_at then aegis.opening_elapsed_ms=g_Time-aegis.opening_started_at end
- if not cine.seen.ARRIVAL_PERIM and not cine.failed.ARRIVAL_PERIM and not cine.active and not cine.pending and not aegis.cinematic_request and g_Time-(fl.born or g_Time)>350 then
+ if false and not cine.seen.ARRIVAL_PERIM and not cine.failed.ARRIVAL_PERIM and not cine.active and not cine.pending and not aegis.cinematic_request and g_Time-(fl.born or g_Time)>350 then
   if configure_opening_graph() then fl_request_cinematic('ARRIVAL_PERIM')
   elseif g_Time-(fl.born or g_Time)>STARTUP_GRACE_MS then opening_fallback('native_chain_not_ready');mark_opening_seen();finish_opening_handoff() end
  end
