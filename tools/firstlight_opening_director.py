@@ -1,9 +1,9 @@
 """Hard-replace the FIRST LIGHT insertion cinematic.
 
 The seventeen legacy insertion CineGuru cameras are quarantined out of the ARRIVAL
-namespace and rebound to an inert mount script.  Their transforms remain in the map
+namespace and rebound to an inert mount script. Their transforms remain in the map
 only to preserve stable authoring/entity counts; CineGuru and the old coordinator can
-no longer resolve or activate them.  The automatic ARRIVAL bootstrap is also hard
+no longer resolve or activate them. The automatic ARRIVAL bootstrap is also hard
 disabled after firstlight_cinematics.py synchronizes the later-story coordinator.
 
 The actual 50.8 second opener is owned entirely by firstlight_opening_native.lua,
@@ -36,6 +36,16 @@ def disable_legacy_opening(path):
     path.write_text(text)
 
 
+def sync_coordinator_guard(path):
+    """Normalize the generated coordinator to the native-opening ownership contract.
+
+    firstlight_rebuild_if_needed.py calls this immediately after sync_coordinator().
+    Keep it intentionally idempotent so a checked-in coordinator that is already
+    disabled remains stable and does not force a rebuild on every launch.
+    """
+    disable_legacy_opening(path)
+
+
 def quarantine_legacy_opening_cameras(build):
     """Rename and neutralize all seventeen legacy insertion cameras."""
     found=[]
@@ -59,7 +69,7 @@ def quarantine_legacy_opening_cameras(build):
 
 
 def apply(build):
-    disable_legacy_opening(build.FILES/'scriptbank/aegis_reach/firstlight_cinematic.lua')
+    sync_coordinator_guard(build.FILES/'scriptbank/aegis_reach/firstlight_cinematic.lua')
     quarantined=quarantine_legacy_opening_cameras(build)
     # Inert compatibility marker only. Its Lua script does not own camera 0.
     build.add(MARKER,NAME,300,-9500,y=100,kind='controller',script=SCRIPT,
