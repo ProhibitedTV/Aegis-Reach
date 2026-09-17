@@ -6,6 +6,7 @@ from max_archive import PASSWORD
 MAP=ROOT/'Aegis Reach/Files/mapbank/Aegis Reach - First Light.fpm'
 CHAIN_CONTROLLER='FIRST LIGHT // CINEGURU NATIVE CHAIN'
 CHAIN_SCRIPT=r'aegis_reach\firstlight_cineguru_chain.lua'
+CHAIN_RUNTIME=ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_cineguru_chain.lua'
 
 
 def suffix(entity,name,default=0):
@@ -20,14 +21,18 @@ def main():
         archive.setpassword(PASSWORD);_,entities=read_ele(archive.read('map.ele'))
     opening=[e for e in entities if str(suffix(e,'eleprof.name_s','')).startswith('FL CG ARRIVAL ')]
     assert not opening,[str(suffix(e,'eleprof.name_s','')) for e in opening]
-    # The old graph controller may remain as an inert compatibility marker for build
-    # tooling, but with zero ARRIVAL camera entities there is no native relationship
-    # graph capable of driving the insertion.
+    # The old graph controller remains only as an inert compatibility marker for build
+    # tooling; with zero ARRIVAL camera entities there is no relationship graph capable
+    # of driving the insertion.
     controller=[e for e in entities if str(suffix(e,'eleprof.name_s',''))==CHAIN_CONTROLLER]
     assert len(controller)==1,len(controller)
     script=str(suffix(controller[0],'eleprof.aimain_s','')).replace('/','\\').lower()
     assert script==CHAIN_SCRIPT.lower(),script
+    runtime=CHAIN_RUNTIME.read_text()
+    for forbidden in ('CG_ProcessCamera','CG_ActivateCamera','CG_IsCamera','FL CG ARRIVAL PERIM'):
+        assert forbidden not in runtime,forbidden
+    assert 'Intentionally inert' in runtime
     print('FIRST LIGHT // CINEGURU INSERTION REMOVAL PASS')
-    print('0 ARRIVAL camera entities exist in encrypted map.ele; the compatibility graph controller has nothing to activate.')
+    print('0 ARRIVAL camera entities exist in encrypted map.ele; the compatibility graph controller is inert.')
 
 if __name__=='__main__':main()

@@ -1,10 +1,10 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- DESCRIPTION: Robust adaptive Aegis Reach score controller for GameGuru MAX.
 --
--- Persistent native global sounds give FIRST LIGHT stable authored music even when
--- standalone packaging cannot find an optional master. The combat director supplies
--- intensity while radio/cinematic arbitration supplies ducking; spatial identity stays
--- stable so every short firefight or authored camera beat does not hard-cut the score.
+-- Primary playback uses native global sounds for phase-continuous crossfades. The
+-- controller entity also carries the same three WAVs in Sound0/1/2; if MAX refuses
+-- to start a loaded global sound, those slots become a deterministic non-3D fallback
+-- instead of allowing a silent mission.
 local music={}
 
 local TRACK_SALT=0
@@ -84,7 +84,8 @@ local function load_score()
 end
 
 local function exists(id)
- return GetGlobalSoundExist and GetGlobalSoundExist(id)==1
+ if not GetGlobalSoundExist then return true end
+ return GetGlobalSoundExist(id)==1
 end
 
 local function resolved_id(slot)
@@ -95,18 +96,47 @@ local function resolved_id(slot)
 end
 
 local function ensure_looping(id)
- if id<0 or not exists(id) then return end
- if GetGlobalSoundPlaying and GetGlobalSoundPlaying(id)==0 then LoopGlobalSound(id) end
+ if id<0 or not exists(id) then return false end
+ if not GetGlobalSoundPlaying then
+  if LoopGlobalSound then LoopGlobalSound(id) end
+  return true
+ end
+ if GetGlobalSoundPlaying(id)==0 and LoopGlobalSound then LoopGlobalSound(id) end
+ return GetGlobalSoundPlaying(id)==1
 end
 
 local function set_volume(id,volume)
  if id<0 or not exists(id) then return end
- SetGlobalSoundVolume(id,math.max(0,math.min(100,math.floor(volume))))
+ if SetGlobalSoundVolume then SetGlobalSoundVolume(id,math.max(0,math.min(100,math.floor(volume)))) end
 end
 
 local function stop_if_silent(id,volume,keep)
  if id<0 or not exists(id) or keep then return end
  if volume<=0.1 and StopGlobalSound then StopGlobalSound(id) end
+end
+
+local function stop_entity_fallback(e,m)
+ if not m.entity_fallback then return end
+ if StopSound then
+  for slot=0,TRACK_COUNT-1 do pcall(StopSound,e,slot) end
+ end
+ m.entity_fallback=false;m.entity_slot=-1
+ audit('music_entity_fallback active=false')
+end
+
+local function run_entity_fallback(e,m,slot,volume)
+ if not LoopNon3DSound then return false end
+ if not m.entity_fallback or m.entity_slot~=slot then
+  if StopSound then for s=0,TRACK_COUNT-1 do pcall(StopSound,e,s) end end
+  if SetSound then pcall(SetSound,e,slot) end
+  local ok=pcall(LoopNon3DSound,e,slot)
+  if not ok then return false end
+  m.entity_fallback=true;m.entity_slot=slot
+  audit('music_entity_fallback active=true track='..track_name(slot))
+ end
+ if SetSound then pcall(SetSound,e,slot) end
+ if SetSoundVolume then pcall(SetSoundVolume,math.max(0,math.min(100,math.floor(volume)))) end
+ return true
 end
 
 function firstlight_score_init(e)
@@ -115,7 +145,8 @@ function firstlight_score_init(e)
   target=TRACK_SALT,pending=-1,pending_since=0,
   volumes={[211]=0,[212]=0,[213]=0,[214]=0},
   last_state="",last_update=g_Time or 0,target_volume=46,
-  fallback_announced=false,ducking=false
+  fallback_announced=false,ducking=false,global_fail_since=0,
+  entity_fallback=false,entity_slot=-1
  }
  Hide(e)
  CollisionOff(e)
@@ -124,9 +155,12 @@ function firstlight_score_init(e)
 
  local first=resolved_id(TRACK_SALT)
  if first>=0 then
-  ensure_looping(first)
+  local playing=ensure_looping(first)
   set_volume(first,34)
   music[e].volumes[first]=34
+  if not playing then music[e].global_fail_since=g_Time or 0 end
+ else
+  music[e].global_fail_since=g_Time or 0
  end
 
  audit(
@@ -147,17 +181,15 @@ function firstlight_score_main(e)
 
  local state=aegis.music_state or "exploration_fortress"
  local desired,desired_volume=track_for_state(state)
- local immediate=false -- Preserve spatial score identity through very short contacts.
+ local immediate=false
  local intensity=clamp(aegis.combat_intensity or 0,0,100)
  local combat_state=state=="combat" or state=="combat_overcharge" or state=="combat_interference"
  if combat_state then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
 
- -- Dialogue and authored CineGuru beats own intelligibility/presentation windows. Duck
- -- without pausing so Suno masters remain phase-continuous across gameplay and cameras.
  local speaking=fl and g_Time<(fl.message_until or 0)
  local cinematic=aegis.music_cinematic_duck and true or false
  local ducking=speaking or cinematic
- if ducking then desired_volume=math.max(26,desired_volume-(cinematic and 18 or 14)) end
+ if ducking then desired_volume=math.max(30,desired_volume-(cinematic and 16 or 12)) end
  aegis.music_ducking=ducking
 
  if desired~=m.target then
@@ -170,6 +202,7 @@ function firstlight_score_main(e)
    m.target=desired
    m.target_volume=desired_volume
    m.pending=-1
+   m.global_fail_since=0
    aegis.music_track=m.target
    aegis.music_track_changed_at=g_Time
    local id,fallback=resolved_id(m.target)
@@ -188,7 +221,8 @@ function firstlight_score_main(e)
  end
  if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and g_Time-(m.audit_at or 0)>5000 then
   m.audit_at=g_Time
-  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(ducking))
+  local gp=GetGlobalSoundPlaying and GetGlobalSoundPlaying(GLOBAL_IDS[m.target]) or -1
+  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(gp)..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(ducking)..' entity_fallback='..tostring(m.entity_fallback))
  end
 
  local target_id,fallback=resolved_id(m.target)
@@ -197,11 +231,22 @@ function firstlight_score_main(e)
   audit("music_fallback active=true requested="..track_name(m.target))
  end
 
- -- Crossfade tracks in roughly two seconds; presentation ducking responds faster.
+ local global_playing=false
+ if target_id>=0 then global_playing=ensure_looping(target_id) end
+ if global_playing then
+  m.global_fail_since=0
+  stop_entity_fallback(e,m)
+ else
+  if (m.global_fail_since or 0)==0 then m.global_fail_since=g_Time end
+  if g_Time-m.global_fail_since>=750 then run_entity_fallback(e,m,m.target,m.target_volume) end
+ end
+ if m.entity_fallback then run_entity_fallback(e,m,m.target,m.target_volume) end
+
+ -- Crossfade global tracks in roughly two seconds; presentation ducking responds faster.
  local step=elapsed*(ducking and 0.060 or 0.035)
  local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
  for _,id in ipairs(ids) do
-  local goal=(id==target_id) and m.target_volume or 0
+  local goal=(id==target_id and not m.entity_fallback) and m.target_volume or 0
   local v=m.volumes[id] or 0
   if v<goal then v=math.min(goal,v+step) end
   if v>goal then v=math.max(goal,v-step) end
@@ -211,7 +256,7 @@ function firstlight_score_main(e)
    set_volume(id,v)
   else
    set_volume(id,0)
-   stop_if_silent(id,v,id==target_id)
+   stop_if_silent(id,v,id==target_id and not m.entity_fallback)
   end
  end
 end

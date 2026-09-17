@@ -49,12 +49,12 @@ def main():
  # so a successful build does not immediately report itself stale on the next launch.
  from firstlight_dialogue import sync_catalog
  from firstlight_cinematics import sync_coordinator
- from firstlight_opening_director import sync_coordinator_guard
+ from firstlight_opening_director import disable_legacy_opening
  from firstlight_material_polish import apply_material_polish
  from firstlight_material_contracts import enforce_material_contracts
  sync_catalog(GAME/'Files/scriptbank/aegis_reach/firstlight_dialogue.lua')
  coordinator=GAME/'Files/scriptbank/aegis_reach/firstlight_cinematic.lua'
- sync_coordinator(coordinator);sync_coordinator_guard(coordinator)
+ sync_coordinator(coordinator);disable_legacy_opening(coordinator)
  signature=digest_sources();prior=current_stamp();needed=(not MAP.is_file()) or prior.get('source_sha256')!=signature
  if not needed:
   # Texture outputs are generated assets; restore them if a local cache was cleared
