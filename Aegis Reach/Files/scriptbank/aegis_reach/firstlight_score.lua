@@ -131,6 +131,9 @@ function firstlight_score_init(e)
  Hide(e)
  CollisionOff(e)
  SetActivated(e,1)
+ -- FIRST LIGHT owns its soundtrack. Prevent MAX's ordinary reset/restart path from
+ -- reasserting another music system while our global score controller is active.
+ if DisableMusicReset then DisableMusicReset(1) end
  if StopAmbientMusicTrack then StopAmbientMusicTrack() end
 
  local first=resolved_id(TRACK_SALT)
@@ -174,10 +177,12 @@ function firstlight_score_main(e)
  local combat_state=state=="combat" or state=="combat_overcharge" or state=="combat_interference"
  if combat_state and not cinematic_override then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
 
- -- During an authored cinematic, the explicit score cue remains audible and only VO
- -- causes a modest intelligibility duck. Generic cinematic ducking remains for later
- -- CineGuru beats that do not provide their own music edit.
- local speaking=fl and g_Time<(fl.message_until or 0)
+ -- Cinematic VO has its own clock. Normal HUD speech uses fl.message_until only when
+ -- no story camera owns presentation; this prevents stale mission text from becoming a
+ -- fake VO-duck signal during the opening.
+ local dialogue_speaking=aegis.dialogue_current and g_Time<(aegis.dialogue_current.expires_at or 0)
+ local hud_speaking=(not aegis.cinematic_active) and fl and g_Time<(fl.message_until or 0)
+ local speaking=(dialogue_speaking or hud_speaking) and true or false
  local cinematic=aegis.music_cinematic_duck and true or false
  local ducking=speaking or (cinematic and not cinematic_override)
  if speaking then desired_volume=math.max(30,desired_volume-10)
@@ -185,11 +190,19 @@ function firstlight_score_main(e)
  aegis.music_ducking=ducking
 
  -- A cue serial is an edit point, not an adaptive-state suggestion. Restart the master
- -- exactly once at the cue and bypass normal 4.5s/15s gameplay hysteresis.
+ -- exactly once at the cue and hard-silence every other FIRST LIGHT score ID first.
+ -- That prevents a combat state reached under the cinematic from leaking into the cut.
  if cinematic_override and cue_changed then
   m.target=desired;m.target_volume=desired_volume;m.pending=-1;m.changed_at=g_Time
   aegis.music_track=m.target;aegis.music_track_changed_at=g_Time
   local id,fallback=resolved_id(m.target)
+  local score_ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
+  for _,other in ipairs(score_ids) do
+   if other~=id then
+    if exists(other) then set_volume(other,0);if StopGlobalSound then StopGlobalSound(other) end end
+    m.volumes[other]=0
+   end
+  end
   if id>=0 then
    restart_loop(id)
    local launch=math.min(desired_volume,18)
@@ -217,8 +230,6 @@ function firstlight_score_main(e)
   m.pending=-1
  end
  if cue_changed and not cinematic_override then
-  -- Leaving an authored edit should not trap gameplay behind the cinematic's change
-  -- timestamp; allow the next legitimate adaptive state to settle normally.
   m.changed_at=-20000
  end
  m.cinematic_override=cinematic_override
@@ -239,8 +250,6 @@ function firstlight_score_main(e)
   audit("music_fallback active=true requested="..track_name(m.target))
  end
 
- -- Crossfade gameplay in ~2 s; authored edit points rise faster so the music onset is
- -- perceptible on the cut without becoming a hard digital jump.
  local step=elapsed*(cinematic_override and 0.085 or (ducking and 0.060 or 0.035))
  local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
  for _,id in ipairs(ids) do
