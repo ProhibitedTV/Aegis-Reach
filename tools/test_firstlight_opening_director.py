@@ -31,13 +31,17 @@ def main():
     assert meta.get('runtime_entry')=='firstlight_hud.lua -> fl_opening_native_tick()',meta
 
     native=NATIVE.read_text();hud=HUD.read_text();coord=COORD.read_text()
+    # Cinematic-v2 keeps the hard native ownership contract while replacing the old
+    # mostly hull-mounted framing with readable exterior/security compositions.
     for token in (
         'FreezePlayer()','UnFreezePlayer()','SetCameraOverride(3)',
         'SetCameraPosition(0,x,y,z)','SetCameraAngle(0,rx,ry,rz)',
         "aegis.cinematic_request='OPENING_NATIVE_LOCK'",'g_KeyPressSPACE==1',
-        "FL KESTREL INSERTION FLIGHT","KSTL-01 NOSE EO // LIVE",
-        "KSTL-08 STBD GEAR // GROUND","KSTL-09 RAMP // DEPLOY",
-        'for id=1,4096 do',
+        "FL KESTREL INSERTION FLIGHT","KSTL-01 // NOSE EO",
+        "KSTL EXT // PORT THREE-QUARTER","KSTL EXT // FINAL HOVER",
+        "LZ07-PAD-04 // DEPLOY","KSTL EXT // DEPARTURE CHASE",
+        'SetCameraPanelFOV(fov)','for id=1,4096 do',
+        "cinematic_music_track=cue.track","cinematic_music_cue_serial",
     ):
         assert token in native,token
     assert native.count("beat='ARRIVAL_")>=17
@@ -54,7 +58,7 @@ def main():
     assert not opening,[(_name(e),_script(e)) for e in opening]
     later=[e for e in entities if _name(e) in ('FL CG MIRA SIGNAL','FL CG AEGIS REVEAL','FL CG EXTRACTION')]
     assert len(later)==3 and all(_script(e)==CINE for e in later),'later story cameras must retain CineGuru'
-    print('FIRST LIGHT // HARD-REPLACEMENT OPENING PASS')
-    print('0 insertion CineGuru cameras in map.ele; 17 native cuts begin on KSTL-01 NOSE EO; CineGuru remains only for later story beats.')
+    print('FIRST LIGHT // CINEMATIC V2 HARD-REPLACEMENT PASS')
+    print('0 insertion CineGuru cameras in map.ele; 17 native cuts use nose/exterior/security framing with deterministic score cues; CineGuru remains only for later story beats.')
 
 if __name__=='__main__':main()
