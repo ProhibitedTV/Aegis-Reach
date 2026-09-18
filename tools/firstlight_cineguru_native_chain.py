@@ -1,9 +1,13 @@
-"""Author the FIRST LIGHT opening as a real native CineGuru camera graph.
+"""Retain an inert compatibility marker for the retired FIRST LIGHT CineGuru opener.
 
-The Lua coordinator owns story state, VO and fail-open behavior. CineGuru should own the
-actual edit. GameGuru MAX serializes entity logic links as an object-link ID plus up to
-ten relationship link IDs. CineGuru's cg_lib/GetEntityLinks consumes those native links
-and cg_cinematic_camera follows camera->camera relationships through `nextcam`.
+FIRST LIGHT's insertion is now a hard native replacement owned by
+firstlight_opening_native.lua.  The seventeen legacy `FL CG ARRIVAL ...` camera
+entities are quarantined by firstlight_opening_director before this pass runs.
+
+For compatibility with older reports/tests we still author the historical chain
+controller, but when the hard-replacement state is present it has no camera graph
+to activate.  A partially removed legacy graph is treated as corruption and fails
+loudly rather than producing a mixed opening implementation.
 """
 
 OPENING_CAMERA_NAMES=(
@@ -16,6 +20,7 @@ OPENING_CAMERA_NAMES=(
 )
 MARKER=r'Aegis Reach\Supply Crate.fpe'
 CHAIN_SCRIPT=r'aegis_reach\firstlight_cineguru_chain.lua'
+CONTROLLER='FIRST LIGHT // CINEGURU NATIVE CHAIN'
 
 
 def _suffix_key(entity,suffix):
@@ -34,25 +39,49 @@ def _set(build,entity,suffix,value):
         raise RuntimeError('native CineGuru chain field missing from entity template: '+suffix)
 
 
-def _entity_by_name(build,name):
+def _find_entity_by_name(build,name):
     for placement in build.placements:
         if placement.get('name')==name:
             idx=int(placement['id'])-1
             if 0<=idx<len(build.entities):return build.entities[idx]
-    raise RuntimeError('opening camera missing before native chain pass: '+name)
+    return None
+
+
+def _add_controller(build):
+    build.add(MARKER,CONTROLLER,260,-9500,y=100,
+              kind='controller',script=CHAIN_SCRIPT,
+              **{'eleprof.physics':0,'eleprof.phyalways':1})
 
 
 def apply(build):
-    entities=[_entity_by_name(build,name) for name in OPENING_CAMERA_NAMES]
+    found=[(name,_find_entity_by_name(build,name)) for name in OPENING_CAMERA_NAMES]
+    entities=[entity for _,entity in found if entity is not None]
+
+    # Current production contract: firstlight_opening_director has already renamed
+    # and neutralized every legacy ARRIVAL camera. Preserve only the inert chain
+    # controller so old reports/tests and local MAX projects remain compatible.
+    if not entities:
+        _add_controller(build)
+        return {
+            'native_chain':False,'camera_count':0,'first_camera':None,'last_camera':None,
+            'link_ids':[],
+            'relationship_model':'retired; no ARRIVAL camera graph after native hard replacement',
+            'controller':CONTROLLER,'script':CHAIN_SCRIPT,
+            'compatibility_only':True,
+        }
+
+    # Anything between zero and all seventeen means the build mixed two opening
+    # generations. Never silently publish that state.
+    if len(entities)!=len(OPENING_CAMERA_NAMES):
+        missing=[name for name,entity in found if entity is None]
+        raise RuntimeError('partial legacy CineGuru opening graph survived hard replacement; missing: '+', '.join(missing))
+
+    # Legacy fallback retained for old authoring order only. A production build
+    # should never reach this path because the native opening pass runs first.
     max_link=max([int(_get(e,'eleprof.iObjectLinkID',0) or 0) for e in build.entities]+[0])
     first_link=max(1000,max_link+32)
     link_ids=[first_link+i for i in range(len(entities))]
 
-    # Clean only fields that are actually serialized by the installed/public MAX
-    # entity schema. MAX exposes Relationships, RelationshipsType and
-    # RelationshipsData; there is no RelationshipsDataUser array in map.ele.
-    # Requiring an invented field made the production rebuild fail before the
-    # cinematic/title-screen layers could be written.
     for entity,link_id in zip(entities,link_ids):
         _set(build,entity,'eleprof.iObjectLinkID',link_id)
         for slot in range(10):
@@ -60,9 +89,6 @@ def apply(build):
             _set(build,entity,f'eleprof.iObjectRelationshipsType[{slot}]',0)
             _set(build,entity,f'eleprof.iObjectRelationshipsData[{slot}]',0)
 
-    # Connect each camera to its immediate neighbors. CineGuru walks away from the
-    # camera it came from, so the bidirectional graph resolves deterministically into
-    # PERIM -> ... -> DEPART while remaining visible/editable in MAX.
     for i,entity in enumerate(entities):
         neighbors=[]
         if i>0:neighbors.append(link_ids[i-1])
@@ -70,16 +96,11 @@ def apply(build):
         for slot,target_link in enumerate(neighbors):
             _set(build,entity,f'eleprof.iObjectRelationships[{slot}]',target_link)
 
-    # This tiny controller asks the vendored CineGuru camera script to parse its native
-    # relationship graph as soon as all cameras have registered. The story coordinator
-    # can continue to activate ARRIVAL_PERIM; CineGuru itself then owns the cuts.
-    build.add(MARKER,'FIRST LIGHT // CINEGURU NATIVE CHAIN',260,-9500,y=100,
-              kind='controller',script=CHAIN_SCRIPT,
-              **{'eleprof.physics':0,'eleprof.phyalways':1})
-
+    _add_controller(build)
     return {
         'native_chain':True,'camera_count':len(entities),'first_camera':OPENING_CAMERA_NAMES[0],
         'last_camera':OPENING_CAMERA_NAMES[-1],'link_ids':link_ids,
-        'relationship_model':'bidirectional adjacency; CineGuru nextcam traversal',
-        'controller':'FIRST LIGHT // CINEGURU NATIVE CHAIN','script':CHAIN_SCRIPT,
+        'relationship_model':'legacy bidirectional adjacency; should not occur in production hard-replacement build',
+        'controller':CONTROLLER,'script':CHAIN_SCRIPT,
+        'compatibility_only':False,
     }
