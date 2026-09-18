@@ -30,40 +30,42 @@ def finish_atlas():
     if not ATLAS.is_file() or not EMISSIVE.is_file():
         raise SystemExit('KESTREL FINISH: generated atlas/emissive maps are missing')
     img=Image.open(ATLAS).convert('RGB')
-    # The authored night grade was crushing the original ~20-90 RGB hull almost to
-    # black.  Lift values without bleaching the TPS/interior identity.
-    img=ImageEnhance.Brightness(img).enhance(1.34)
-    img=ImageEnhance.Contrast(img).enhance(1.08)
+    # Vesper's night grade crushed the original ~20-90 RGB hull almost to black.
+    # Cinematic-v2 deliberately lifts the aircraft into a readable moonlit midrange;
+    # the TPS/interior remain dark because their source tiles begin substantially lower.
+    img=ImageEnhance.Brightness(img).enhance(1.55)
+    img=ImageEnhance.Contrast(img).enhance(1.06)
     draw=ImageDraw.Draw(img)
     tile=img.width//8
-    # Shell/secondary identification bands.  These are deliberately broad enough to
-    # survive mipmapping at the camera distances used by the insertion sequence.
-    cyan=(82,181,188); pale=(200,207,198); dark=(28,36,39); amber=(210,126,69)
+    # Shell/secondary identification bands. These are broad enough to survive mipmaps
+    # at insertion-camera distances and provide recognizable military airframe rhythm.
+    cyan=(92,202,210); pale=(214,220,211); dark=(34,43,46); amber=(220,136,73)
     for idx in (0,1):
         x=idx*tile
-        draw.rectangle((x+14,18,x+tile-14,27),fill=cyan)
-        draw.rectangle((x+14,tile-30,x+tile-14,tile-22),fill=dark)
-        for px in (34,82,130):draw.rectangle((x+px,42,x+px+3,150),fill=(77,88,90))
+        draw.rectangle((x+14,18,x+tile-14,29),fill=cyan)
+        draw.rectangle((x+14,tile-32,x+tile-14,tile-22),fill=dark)
+        for px in (34,82,130):draw.rectangle((x+px,42,x+px+4,150),fill=(91,104,106))
     # Markings tile: readable military/flight-line identity instead of anonymous gray.
     x=4*tile
     draw.rectangle((x+12,40,x+tile-12,78),fill=pale)
-    draw.rectangle((x+12,92,x+tile-12,128),fill=(74,91,91))
+    draw.rectangle((x+12,92,x+tile-12,128),fill=(84,103,103))
     draw.text((x+20,47),'VANGUARD',font=_font(20),fill=(31,40,42))
-    draw.text((x+23,99),'KSTL-07',font=_font(18),fill=(210,221,214))
-    draw.rectangle((x+14,140,x+tile-14,150),fill=amber)
+    draw.text((x+23,99),'KSTL-07',font=_font(18),fill=(224,232,224))
+    draw.rectangle((x+14,140,x+tile-14,151),fill=amber)
     # Structure/TPS get edge-readable maintenance stripes without becoming glossy.
     for idx in (2,7):
         x=idx*tile
-        for y in (24,88,152):draw.rectangle((x+18,y,x+tile-18,y+3),fill=(63,72,73))
+        for y in (24,88,152):draw.rectangle((x+18,y,x+tile-18,y+3),fill=(72,82,83))
     img.save(ATLAS,optimize=True)
 
     em=Image.open(EMISSIVE).convert('RGB');ed=ImageDraw.Draw(em)
     # Cool IFF/service strips on shell and markings; hot propulsion tiles remain owned
-    # by the procedural generator.  The strips provide form even in near-black shots.
+    # by the procedural generator. These strips establish silhouette in near-black shots
+    # without turning the entire hull into self-lit plastic.
     for idx in (0,1,4):
         x=idx*tile
-        ed.rectangle((x+18,18,x+tile-18,23),fill=(28,154,166))
-        ed.rectangle((x+22,tile-26,x+tile-22,tile-22),fill=(10,88,96))
+        ed.rectangle((x+18,18,x+tile-18,25),fill=(36,190,204))
+        ed.rectangle((x+22,tile-28,x+tile-22,tile-22),fill=(14,112,122))
     em.save(EMISSIVE,optimize=True)
 
 
@@ -80,19 +82,19 @@ def finish_fpes():
         path=AS/name
         if not path.is_file():raise SystemExit('KESTREL FINISH: missing '+name)
         text=path.read_text(errors='replace')
-        # Full-strength metalness plus dark albedo was producing a black void in the
-        # night sequence.  Keep it metallic, but give environment light something to
-        # read and let the restrained emissive service strips define silhouette.
-        text=set_field(text,'roughnessStrength','0.90')
-        text=set_field(text,'metalnessStrength','0.72')
-        text=set_field(text,'emissiveStrength','1.30')
-        text=set_field(text,'reflectance','0.30')
+        # Full metalness plus dark albedo was producing a black void. Keep a metallic
+        # response, but bias toward diffuse readability and let cyan service emission
+        # define form when the environment is nearly unlit.
+        text=set_field(text,'roughnessStrength','0.92')
+        text=set_field(text,'metalnessStrength','0.58')
+        text=set_field(text,'emissiveStrength','1.55')
+        text=set_field(text,'reflectance','0.36')
         path.write_text(text)
 
 
 def main():
     finish_atlas();finish_fpes()
     print('FIRST LIGHT // KESTREL CINEMATIC MATERIAL PASS')
-    print('Hull values lifted, VANGUARD/KSTL markings restored, cyan IFF strips active, APBR metal response restrained.')
+    print('Hull exposure raised for Vesper night, VANGUARD/KSTL markings restored, stronger cyan IFF silhouette active, APBR metal response restrained.')
 
 if __name__=='__main__':main()
