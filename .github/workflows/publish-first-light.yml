@@ -1,0 +1,149 @@
+name: Publish First Light Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        required: true
+        default: v0.1.0-alpha
+      prerelease:
+        description: Mark as prerelease
+        required: true
+        type: boolean
+        default: true
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-first-light.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DEFAULT_TAG: v0.1.0-alpha
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Resolve release settings
+        id: release
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ inputs.prerelease }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$DEFAULT_TAG" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip if release already exists
+        id: existing
+        shell: bash
+        run: |
+          if gh release view "${{ steps.release.outputs.tag }}" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out release source
+        if: steps.existing.outputs.exists != 'true'
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Build downloadable First Light package
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        run: |
+          TAG="${{ steps.release.outputs.tag }}"
+          SAFE_TAG="${TAG#v}"
+          PACKAGE="Aegis-Reach-First-Light-${SAFE_TAG}"
+          mkdir -p "dist/$PACKAGE"
+          cp -a "Aegis Reach" "dist/$PACKAGE/"
+          cp -a tools "dist/$PACKAGE/"
+          cp "PLAY FIRST LIGHT.cmd" "dist/$PACKAGE/"
+          cp "PLAY FIRST LIGHT QA.cmd" "dist/$PACKAGE/"
+          cp "COLLECT FIRST LIGHT.cmd" "dist/$PACKAGE/"
+          cp "COLLECT FIRST LIGHT QA.cmd" "dist/$PACKAGE/"
+          cp README.md "dist/$PACKAGE/"
+          printf '%s\n' \
+            'AEGIS REACH: FIRST LIGHT' \
+            '' \
+            'This is a GameGuru MAX developer/playtest package, not a standalone executable.' \
+            'GameGuru MAX and the project licensed asset dependencies are required.' \
+            '' \
+            'Start with PLAY FIRST LIGHT.cmd from the package root.' \
+            > "dist/$PACKAGE/RELEASE.txt"
+          cd dist
+          zip -r -9 "${PACKAGE}.zip" "$PACKAGE"
+          sha256sum "${PACKAGE}.zip" > "${PACKAGE}.zip.sha256"
+
+      - name: Write release notes
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        run: |
+          cat > release-notes.md <<'EOF'
+          # Aegis Reach: First Light — Developer Preview
+
+          **First Light is Mission 01.** This release packages the current native GameGuru MAX project, launch/preflight tooling, QA launcher, collection tooling, and authored project content from `main`.
+
+          ## What is in this release
+          - First Light mission project and authored runtime content
+          - Normal launcher: `PLAY FIRST LIGHT.cmd`
+          - Instrumented native QA launcher: `PLAY FIRST LIGHT QA.cmd`
+          - Runtime report collection helpers
+          - Authoring/validation tools under `tools/`
+          - SHA-256 checksum for the downloadable ZIP
+
+          ## Recent First Light work
+          - Replaced the legacy external insertion scene with an onboard Kestrel camera sequence
+          - Moved opening-camera ownership onto the mission/HUD runtime path
+          - Added deterministic opening-camera behavior and regression coverage
+          - Hard-disabled the stale CineGuru opening bootstrap
+
+          ## Requirements
+          This is **not a standalone executable**. You need GameGuru MAX plus the licensed local asset dependencies used by the project, including the Military Pack, Industrial Collection, and MAX Collection. Those licensed payloads are intentionally not redistributed in this repository or release.
+
+          ## Launch
+          Close any existing GameGuru MAX session, extract the ZIP, then run:
+
+          `PLAY FIRST LIGHT.cmd`
+
+          The launcher applies the narrow legacy weapon safety patch, runs structural/preflight validation, verifies the runtime map and score masters, registers the checkout as the external Aegis Reach project, and then opens the native project.
+
+          For instrumented native QA, use `PLAY FIRST LIGHT QA.cmd`.
+
+          ---
+          First public prerelease of **Aegis Reach: First Light**.
+          EOF
+
+      - name: Publish GitHub release
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        run: |
+          TAG="${{ steps.release.outputs.tag }}"
+          SAFE_TAG="${TAG#v}"
+          PACKAGE="Aegis-Reach-First-Light-${SAFE_TAG}"
+          EXTRA_FLAGS=""
+          if [ "${{ steps.release.outputs.prerelease }}" = "true" ]; then
+            EXTRA_FLAGS="--prerelease"
+          fi
+          gh release create "$TAG" \
+            "dist/${PACKAGE}.zip" \
+            "dist/${PACKAGE}.zip.sha256" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Aegis Reach: First Light — Developer Preview ${TAG}" \
+            --notes-file release-notes.md \
+            $EXTRA_FLAGS
+
+      - name: Report existing release
+        if: steps.existing.outputs.exists == 'true'
+        shell: bash
+        run: |
+          echo "Release ${{ steps.release.outputs.tag }} already exists; nothing to publish."
