@@ -38,13 +38,16 @@ for line in LINES:
     raise ValueError(f'{wav.name}: MAX dialogue requires uncompressed 16-bit PCM')
    line['audio_seconds']=round(audio.getnframes()/audio.getframerate(),6)
   line['seconds']=math.ceil((line['audio_seconds']+.15)*1000)/1000
+
 def sync_catalog(script):
- # Keep spoken text, subtitle text and export manifest under one authoring owner.
+ # Keep spoken text, subtitle text and export manifest under one authoring owner. Only
+ # replace the catalog itself; runtime tables immediately following it are independently
+ # authored and must survive rebuilds (for example cinematic global-VO IDs).
  entries=[]
  for line in LINES:
   entries.append(' '+line['id']+'={speaker='+json.dumps(line['speaker'])+',text='+json.dumps(line['text'])+',seconds='+str(line['seconds'])+'},')
- replacement='local catalog={\n'+'\n'.join(entries)+'\n}\nlocal voice_entities'
- source,n=re.subn(r'local catalog=\{.*?\n\}\nlocal voice_entities',lambda _:replacement,script.read_text(),count=1,flags=re.S)
+ replacement='local catalog={\n'+'\n'.join(entries)+'\n}\n'
+ source,n=re.subn(r'local catalog=\{.*?\n\}\n',lambda _:replacement,script.read_text(),count=1,flags=re.S)
  assert n==1,'dialogue catalog boundary missing'
  script.write_text(source)
 
