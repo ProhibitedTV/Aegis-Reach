@@ -6,9 +6,32 @@ ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/'tools'));sys.path.insert(0,str(ROOT/'tools/vendor'))
 from python_runtime import ensure_max_lua_runtime
 
+scripts=ROOT/'Aegis Reach/Files/scriptbank/aegis_reach'
+source=(scripts/'firstlight_opening_native.lua').read_text()
+dialogue=(scripts/'firstlight_dialogue.lua').read_text()
+score=(scripts/'firstlight_score.lua').read_text()
+finish=(ROOT/'tools/firstlight_kestrel_finish.py').read_text()
+
+# Presentation/audio contract: prevent the exact native-playtest regressions that led
+# to cinematic-v2.  FOV must be real degrees, music must use deterministic edit cues,
+# VO discovery must survive MAX's sparse entity table, subtitles must use a readable
+# lower third, and the night Kestrel must receive its dedicated material finish.
+assert 'SetCameraPanelFOV(fov)' in source and 'SetCameraPanelFOV(fov/2)' not in source
+for cue in ("{at=0,track='salt_moon_drift'", "{at=8400,track='moon_outpost_drift'",
+            "{at=23500,track='orbital_catacomb'", "{at=42700,track='salt_moon_drift'"):
+    assert cue in source,cue
+assert 'cinematic_music_cue_serial' in source
+assert 'for e=1,4096 do' in dialogue,'cinematic VO lookup regressed to pairs-only entity discovery'
+assert 'fl.message_until=math.max' in dialogue,'cinematic VO no longer drives shared score-duck clock'
+assert 'split_line(rest,62)' in dialogue and 'TextCenterOnXColor(50,top+(i-1)*4.6,3,row' in dialogue
+for token in ('slot_for_name','cinematic_music_track','cinematic_music_cue_serial','restart_loop(id)'):
+    assert token in score,token
+for token in ('FIRST LIGHT // KESTREL CINEMATIC MATERIAL PASS','Brightness(img).enhance(1.34)',
+              "metalnessStrength','0.72'","emissiveStrength','1.30'"):
+    assert token in finish,token
+
 LuaRuntime=ensure_max_lua_runtime(__file__)
 lua=LuaRuntime(unpack_returned_tuples=True)
-source=(ROOT/'Aegis Reach/Files/scriptbank/aegis_reach/firstlight_opening_native.lua').read_text()
 source='\n'.join(line for line in source.splitlines() if not line.startswith("require 'scriptbank\\\\aegis_reach\\\\firstlight_audit'"))
 
 lua.execute(r'''
@@ -116,4 +139,4 @@ assert g.aegis.insertion_complete is True
 assert g.aegis.cinematic_request=='OPENING_NATIVE_DONE',g.aegis.cinematic_request
 assert g.aegis.cinematic_music_track is None
 print('FIRST LIGHT // CINEMATIC V2 OPENING RUNTIME PASS')
-print('Nose feed -> exterior chase -> security -> conversion -> touchdown -> departure uses true FOV and deterministic score cues; control restores at handoff.')
+print('Nose feed -> exterior chase -> security -> conversion -> touchdown -> departure uses true FOV, deterministic score cues, VO-safe ducking and finished Kestrel materials; control restores at handoff.')
