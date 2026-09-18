@@ -113,8 +113,10 @@ for e,role in ((70,'GATELOG'),(71,'GRIDLOG'),(72,'FLIGHTLOG')):
  g.g_KeyPressE=1;step(100,e)
  check(role+' reveals story without bypassing objectives',g.fl.stage==stage and len(list(g.fl.intel.items()))==count and g.fl.discovery_track=='discovery_human')
  until=g.fl.message_until;step(100,e);check(role+' cannot spam repeated messages',g.fl.message_until==until)
-# Enemy wrapper contracts: stock MAX tactics, hidden reserves and visibility-safe reveals.
-entity(40,0,-2350,100);g.firstlight_enemy_init_name(40,'FL ENEMY 7 1');g.firstlight_enemy_main(40)
+# Enemy wrapper contracts: opening lock first, then stock MAX tactics and reveal cadence.
+entity(40,0,-2350,100);g.firstlight_enemy_init_name(40,'FL ENEMY 7 1');before=g.ai_ticks;g.firstlight_enemy_main(40)
+check('Opening gate prevents native combat initialization',g.calls.hidden40 and g.ai_ticks==before)
+g.aegis.insertion_complete=True
 check('Reserve remains hidden before evacuation',g.calls.hidden40)
 g.fl.stage=4;g.fl.evac_start=g.g_Time;g.firstlight_enemy_main(40);check('Reinforcements respect their arrival delay',g.calls.hidden40)
 g.g_Time+=4100;g.firstlight_enemy_main(40)
@@ -145,7 +147,7 @@ check('Shield meter represents partial segments',len(bars)==3 and abs(sum(bars)-
 check('Empty armour has no filled segments',not any(r.r==212 and r.g==222 and r.b==225 for r in rects))
 g.fl_hud_reset();check('HUD releases its sprite between sessions',g.calls.hud_deleted==82)
 # A regular squad staging point centered in view should stay concealed until the player turns away.
-g.firstlight_director_init(1);g.firstlight_director_main(1);g.g_Time=g.fl.born+23000;pos(0,-6000);g.g_PlayerAngY=0
+g.firstlight_director_init(1);g.firstlight_director_main(1);g.aegis.insertion_complete=True;g.g_Time=g.fl.born+23000;pos(0,-6000);g.g_PlayerAngY=0
 entity(41,0,-5000,100);g.firstlight_enemy_init_name(41,'FL ENEMY 1 1');g.firstlight_enemy_main(41)
 g.g_Time+=500;g.firstlight_enemy_main(41)
 check('Regular squad reveal waits while staging point is centered in view',g.calls.hidden41)
