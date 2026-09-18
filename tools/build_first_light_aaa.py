@@ -57,7 +57,7 @@ print('FIRST LIGHT // PRODUCTION COMBAT + STORY + VEHICLE + BIOSPHERE + NATIVE E
 print('Cover pieces:',summary['cover_count']);print('Combat backlights:',summary['combat_light_count']);print('Repositioned Warden starts:',len(summary['enemy_starts']))
 print('CineGuru story beats:',', '.join(cinematics['beats']))
 print('Opening director:',opening_director['cut_count'],'hard cuts //',opening_director['opening_ms']/1000,'s // camera owner',opening_director['camera_owner'])
-print('Native CineGuru opener chain:',cineguru_chain['native_chain'],'//',cineguru_chain['camera_count'],'linked camera mounts')
+print('CineGuru compatibility marker:',cineguru_chain['compatibility_only'],'//',cineguru_chain['camera_count'],'linked ARRIVAL cameras')
 print('Title-screen skyline:',title_screen['entity_count'],'visual-only landmarks //',title_screen['spire_count'],'relay spires')
 print('Kestrel:',kestrel['vehicle_entities'],'visible vehicle entities // landing at',kestrel['touchdown_ms']//1000,'s')
 print('Kestrel boarding:',kestrel_boarding['proxy_entities'],'landed-only polygon collision proxy')
