@@ -7,7 +7,7 @@ require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- genuine tactical feeds with authored exterior chase/three-quarter views that show the
 -- ship, its conversion hardware, touchdown, ramp and departure.  Music cues are also
 -- explicit and deterministic instead of merely ducking a free-running adaptive score.
-local opening={started=false,finished=false,start_ms=0,shot=0,ship_obj=nil,ship_entity=nil,lines={},logged_wait=false,music_cue=0}
+local opening={started=false,finished=false,start_ms=0,shot=0,ship_obj=nil,ship_entity=nil,lines={},logged_wait=false,music_cue=0,ai_frozen=false}
 
 -- fovs/fove are actual camera FOV degrees.  Do not divide them as focal lengths: MAX's
 -- SetCameraPanelFOV consumes field-of-view directly.
@@ -147,6 +147,7 @@ local function release(skipped)
  if opening.finished then return end;opening.finished=true
  if SetCameraOverride then SetCameraOverride(0) end
  if UnFreezePlayer then UnFreezePlayer() end
+ if opening.ai_frozen and UnFreezeAI then UnFreezeAI() end;opening.ai_frozen=false
  if SetCameraPanelFOV and opening.orig_fov then SetCameraPanelFOV(opening.orig_fov) end
  if SetPostMotionIntensity and opening.orig_pmi then SetPostMotionIntensity(opening.orig_pmi) end
  if SetPlayerWeapons then SetPlayerWeapons(1) end
@@ -163,7 +164,10 @@ local function release(skipped)
   aegis.cinematic_music_cue_serial=(aegis.cinematic_music_cue_serial or 0)+1
   aegis.cinematic_request='OPENING_NATIVE_DONE'
  end
- if fl then fl.objective_pulse_until=(g_Time or 0)+3500 end
+ if fl then
+  fl.message={};fl.message_until=0;fl.radio_queue={};fl.zone_until=0
+  fl.objective_pulse_until=(g_Time or 0)+3500
+ end
  log(skipped and 'skip complete' or 'opening complete')
 end
 local function begin()
@@ -177,13 +181,14 @@ local function begin()
  opening.orig_pmi=GetPostMotionIntensity and GetPostMotionIntensity() or 0
  opening.orig_weapon=GetPlayerWeaponID and GetPlayerWeaponID() or 0
  opening.orig_flash=GetGamePlayerStateFlashlightKeyEnabled and GetGamePlayerStateFlashlightKeyEnabled() or 1
- if fl then fl.message_until=0;fl.zone_until=0;fl.radio_queue={} end
+ if fl then fl.message={};fl.message_until=0;fl.zone_until=0;fl.radio_queue={} end
  if aegis then
   aegis.opening_native_active=true;aegis.opening_director_active=false;aegis.insertion_complete=false
   aegis.cinematic_request='OPENING_NATIVE_LOCK';aegis.cinematic_active=true;aegis.opening_started_at=opening.start_ms
-  aegis.opening_elapsed_ms=0;aegis.music_cinematic_duck=true
+  aegis.opening_elapsed_ms=0;aegis.music_cinematic_duck=true;aegis.combat_intensity=0
  end
  if FreezePlayer then FreezePlayer() end
+ if FreezeAI then FreezeAI();opening.ai_frozen=true end
  if SetCameraOverride then SetCameraOverride(3) end
  if SetPostMotionIntensity then SetPostMotionIntensity(0) end
  if SetFlashLightKeyEnabled then SetFlashLightKeyEnabled(0) end
@@ -195,7 +200,7 @@ local function begin()
 end
 
 function fl_opening_native_reset()
- opening={started=false,finished=false,start_ms=0,shot=0,ship_obj=nil,ship_entity=nil,lines={},logged_wait=false,music_cue=0}
+ opening={started=false,finished=false,start_ms=0,shot=0,ship_obj=nil,ship_entity=nil,lines={},logged_wait=false,music_cue=0,ai_frozen=false}
 end
 
 function fl_opening_native_tick()
@@ -205,7 +210,7 @@ function fl_opening_native_tick()
   if (g_Time or 0)-(fl.born or (g_Time or 0))>=40 then begin() end
   if not opening.started then return false end
  end
- local ms=(g_Time or 0)-opening.start_ms;aegis.opening_elapsed_ms=ms
+ local ms=(g_Time or 0)-opening.start_ms;aegis.opening_elapsed_ms=ms;aegis.combat_intensity=0
  if g_KeyPressSPACE==1 and ms>250 then release(true);return false end
  if ms>=50800 then release(false);return false end
  update_music(ms)
