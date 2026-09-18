@@ -89,7 +89,9 @@ end
 
 local function draw_feed_label()
  local beat=active_beat();local label=beat and feeds[beat] or nil
- if not label or not aegis or not aegis.cinematic_active then return end
+ -- Native opening v2 owns its own telemetry.  This compatibility rig remains useful
+ -- for later CineGuru beats, but must never paint the retired v1 labels over v2.
+ if not label or not aegis or not aegis.cinematic_active or aegis.opening_native_active then return end
  if Panel then Panel(2,2,31,9) end
  if TextCenterOnXColor then
   TextCenterOnXColor(16.5,3.0,1,label,103,220,230)
