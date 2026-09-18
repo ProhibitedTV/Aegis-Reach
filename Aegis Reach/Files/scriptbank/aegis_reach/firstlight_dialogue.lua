@@ -36,14 +36,24 @@ end
 local function entity_name(e)if not GetEntityName then return nil end;local ok,name=pcall(GetEntityName,e);return ok and name or nil end
 local function resolve_voice(id)
  if voice_entities[id] and g_Entity and g_Entity[voice_entities[id]] then return voice_entities[id] end
- if not g_Entity then return nil end;local wanted='FL VO '..id
- for e,_ in pairs(g_Entity) do if entity_name(e)==wanted then voice_entities[id]=e;return e end end;return nil
+ if not g_Entity then return nil end
+ local wanted='FL VO '..id
+ -- MAX can expose g_Entity as an engine-backed sparse table. Numeric scanning is the
+ -- reliable path; pairs() is only a compatibility fallback for test harnesses/mods.
+ for e=1,4096 do
+  local ent=g_Entity[e]
+  if ent and entity_name(e)==wanted then voice_entities[id]=e;return e end
+ end
+ for e,_ in pairs(g_Entity) do if entity_name(e)==wanted then voice_entities[id]=e;return e end end
+ return nil
 end
 local function play_voice(id)
  if active_voice and StopSound then StopSound(active_voice,0) end
  active_voice=nil
  if not PlayNon3DSound then return end
- local e=resolve_voice(id);if e then pcall(PlayNon3DSound,e,0);active_voice=e end
+ local e=resolve_voice(id)
+ if e then pcall(PlayNon3DSound,e,0);active_voice=e
+ elseif fl_log then fl_log('voice missing '..id) end
 end
 function fl_dialogue_busy()
  return aegis and aegis.dialogue_current and g_Time<(aegis.dialogue_current.expires_at or 0)
@@ -60,15 +70,17 @@ function fl_dialogue(id)
  if fl_log then fl_log('dialogue '..id) end;return true
 end
 function fl_dialogue_draw_cinematic()
- if not aegis or not aegis.dialogue_current then return end;local line=aegis.dialogue_current;if g_Time>(line.expires_at or 0) then return end
+ if not aegis or not aegis.dialogue_current then return end
+ local line=aegis.dialogue_current;if g_Time>(line.expires_at or 0) then return end
  local rows={};local rest=line.text
- while rest~='' do local row,next_part=split_line(rest,78);rows[#rows+1]=row;rest=next_part end
- local top=89-#rows*4
- if Panel then Panel(8,top-7,92,95) end
+ while rest~='' do local row,next_part=split_line(rest,62);rows[#rows+1]=row;rest=next_part end
+ -- Large, screen-safe lower third. The previous tiny center text was nearly unreadable
+ -- at 1080p and especially poor on ultrawide capture layouts.
+ local top=84-(#rows-1)*4.6
+ if Panel then Panel(7.5,top-7.2,92.5,96.0) end
  if TextCenterOnXColor then
-  TextCenterOnXColor(50,top-5,1,line.speaker,103,220,230)
-  for i,row in ipairs(rows) do TextCenterOnXColor(50,top+(i-1)*4,2,row,228,225,209) end
-  TextCenterOnXColor(50,96,1,'SPACE // SKIP',144,165,178)
+  TextCenterOnXColor(50,top-4.6,2,line.speaker,102,224,232)
+  for i,row in ipairs(rows) do TextCenterOnXColor(50,top+(i-1)*4.6,3,row,232,229,214) end
  end
 end
 local function mission_radio_tick()
