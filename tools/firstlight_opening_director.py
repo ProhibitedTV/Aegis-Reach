@@ -36,6 +36,11 @@ def disable_legacy_opening(path):
     path.write_text(text)
 
 
+def sync_coordinator_guard(path):
+    """Reapply the hard-disabled opening guard after coordinator regeneration."""
+    disable_legacy_opening(path)
+
+
 def quarantine_legacy_opening_cameras(build):
     """Rename and neutralize all seventeen legacy insertion cameras."""
     found=[]
