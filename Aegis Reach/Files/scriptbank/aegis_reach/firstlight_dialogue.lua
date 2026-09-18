@@ -23,7 +23,25 @@ local catalog={
  FL01_KES_017={speaker="KESTREL",text="Lifting. Shelter Twelve is alive. Mira is still transmitting.",seconds=4.0},
  FL01_M17_001={speaker="M-17 PILOT",text="Colony filters. Medical packs. Security ammunition. Landing clearance revoked. Gate Zero-Seven will not answer. Putting her down in the tide channel.",seconds=8.5},
 }
+
+-- The four recorded insertion lines ship with FIRST LIGHT today.  Use MAX global
+-- sounds for cinematic VO: this is the engine's deterministic non-positional path and
+-- avoids entity sound-slot timing/registration quirks during the opening.
+local VOICE_GLOBAL_IDS={FL01_KES_001=301,FL01_KES_002=302,FL01_KES_003=303,FL01_KES_004=304}
 local voice_entities={};local last_played={};local active_voice=nil;local runtime={zone='',evac_started=false,evac={}}
+
+local function load_global_voices()
+ if not LoadGlobalSound then return end
+ for _,gid in pairs(VOICE_GLOBAL_IDS) do
+  if GetGlobalSoundExist and GetGlobalSoundExist(gid)==1 and DeleteGlobalSound then DeleteGlobalSound(gid) end
+ end
+ -- Keep literal paths so MAX's standalone collector sees the files.
+ LoadGlobalSound("audiobank\\aegis_reach\\dialogue\\fl01_kestrel_001.wav",301)
+ LoadGlobalSound("audiobank\\aegis_reach\\dialogue\\fl01_kestrel_002.wav",302)
+ LoadGlobalSound("audiobank\\aegis_reach\\dialogue\\fl01_kestrel_003.wav",303)
+ LoadGlobalSound("audiobank\\aegis_reach\\dialogue\\fl01_kestrel_004.wav",304)
+end
+
 local function split_line(text,limit)
  if not text or #text<=limit then return text or '','' end
  local cut=limit
@@ -47,29 +65,44 @@ local function resolve_voice(id)
  for e,_ in pairs(g_Entity) do if entity_name(e)==wanted then voice_entities[id]=e;return e end end
  return nil
 end
-local function play_voice(id)
- if active_voice and StopSound then StopSound(active_voice,0) end
+local function stop_active_voice()
+ if not active_voice then return end
+ if active_voice.kind=='global' then
+  if StopGlobalSound then StopGlobalSound(active_voice.id) end
+ elseif active_voice.kind=='entity' then
+  if StopSound then StopSound(active_voice.id,0) end
+ end
  active_voice=nil
- if not PlayNon3DSound then return end
+end
+local function play_voice(id)
+ stop_active_voice()
+ local gid=VOICE_GLOBAL_IDS[id]
+ if gid and PlayGlobalSound and GetGlobalSoundExist and GetGlobalSoundExist(gid)==1 then
+  if SetGlobalSoundVolume then SetGlobalSoundVolume(gid,100) end
+  PlayGlobalSound(gid);active_voice={kind='global',id=gid}
+  if fl_log then fl_log('voice global '..id..' id='..tostring(gid)) end
+  return
+ end
+ -- Non-opening dialogue may still use optional entity-bound audio when present.
+ if not PlayNon3DSound then if fl_log then fl_log('voice unavailable '..id) end;return end
  local e=resolve_voice(id)
- if e then pcall(PlayNon3DSound,e,0);active_voice=e
+ if e then pcall(PlayNon3DSound,e,0);active_voice={kind='entity',id=e}
  elseif fl_log then fl_log('voice missing '..id) end
 end
 function fl_dialogue_busy()
  return aegis and aegis.dialogue_current and g_Time<(aegis.dialogue_current.expires_at or 0)
 end
 function fl_dialogue_cancel()
- if active_voice and StopSound then StopSound(active_voice,0) end;active_voice=nil
+ stop_active_voice()
  if aegis then aegis.dialogue_current=nil end
 end
 function fl_dialogue(id)
  local line=catalog[id];if not line then return false end;if not aegis then aegis={} end
  local expires=g_Time+math.floor(line.seconds*1000)
  aegis.dialogue_current={id=id,speaker=line.speaker,text=line.text,expires_at=expires}
- -- Keep the mission's shared speech clock authoritative even during cinematics. The
- -- score controller already keys VO ducking from this timer, so recorded Kestrel lines
- -- now remain intelligible without pausing or de-syncing the authored music edit.
- if fl then fl.message_until=math.max(fl.message_until or 0,expires) end
+ -- During cinematics the dialogue_current clock is authoritative.  Do not reuse the
+ -- normal mission message timer: doing so resurrects whatever stale HUD message was in
+ -- fl.message and causes two dialogue systems to render at once.
  if not aegis.cinematic_active and fl_say then local a,b=split_line(line.text,68);fl_say(line.speaker..': '..a,b,line.seconds) end
  if not last_played[id] or g_Time-last_played[id]>500 then last_played[id]=g_Time;play_voice(id) end
  if fl_log then fl_log('dialogue '..id) end;return true
@@ -79,8 +112,6 @@ function fl_dialogue_draw_cinematic()
  local line=aegis.dialogue_current;if g_Time>(line.expires_at or 0) then return end
  local rows={};local rest=line.text
  while rest~='' do local row,next_part=split_line(rest,62);rows[#rows+1]=row;rest=next_part end
- -- Large, screen-safe lower third. The previous tiny center text was nearly unreadable
- -- at 1080p and especially poor on ultrawide capture layouts.
  local top=84-(#rows-1)*4.6
  if Panel then Panel(7.5,top-7.2,92.5,96.0) end
  if TextCenterOnXColor then
@@ -90,7 +121,6 @@ function fl_dialogue_draw_cinematic()
 end
 local function mission_radio_tick()
  if not fl or not fl.started or fl.won or (aegis and (aegis.cinematic_active or aegis.cinematic_request)) then return end
- -- Zone calls wait for a full sentence, including a field record or mission update.
  if fl_dialogue_busy() or g_Time<(fl.message_until or 0) then return end
  if fl.zone~=runtime.zone then
   runtime.zone=fl.zone
@@ -107,7 +137,10 @@ local function mission_radio_tick()
   if t>=60000 and not runtime.evac[4] and aegis and aegis.kestrel_landed then runtime.evac[4]=true;fl_dialogue('FL01_KES_015') end
  end
 end
-function firstlight_dialogue_init(e)runtime={zone='',evac_started=false,evac={}};Hide(e);CollisionOff(e);if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end end
+function firstlight_dialogue_init(e)
+ runtime={zone='',evac_started=false,evac={}};voice_entities={};active_voice=nil;load_global_voices()
+ Hide(e);CollisionOff(e);if SetEntityAlwaysActive then SetEntityAlwaysActive(e,1) end
+end
 function firstlight_dialogue_main(e)mission_radio_tick() end
 firstlight_dialogue_init=firstlight_guard('firstlight_dialogue_init',firstlight_dialogue_init)
 firstlight_dialogue_main=firstlight_guard('firstlight_dialogue_main',firstlight_dialogue_main)
