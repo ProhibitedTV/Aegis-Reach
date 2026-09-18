@@ -13,7 +13,7 @@ score=(scripts/'firstlight_score.lua').read_text()
 finish=(ROOT/'tools/firstlight_kestrel_finish.py').read_text()
 
 # Presentation/audio contract: prevent the exact native-playtest regressions that led
-# to cinematic-v2.  FOV must be real degrees, music must use deterministic edit cues,
+# to cinematic-v2. FOV must be real degrees, music must use deterministic edit cues,
 # VO discovery must survive MAX's sparse entity table, subtitles must use a readable
 # lower third, and the night Kestrel must receive its dedicated material finish.
 assert 'SetCameraPanelFOV(fov)' in source and 'SetCameraPanelFOV(fov/2)' not in source
@@ -26,8 +26,8 @@ assert 'fl.message_until=math.max' in dialogue,'cinematic VO no longer drives sh
 assert 'split_line(rest,62)' in dialogue and 'TextCenterOnXColor(50,top+(i-1)*4.6,3,row' in dialogue
 for token in ('slot_for_name','cinematic_music_track','cinematic_music_cue_serial','restart_loop(id)'):
     assert token in score,token
-for token in ('FIRST LIGHT // KESTREL CINEMATIC MATERIAL PASS','Brightness(img).enhance(1.34)',
-              "metalnessStrength','0.72'","emissiveStrength','1.30'"):
+for token in ('FIRST LIGHT // KESTREL CINEMATIC MATERIAL PASS','Brightness(img).enhance(1.55)',
+              "metalnessStrength','0.58'","emissiveStrength','1.55'","reflectance','0.36'"):
     assert token in finish,token
 
 LuaRuntime=ensure_max_lua_runtime(__file__)
