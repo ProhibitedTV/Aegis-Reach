@@ -10,22 +10,38 @@ scripts=ROOT/'Aegis Reach/Files/scriptbank/aegis_reach'
 source=(scripts/'firstlight_opening_native.lua').read_text()
 dialogue=(scripts/'firstlight_dialogue.lua').read_text()
 score=(scripts/'firstlight_score.lua').read_text()
+enemy=(scripts/'firstlight_enemy.lua').read_text()
 finish=(ROOT/'tools/firstlight_kestrel_finish.py').read_text()
 
 # Presentation/audio contract: prevent the exact native-playtest regressions that led
 # to cinematic-v2. FOV must be real degrees, music must use deterministic edit cues,
-# VO discovery must survive MAX's sparse entity table, subtitles must use a readable
-# lower third, and the night Kestrel must receive its dedicated material finish.
+# opening VO must use deterministic global non-positional playback, stale HUD speech
+# must not become a second cinematic channel, stock Warden AI must remain dormant until
+# insertion handoff, and the night Kestrel must receive its dedicated material finish.
 assert 'SetCameraPanelFOV(fov)' in source and 'SetCameraPanelFOV(fov/2)' not in source
 for cue in ("{at=0,track='salt_moon_drift'", "{at=8400,track='moon_outpost_drift'",
             "{at=23500,track='orbital_catacomb'", "{at=42700,track='salt_moon_drift'"):
     assert cue in source,cue
 assert 'cinematic_music_cue_serial' in source
-assert 'for e=1,4096 do' in dialogue,'cinematic VO lookup regressed to pairs-only entity discovery'
-assert 'fl.message_until=math.max' in dialogue,'cinematic VO no longer drives shared score-duck clock'
+for token in (
+    'VOICE_GLOBAL_IDS={FL01_KES_001=301,FL01_KES_002=302,FL01_KES_003=303,FL01_KES_004=304}',
+    'LoadGlobalSound("audiobank\\\\aegis_reach\\\\dialogue\\\\fl01_kestrel_001.wav",301)',
+    'PlayGlobalSound(gid)',
+    'for e=1,4096 do',
+):
+    assert token in dialogue,token
+assert 'fl.message_until=math.max' not in dialogue,'cinematic VO regressed into the ordinary HUD message clock'
 assert 'split_line(rest,62)' in dialogue and 'TextCenterOnXColor(50,top+(i-1)*4.6,3,row' in dialogue
-for token in ('slot_for_name','cinematic_music_track','cinematic_music_cue_serial','restart_loop(id)'):
+for token in (
+    'slot_for_name','cinematic_music_track','cinematic_music_cue_serial','restart_loop(id)',
+    'local dialogue_speaking=aegis.dialogue_current',
+    'local hud_speaking=(not aegis.cinematic_active)',
+    'DisableMusicReset(1)',
+):
     assert token in score,token
+gate='if not aegis or aegis.insertion_complete~=true then return end'
+assert gate in enemy,'stock Warden AI can initialize before insertion handoff'
+assert enemy.index(gate)<enemy.index('if not w.primed then prime_native_character(e,w) end'),'AI gate must run before character_attack initialization'
 for token in ('FIRST LIGHT // KESTREL CINEMATIC MATERIAL PASS','Brightness(img).enhance(1.55)',
               "metalnessStrength','0.58'","emissiveStrength','1.55'","reflectance','0.36'"):
     assert token in finish,token
@@ -139,4 +155,4 @@ assert g.aegis.insertion_complete is True
 assert g.aegis.cinematic_request=='OPENING_NATIVE_DONE',g.aegis.cinematic_request
 assert g.aegis.cinematic_music_track is None
 print('FIRST LIGHT // CINEMATIC V2 OPENING RUNTIME PASS')
-print('Nose feed -> exterior chase -> security -> conversion -> touchdown -> departure uses true FOV, deterministic score cues, VO-safe ducking and finished Kestrel materials; control restores at handoff.')
+print('Nose feed -> exterior chase -> security -> conversion -> touchdown -> departure uses true FOV, deterministic score cues, global opening VO, isolated HUD speech, gated Warden AI and finished Kestrel materials; control restores at handoff.')
