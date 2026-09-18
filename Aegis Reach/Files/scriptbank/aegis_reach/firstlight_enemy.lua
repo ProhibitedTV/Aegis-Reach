@@ -218,6 +218,11 @@ function firstlight_enemy_main(e)
  local w=soldiers[e]
  if not w or not fl or not fl.started or fl.won then return end
  if not g_Entity[e] then return end
+ -- The opening owns the game before insertion handoff. Do not even initialize MAX's
+ -- stock character_attack layer while it is running: that stock layer can wake combat
+ -- audio/global state even for hidden actors. AI ownership begins only after the native
+ -- opening sets insertion_complete=true (including the skip path).
+ if not aegis or aegis.insertion_complete~=true then return end
  if not w.primed then prime_native_character(e,w) end
  if not w.registered then fl.enemies[e]=w;w.registered=true end
  if g_Entity[e] and g_Entity[e].health<=0 then
