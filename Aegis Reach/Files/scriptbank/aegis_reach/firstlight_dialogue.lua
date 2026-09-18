@@ -64,7 +64,12 @@ function fl_dialogue_cancel()
 end
 function fl_dialogue(id)
  local line=catalog[id];if not line then return false end;if not aegis then aegis={} end
- aegis.dialogue_current={id=id,speaker=line.speaker,text=line.text,expires_at=g_Time+math.floor(line.seconds*1000)}
+ local expires=g_Time+math.floor(line.seconds*1000)
+ aegis.dialogue_current={id=id,speaker=line.speaker,text=line.text,expires_at=expires}
+ -- Keep the mission's shared speech clock authoritative even during cinematics. The
+ -- score controller already keys VO ducking from this timer, so recorded Kestrel lines
+ -- now remain intelligible without pausing or de-syncing the authored music edit.
+ if fl then fl.message_until=math.max(fl.message_until or 0,expires) end
  if not aegis.cinematic_active and fl_say then local a,b=split_line(line.text,68);fl_say(line.speaker..': '..a,b,line.seconds) end
  if not last_played[id] or g_Time-last_played[id]>500 then last_played[id]=g_Time;play_voice(id) end
  if fl_log then fl_log('dialogue '..id) end;return true
