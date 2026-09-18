@@ -180,10 +180,21 @@ function firstlight_director_main(e)
  if not fl.started then
   fl.started=true;fl.born=g_Time;fl.last_hit=g_Time;fl.last_health=200;fl.last_director_tick=g_Time
   SetPlayerHealth(200);aegis.started=true
-  fl_say('KESTREL: The colony has gone silent. Northstar can tell us why.','Follow the old survey road. I will keep a channel open.',11)
-  if PlayNon3DSound then PlayNon3DSound(e,0) end
+  -- Cinematic v2 is the sole mission-opening dialogue owner.  Do not emit the retired
+  -- startup bark or entity-slot sound here; it used to compete with the briefing.
   fl_log('mission_started x='..g_PlayerPosX..' y='..g_PlayerPosY..' z='..g_PlayerPosZ)
  end
+
+ -- Give the opening first right of refusal before combat, zones, tutorial HUD, radio,
+ -- or adaptive music-state logic run.  The HUD still calls this tick later for legacy
+ -- compatibility, but production reaches it here first and returns while locked.
+ if fl_opening_native_tick then fl_opening_native_tick() end
+ if aegis and (aegis.opening_native_active or aegis.cinematic_request=='OPENING_NATIVE_LOCK') then
+  fl.message={};fl.message_until=0;fl.radio_queue={};fl.zone_until=0;fl.objective_pulse_until=0
+  fl.last_director_tick=g_Time
+  return
+ end
+
  if native_qa then firstlight_qa_tick() end
  if g_PlayerHealth<=0 then return end
 
