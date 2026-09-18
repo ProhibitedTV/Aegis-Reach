@@ -1,10 +1,10 @@
 require 'scriptbank\\aegis_reach\\firstlight_audit'
 -- DESCRIPTION: Robust adaptive Aegis Reach score controller for GameGuru MAX.
 --
--- Persistent native global sounds give FIRST LIGHT stable authored music even when
--- standalone packaging cannot find an optional master. The combat director supplies
--- intensity while radio/cinematic arbitration supplies ducking; spatial identity stays
--- stable so every short firefight or authored camera beat does not hard-cut the score.
+-- Gameplay uses slow adaptive crossfades. Authored cinematics may instead publish an
+-- explicit cinematic_music_track + cue serial; those requests bypass gameplay
+-- hysteresis and restart the requested master on the edit so picture and score remain
+-- deterministic across playtests and standalone builds.
 local music={}
 
 local TRACK_SALT=0
@@ -53,6 +53,12 @@ local function track_name(slot)
  if slot==TRACK_CATACOMB then return "orbital_catacomb" end
  return "unknown"
 end
+local function slot_for_name(name)
+ if name=="salt_moon_drift" then return TRACK_SALT end
+ if name=="moon_outpost_drift" then return TRACK_OUTPOST end
+ if name=="orbital_catacomb" then return TRACK_CATACOMB end
+ return nil
+end
 
 local function track_for_state(state)
  if state=="exploration_vesper" then return TRACK_SALT,52 end
@@ -98,6 +104,11 @@ local function ensure_looping(id)
  if id<0 or not exists(id) then return end
  if GetGlobalSoundPlaying and GetGlobalSoundPlaying(id)==0 then LoopGlobalSound(id) end
 end
+local function restart_loop(id)
+ if id<0 or not exists(id) then return end
+ if StopGlobalSound then StopGlobalSound(id) end
+ LoopGlobalSound(id)
+end
 
 local function set_volume(id,volume)
  if id<0 or not exists(id) then return end
@@ -115,7 +126,7 @@ function firstlight_score_init(e)
   target=TRACK_SALT,pending=-1,pending_since=0,
   volumes={[211]=0,[212]=0,[213]=0,[214]=0},
   last_state="",last_update=g_Time or 0,target_volume=46,
-  fallback_announced=false,ducking=false
+  fallback_announced=false,ducking=false,last_cue_serial=-1,cinematic_override=false
  }
  Hide(e)
  CollisionOff(e)
@@ -147,25 +158,50 @@ function firstlight_score_main(e)
 
  local state=aegis.music_state or "exploration_fortress"
  local desired,desired_volume=track_for_state(state)
- local immediate=false -- Preserve spatial score identity through very short contacts.
+ local cinematic_name=aegis.cinematic_music_track
+ local cinematic_slot=cinematic_name and slot_for_name(cinematic_name) or nil
+ local cinematic_override=cinematic_slot~=nil
+ local cue_serial=aegis.cinematic_music_cue_serial or 0
+ local cue_changed=cue_serial~=m.last_cue_serial
+ if cue_changed then m.last_cue_serial=cue_serial end
+ if cinematic_override then
+  desired=cinematic_slot
+  desired_volume=clamp(tonumber(aegis.cinematic_music_volume) or 60,0,100)
+ end
+
+ local immediate=cinematic_override
  local intensity=clamp(aegis.combat_intensity or 0,0,100)
  local combat_state=state=="combat" or state=="combat_overcharge" or state=="combat_interference"
- if combat_state then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
+ if combat_state and not cinematic_override then desired_volume=math.min(78,desired_volume+math.floor(intensity*0.06)) end
 
- -- Dialogue and authored CineGuru beats own intelligibility/presentation windows. Duck
- -- without pausing so Suno masters remain phase-continuous across gameplay and cameras.
+ -- During an authored cinematic, the explicit score cue remains audible and only VO
+ -- causes a modest intelligibility duck. Generic cinematic ducking remains for later
+ -- CineGuru beats that do not provide their own music edit.
  local speaking=fl and g_Time<(fl.message_until or 0)
  local cinematic=aegis.music_cinematic_duck and true or false
- local ducking=speaking or cinematic
- if ducking then desired_volume=math.max(26,desired_volume-(cinematic and 18 or 14)) end
+ local ducking=speaking or (cinematic and not cinematic_override)
+ if speaking then desired_volume=math.max(30,desired_volume-10)
+ elseif ducking then desired_volume=math.max(26,desired_volume-18) end
  aegis.music_ducking=ducking
 
- if desired~=m.target then
+ -- A cue serial is an edit point, not an adaptive-state suggestion. Restart the master
+ -- exactly once at the cue and bypass normal 4.5s/15s gameplay hysteresis.
+ if cinematic_override and cue_changed then
+  m.target=desired;m.target_volume=desired_volume;m.pending=-1;m.changed_at=g_Time
+  aegis.music_track=m.target;aegis.music_track_changed_at=g_Time
+  local id,fallback=resolved_id(m.target)
+  if id>=0 then
+   restart_loop(id)
+   local launch=math.min(desired_volume,18)
+   set_volume(id,launch);m.volumes[id]=launch
+  end
+  audit("cinematic_music_cue serial="..tostring(cue_serial).." track="..track_name(m.target).." fallback="..tostring(fallback).." volume="..math.floor(desired_volume))
+ elseif desired~=m.target then
   if desired~=m.pending then
    m.pending=desired
    m.pending_since=g_Time
   end
-  if (immediate or g_Time-m.pending_since>=4500) and g_Time-(m.changed_at or -20000)>=15000 then
+  if (immediate or g_Time-m.pending_since>=4500) and (immediate or g_Time-(m.changed_at or -20000)>=15000) then
    m.changed_at=g_Time
    m.target=desired
    m.target_volume=desired_volume
@@ -180,15 +216,21 @@ function firstlight_score_main(e)
   m.target_volume=desired_volume
   m.pending=-1
  end
+ if cue_changed and not cinematic_override then
+  -- Leaving an authored edit should not trap gameplay behind the cinematic's change
+  -- timestamp; allow the next legitimate adaptive state to settle normally.
+  m.changed_at=-20000
+ end
+ m.cinematic_override=cinematic_override
  m.last_state=state
 
  if m.ducking~=ducking then
   m.ducking=ducking
-  audit('music_duck active='..tostring(m.ducking)..' dialogue='..tostring(speaking)..' cinematic='..tostring(cinematic)..' state='..state)
+  audit('music_duck active='..tostring(m.ducking)..' dialogue='..tostring(speaking)..' cinematic='..tostring(cinematic)..' authored='..tostring(cinematic_override)..' state='..state)
  end
  if os.getenv('AEGIS_FIRSTLIGHT_QA')=='1' and g_Time-(m.audit_at or 0)>5000 then
   m.audit_at=g_Time
-  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(ducking))
+  audit('FIRST_LIGHT score target='..track_name(m.target)..' playing='..tostring(GetGlobalSoundPlaying(GLOBAL_IDS[m.target]))..' volume='..math.floor(m.target_volume)..' intensity='..math.floor(intensity)..' duck='..tostring(ducking)..' authored='..tostring(cinematic_override))
  end
 
  local target_id,fallback=resolved_id(m.target)
@@ -197,8 +239,9 @@ function firstlight_score_main(e)
   audit("music_fallback active=true requested="..track_name(m.target))
  end
 
- -- Crossfade tracks in roughly two seconds; presentation ducking responds faster.
- local step=elapsed*(ducking and 0.060 or 0.035)
+ -- Crossfade gameplay in ~2 s; authored edit points rise faster so the music onset is
+ -- perceptible on the cut without becoming a hard digital jump.
+ local step=elapsed*(cinematic_override and 0.085 or (ducking and 0.060 or 0.035))
  local ids={GLOBAL_IDS[TRACK_SALT],GLOBAL_IDS[TRACK_OUTPOST],GLOBAL_IDS[TRACK_CATACOMB],FALLBACK_ID}
  for _,id in ipairs(ids) do
   local goal=(id==target_id) and m.target_volume or 0
