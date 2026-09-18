@@ -1,4 +1,4 @@
-"""Runtime regression for the hard-replacement FIRST LIGHT opening camera."""
+"""Runtime regression for the FIRST LIGHT cinematic-v2 native opening."""
 from pathlib import Path
 import sys
 
@@ -53,51 +53,67 @@ function fl_dialogue_cancel() end
 lua.execute(source)
 g=lua.globals();g.fl_opening_native_reset()
 
-# The first rendered frame must already be the hull-mounted nose EO feed.
+# First rendered frame is a real nose feed, using an actual FOV value rather than the
+# old accidental half-FOV telephoto crop. It also publishes the first authored score cue.
 g.g_Time=100;g.fl_opening_native_tick()
 assert g.camera.override==3,g.camera.override
 assert g.camera.freeze==1,g.camera.freeze
 assert g.aegis.cinematic_beat=='ARRIVAL_NOSE',g.aegis.cinematic_beat
 nose=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert abs(nose[0]-1000)>1 or abs(nose[2]-(-10000))>1,nose
+assert float(g.camera.fov)>50,g.camera.fov
+assert g.aegis.cinematic_music_track=='salt_moon_drift',g.aegis.cinematic_music_track
+assert int(g.aegis.cinematic_music_cue_serial)==1,g.aegis.cinematic_music_cue_serial
 assert g.spoken['FL01_KES_001'] is None
 
 # Dialogue events are timed from the moment the native opening actually begins.
-# The opening begins at global 100 ms in this harness, so a 200 ms event fires
-# at global 300 ms rather than on the first rendered frame.
 g.g_Time=300;g.fl_opening_native_tick()
 assert g.spoken['FL01_KES_001'] is True
 
-# 3.0 s opening elapsed: port shoulder camera, a distinct live-airframe transform.
+# 3.0 s opening elapsed: exterior port three-quarter, distinctly separated from hull.
 g.g_Time=3100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_PORT_FWD',g.aegis.cinematic_beat
 port=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert port!=nose,(nose,port)
+assert abs(port[0]-1000)>500 or abs(port[2]-(-10000))>500,port
 
-# 6.0 s opening elapsed: stabilized ventral ISR looking at Meridian rather than along the hull.
+# 6.0 s opening elapsed: high chase composition.
 g.g_Time=6100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_ISR',g.aegis.cinematic_beat
 isr=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert isr!=port,(port,isr)
 
-# 8.7 s opening elapsed: first external context shot is fixed Gate CCTV; second VO is live.
+# 8.7 s opening elapsed: fixed Gate security view and the second score master are live.
 g.g_Time=8800;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_GATE',g.aegis.cinematic_beat
 gate=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert abs(gate[0]-(-520))<.01,gate
+assert g.aegis.cinematic_music_track=='moon_outpost_drift',g.aegis.cinematic_music_track
 assert g.spoken['FL01_KES_002'] is True
 
-# 11.8 s opening elapsed: back onto a Kestrel-mounted starboard shoulder feed.
+# 11.8 s opening elapsed: readable starboard exterior chase.
 g.g_Time=11900;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_STBD',g.aegis.cinematic_beat
 stbd=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert stbd!=gate,(gate,stbd)
 
-# End restores player control and permanently gates any legacy insertion opener.
+# Powered-lift phase deliberately cues the darker master on the edit.
+g.g_Time=23650;g.fl_opening_native_tick()
+assert g.aegis.cinematic_music_track=='orbital_catacomb',g.aegis.cinematic_music_track
+assert int(g.aegis.cinematic_music_cue_serial)==3,g.aegis.cinematic_music_cue_serial
+
+# Departure returns to the Vesper exploration master before control handoff.
+g.g_Time=43000;g.fl_opening_native_tick()
+assert g.aegis.cinematic_music_track=='salt_moon_drift',g.aegis.cinematic_music_track
+assert int(g.aegis.cinematic_music_cue_serial)==4,g.aegis.cinematic_music_cue_serial
+
+# End restores player control, clears the authored music override and permanently gates
+# any legacy insertion opener.
 g.g_Time=51000;g.fl_opening_native_tick()
 assert g.camera.override==0,g.camera.override
 assert g.camera.unfreeze==1,g.camera.unfreeze
 assert g.aegis.insertion_complete is True
 assert g.aegis.cinematic_request=='OPENING_NATIVE_DONE',g.aegis.cinematic_request
-print('FIRST LIGHT // ONBOARD-FIRST OPENING RUNTIME PASS')
-print('NOSE -> PORT SHOULDER -> ISR -> GATE CCTV -> STBD changes camera 0 on one 50.8s clock; player control restores at handoff.')
+assert g.aegis.cinematic_music_track is None
+print('FIRST LIGHT // CINEMATIC V2 OPENING RUNTIME PASS')
+print('Nose feed -> exterior chase -> security -> conversion -> touchdown -> departure uses true FOV and deterministic score cues; control restores at handoff.')
