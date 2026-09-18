@@ -14,7 +14,7 @@ GAME=ROOT/'Aegis Reach';MAP=GAME/'Files/mapbank/Aegis Reach - First Light.fpm';S
 MATERIAL_SOURCES=(ROOT/'tools/texture_sources/first_light/first_light_material_sources.jpg',)
 SOURCES=(
  ROOT/'tools/firstlight_world.py',ROOT/'tools/build_first_light.py',ROOT/'tools/firstlight_combat_geometry.py',
- ROOT/'tools/firstlight_story_effects.py',ROOT/'tools/firstlight_transport.py',ROOT/'tools/firstlight_kestrel.py',
+ ROOT/'tools/firstlight_story_effects.py',ROOT/'tools/firstlight_transport.py',ROOT/'tools/firstlight_kestrel.py',ROOT/'tools/firstlight_kestrel_finish.py',
  ROOT/'tools/firstlight_kestrel_boarding.py',ROOT/'tools/firstlight_dialogue.py',ROOT/'tools/firstlight_cinematics.py',ROOT/'tools/firstlight_opening_director.py',ROOT/'tools/firstlight_biosphere.py',
  ROOT/'tools/firstlight_cineguru_native_chain.py',ROOT/'tools/firstlight_title_screen_convergence.py',
  ROOT/'tools/firstlight_native_engine_pass.py',ROOT/'tools/build_first_light_aaa.py',ROOT/'tools/environment_pass.py',
@@ -44,6 +44,8 @@ def digest_sources():
 def current_stamp():
  try:return json.loads(STAMP.read_text())
  except Exception:return {}
+def finish_kestrel():
+ subprocess.run([sys.executable,'-B',str(ROOT/'tools/firstlight_kestrel_finish.py')],cwd=ROOT,check=True)
 def main():
  # Generated catalog/timelines are build inputs too. Normalize them before hashing,
  # so a successful build does not immediately report itself stale on the next launch.
@@ -59,7 +61,7 @@ def main():
  if not needed:
   # Texture outputs are generated assets; restore them if a local cache was cleared
   # even when geometry/story sources are otherwise current.
-  apply_material_polish();enforce_material_contracts()
+  apply_material_polish();enforce_material_contracts();finish_kestrel()
   print('FIRST LIGHT // BUILD CURRENT',signature[:16]);return
  subprocess.run([sys.executable,'-B',str(ROOT/'tools/build_vesper_sky.py')],cwd=ROOT,check=True)
  print('FIRST LIGHT // REBUILD REQUIRED');print('Source signature:',signature[:16])
@@ -67,6 +69,6 @@ def main():
  # Builders own geometry/UVs; material polish intentionally runs last so procedural
  # fallback atlases cannot overwrite the high-detail art pass. Final material
  # contracts then lock engine semantics (for example brineglass remains dielectric).
- apply_material_polish(force=True);enforce_material_contracts()
+ apply_material_polish(force=True);enforce_material_contracts();finish_kestrel()
  STAMP.parent.mkdir(parents=True,exist_ok=True);STAMP.write_text(json.dumps({'source_sha256':signature,'map':str(MAP),'builder':'build_first_light_aaa.py'},indent=2));print('FIRST LIGHT // REBUILD COMPLETE')
 if __name__=='__main__':main()
