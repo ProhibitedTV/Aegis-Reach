@@ -5,9 +5,15 @@ The native GameGuru MAX project is in `Aegis Reach`.
 
 Close an existing MAX run, then double-click **PLAY FIRST LIGHT.cmd** in the main
 checkout. The launcher registers this checkout and opens the native project.
-Use the FIRST LIGHT mission node in MAX. No standalone export is included.
+Use the FIRST LIGHT mission node in MAX.
 
-[Mission and playtest guide](Aegis%20Reach/Design/First%20Light/PLAYTEST.md)
+[Mission and playtest guide](Aegis%20Reach/Design/First%20Light/PLAYTEST.md)  
+[Windows standalone build/release guide](STANDALONE.md)
+
+For a real player-facing Windows build, run **BUILD STANDALONE.cmd**, use GameGuru
+MAX's **Save Standalone Game** export, then run **VERIFY STANDALONE.cmd**. A verified
+export can be packaged and released with **PUBLISH STANDALONE.cmd** or the Windows
+self-hosted `Publish Windows Standalone` GitHub Actions workflow.
 
 First Light follows Seven across a receded brine sea, through an occupied civilian
 survey station, and into an AEGIS excavation. Restore Northstar, recover Mira Sen's
