@@ -60,28 +60,34 @@ assert g.camera.freeze==1,g.camera.freeze
 assert g.aegis.cinematic_beat=='ARRIVAL_NOSE',g.aegis.cinematic_beat
 nose=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert abs(nose[0]-1000)>1 or abs(nose[2]-(-10000))>1,nose
+assert g.spoken['FL01_KES_001'] is None
+
+# Dialogue events are timed from the moment the native opening actually begins.
+# The opening begins at global 100 ms in this harness, so a 200 ms event fires
+# at global 300 ms rather than on the first rendered frame.
+g.g_Time=300;g.fl_opening_native_tick()
 assert g.spoken['FL01_KES_001'] is True
 
-# 3.0 s: port shoulder camera, a distinct live-airframe transform.
+# 3.0 s opening elapsed: port shoulder camera, a distinct live-airframe transform.
 g.g_Time=3100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_PORT_FWD',g.aegis.cinematic_beat
 port=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert port!=nose,(nose,port)
 
-# 6.0 s: stabilized ventral ISR looking at Meridian rather than along the hull.
+# 6.0 s opening elapsed: stabilized ventral ISR looking at Meridian rather than along the hull.
 g.g_Time=6100;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_ISR',g.aegis.cinematic_beat
 isr=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert isr!=port,(port,isr)
 
-# 8.7 s: first external context shot is fixed Gate CCTV; second VO is live.
+# 8.7 s opening elapsed: first external context shot is fixed Gate CCTV; second VO is live.
 g.g_Time=8800;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_GATE',g.aegis.cinematic_beat
 gate=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
 assert abs(gate[0]-(-520))<.01,gate
 assert g.spoken['FL01_KES_002'] is True
 
-# 11.8 s: back onto a Kestrel-mounted starboard shoulder feed.
+# 11.8 s opening elapsed: back onto a Kestrel-mounted starboard shoulder feed.
 g.g_Time=11900;g.fl_opening_native_tick()
 assert g.aegis.cinematic_beat=='ARRIVAL_STBD',g.aegis.cinematic_beat
 stbd=(float(g.camera.x),float(g.camera.y),float(g.camera.z))
